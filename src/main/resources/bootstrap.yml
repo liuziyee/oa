@@ -54,3 +54,8 @@ mybatis-plus:
     banner: false
   type-aliases-package: com.dorohedoro.domain
     
+logging:
+  level:
+    com.dorohedoro.mapper: DEBUG
+    
+    
