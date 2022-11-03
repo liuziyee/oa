@@ -3,6 +3,7 @@ package com.dorohedoro.config.xss;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HtmlUtil;
 import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
@@ -12,9 +13,11 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
+@Slf4j
 public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
     public XssHttpServletRequestWrapper(HttpServletRequest request) {
@@ -33,41 +36,45 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
     @Override
     public String[] getParameterValues(String name) {
         String[] values = super.getParameterValues(name);
-        return Arrays.stream(values)
+        log.debug("values可能为空,在做Stream流操作前最好转为Optional");
+        return Optional.ofNullable(values).map(arr -> Arrays.stream(arr)
                 .map(o -> StrUtil.isBlank(o) ? o : HtmlUtil.filter(o))
-                .collect(toList())
-                .toArray(new String[0]);
+                .toArray(String[]::new))
+                .orElse(null);
     }
 
     @Override
     public Map<String, String[]> getParameterMap() {
-        Map<String, String[]> map = super.getParameterMap();
-        map.keySet().stream().map(key -> {
-            String[] arr = Arrays.stream(map.get(key))
-                    .map(o -> StrUtil.isBlank(o) ? o : HtmlUtil.filter(o))
-                    .collect(toList())
-                    .toArray(new String[0]);
-            map.put(key, arr);
-            return key;
-        });
-        return map;
+        Map<String, String[]> paramMap = super.getParameterMap();
+        return Optional.ofNullable(paramMap).map(map -> {
+            map.keySet().stream().peek(key -> {
+                String[] arr = Arrays.stream(map.get(key))
+                        .map(o -> StrUtil.isBlank(o) ? o : HtmlUtil.filter(o))
+                        .toArray(String[]::new);
+                map.put(key, arr);
+            });
+            return map;
+        }).orElse(null);
     }
 
     @Override
     public ServletInputStream getInputStream() throws IOException {
-        Map<String, Object> map = JSONObject.parseObject(super.getInputStream(), Map.class); // 读取输入流
-        map.keySet().stream().map(key -> {
+        log.debug("将输入流转为Map");
+        Map<String, Object> payload = JSONObject.parseObject(super.getInputStream(), Map.class);
+
+        Optional.ofNullable(payload).map(map -> map.keySet().stream().peek(key -> {
             Object value = map.get(key);
             if (value instanceof String && !StrUtil.isBlank(value.toString())) {
                 map.put(key, HtmlUtil.filter(value.toString()));
             }
-            return key;
-        });
+        }).collect(toSet()));
+        log.debug("Stream的map,peek等中间操作为惰性操作,Optional的map不是惰性操作");
 
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(JSONObject.toJSONString(map).getBytes()); // 把字节数组转为输入流
+        log.debug("将Map转为输入流");
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(JSONObject.toJSONString(payload).getBytes());
         return new ServletInputStream() {
             @Override
-            public int read() throws IOException {
+            public int read() {
                 return inputStream.read();
             }
 
@@ -83,7 +90,6 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
             @Override
             public void setReadListener(ReadListener listener) {
-
             }
         };
     }

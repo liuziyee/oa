@@ -14,7 +14,7 @@ import javax.validation.Valid;
 
 @Api(tags = "示例模块")
 @RestController
-@RequestMapping("/swagger")
+@RequestMapping("/demo")
 public class DemoController {
     
     @ApiOperation("示例接口-问好")
