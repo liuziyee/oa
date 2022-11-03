@@ -57,5 +57,8 @@ mybatis-plus:
 logging:
   level:
     com.dorohedoro.mapper: DEBUG
-    
-    
+
+app:
+  jwt:
+    expire: 5
+    cache-expire: 10
