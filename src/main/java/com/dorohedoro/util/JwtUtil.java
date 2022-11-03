@@ -30,9 +30,9 @@ public class JwtUtil {
     }
 
     // 校验访问令牌
-    private Boolean check(String token) {
+    private Boolean check(String accessToken) {
         try {
-            Jwts.parserBuilder().setSigningKey(accessKey).build().parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(accessKey).build().parseClaimsJws(accessToken);
             return true;
         } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e) {
             return false;
@@ -40,9 +40,9 @@ public class JwtUtil {
     }
 
     // 获取负载信息
-    public Optional<Claims> getClaim(String token) {
+    public Optional<Claims> getClaim(String accessToken) {
         try {
-            return Optional.of(Jwts.parserBuilder().setSigningKey(accessKey).build().parseClaimsJws(token).getBody());
+            return Optional.of(Jwts.parserBuilder().setSigningKey(accessKey).build().parseClaimsJws(accessToken).getBody());
         } catch (Exception e) {
             return Optional.empty();
         }
