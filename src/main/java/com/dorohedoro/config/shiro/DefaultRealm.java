@@ -32,7 +32,7 @@ public class DefaultRealm extends AuthorizingRealm {
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-        // TODO 查询账户是否被冻结
+        // TODO 检查账户是否被冻结
         SimpleAuthenticationInfo info = new SimpleAuthenticationInfo();
         return info;
     }

@@ -1,11 +1,15 @@
 package com.dorohedoro.config.xss;
 
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-@WebFilter(value = "/*")
+@Order(Ordered.HIGHEST_PRECEDENCE)
+@WebFilter(urlPatterns = "/*")
 public class XssFilter implements Filter {
     
     @Override

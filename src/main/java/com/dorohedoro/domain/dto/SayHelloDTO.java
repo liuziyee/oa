@@ -6,11 +6,11 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 
-@ApiModel
 @Data
+@ApiModel
 public class SayHelloDTO {
 
-    @ApiModelProperty("用户名")
     @NotBlank
+    @ApiModelProperty("用户名")
     private String username;
 }

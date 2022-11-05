@@ -36,7 +36,7 @@ public class JwtFilter extends AuthenticatingFilter {
 
     @Override
     protected AuthenticationToken createToken(ServletRequest request, ServletResponse response) {
-        // 将访问令牌封装为认证对象
+        log.debug("将访问令牌封装为认证对象");
         String accessToken = getAccessToken((HttpServletRequest) request);
         if (StrUtil.isBlank(accessToken)) {
             return null;
@@ -57,9 +57,9 @@ public class JwtFilter extends AuthenticatingFilter {
 
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
-        log.debug("访问令牌为空或校验失败 => 无效的令牌\n" +
-                  "访问令牌过期,缓存令牌未过期 => 生成新的访问令牌并缓存到Redis\n" +
-                  "访问令牌过期,缓存令牌过期 => 重新登录");
+        log.debug("访问令牌为空或校验失败 => 无效的令牌");
+        log.debug("访问令牌过期,缓存令牌未过期 => 生成新的访问令牌并缓存到Redis");
+        log.debug("访问令牌过期,缓存令牌过期 => 重新登录");
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
         resp.setContentType("application/json");
