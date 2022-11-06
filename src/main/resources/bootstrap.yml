@@ -62,3 +62,6 @@ app:
   jwt:
     expire: 5
     cache-expire: 10
+  wechat:
+    appid: wxd78b9a548681e7f8
+    app-secret: 2e66c070087128da3082283bdc1ae9c6

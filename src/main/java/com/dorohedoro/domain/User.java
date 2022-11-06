@@ -19,7 +19,7 @@ public class User implements Serializable {
 
     private String nickname;
 
-    private String photo;
+    private String avatarUrl;
 
     private String name;
 
