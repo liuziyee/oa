@@ -598,11 +598,11 @@ CREATE TABLE `meeting`  (
   `place` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '开会地点',
   `start` time(0) NOT NULL COMMENT '开始时间',
   `end` time(0) NOT NULL COMMENT '结束时间',
-  `type` smallint(6) NOT NULL COMMENT '会议类型（1在线会议，2线下会议）',
+  `type` smallint(6) NOT NULL COMMENT '会议类型（1在线会议,2线下会议）',
   `members` json NOT NULL COMMENT '参与者',
   `desc` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '会议内容',
   `instance_id` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '工作流实例ID',
-  `status` smallint(6) NOT NULL COMMENT '状态（1未开始，2进行中，3已结束）',
+  `status` smallint(6) NOT NULL COMMENT '状态（1未开始,2进行中,3已结束）',
   `create_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_creator_id`(`creator_id`) USING BTREE,
@@ -713,3 +713,6 @@ SET FOREIGN_KEY_CHECKS = 1;
 # 把生成的访问令牌缓存到Redis(下面叫做缓存令牌),缓存令牌的过期时间设为访问令牌的一倍,下面以访问令牌过期时间5天为例
 # 如果访问令牌过期,缓存令牌没有过期,说明访问令牌过期后的间隔时间还没有超过5天,要生成新的访问令牌(即续期)并缓存到Redis
 # 如果访问令牌过期,缓存令牌也过期了,说明访问令牌过期后的间隔时间超过了5天,要重新登录
+
+# 注册流程:服务器接收注册码和code,校验注册码,用code换取openid,将openid绑定到员工账号
+# 登录流程:服务器接收code,用code换取openid,查询员工表是否存在该openid,不存在,则说明该微信账号没有绑定员工账号,拒绝登录
