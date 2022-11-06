@@ -704,6 +704,8 @@ CREATE TABLE `workday`  (
 SET FOREIGN_KEY_CHECKS = 1;
 
 # ubuntu安装mongodb:https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/
+# problem-spring-web参考文档:https://github.com/zalando/problem-spring-web/tree/main/problem-spring-web
+
 # swagger访问地址:http://localhost:30000/oa/swagger-ui.html
 # knife4j访问地址:http://localhost:30000/oa/doc.html
 

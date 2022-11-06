@@ -57,9 +57,6 @@ public class JwtFilter extends AuthenticatingFilter {
 
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
-        log.debug("访问令牌为空或校验失败 => 无效的令牌");
-        log.debug("访问令牌过期,缓存令牌未过期 => 生成新的访问令牌并缓存到Redis");
-        log.debug("访问令牌过期,缓存令牌过期 => 重新登录");
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
         resp.setContentType("application/json");
@@ -70,6 +67,7 @@ public class JwtFilter extends AuthenticatingFilter {
 
         String accessToken = getAccessToken(req);
         if (StrUtil.isBlank(accessToken)) {
+            log.debug("访问令牌为空或校验失败 => 无效的令牌");
             resp.setStatus(HttpStatus.UNAUTHORIZED.value());
             resp.getWriter().write("无效的令牌");
             return false;
@@ -79,18 +77,20 @@ public class JwtFilter extends AuthenticatingFilter {
             jwtUtil.check(accessToken);
         } catch (ExpiredJwtException e) {
             if (redisTemplate.hasKey(accessToken)) {
-                log.debug("缓存令牌未过期");
+                log.debug("访问令牌过期,缓存令牌未过期 => 生成新的访问令牌并缓存到Redis");
                 redisTemplate.delete("token");
                 long userid = (long) jwtUtil.getClaim(accessToken).get("userid");
                 String refreshToken = jwtUtil.generate(userid);
                 ThreadLocalAccessToken.set(refreshToken);
                 redisTemplate.opsForValue().set(refreshToken, userid, appProperties.getJwt().getCacheExpire(), TimeUnit.DAYS);
             } else {
+                log.debug("访问令牌过期,缓存令牌过期 => 令牌已过期");
                 resp.setStatus(HttpStatus.UNAUTHORIZED.value());
                 resp.getWriter().write("令牌已过期");
                 return false;
             }
         } catch (Exception e) {
+            log.debug("访问令牌为空或校验失败 => 无效的令牌");
             resp.setStatus(HttpStatus.UNAUTHORIZED.value());
             resp.getWriter().write("无效的令牌");
             return false;
