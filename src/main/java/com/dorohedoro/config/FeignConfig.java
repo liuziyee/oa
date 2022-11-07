@@ -15,7 +15,7 @@ public class FeignConfig {
     
     @Bean
     public Decoder decoder() {
-        log.debug("微信的code2Session接口返回的是JSON数据,格式为[text/plain],所以这里要自定义解码器,支持反序列化[text/plain]格式的数据");
+        log.debug("微信的code2Session接口返回的是JSON数据,格式为[text/plain],这里要自定义解码器,支持反序列化[text/plain]格式的数据");
         MappingJackson2HttpMessageConverter weChatConverter = new MappingJackson2HttpMessageConverter();
         weChatConverter.setSupportedMediaTypes(List.of(MediaType.TEXT_PLAIN));
         return new SpringDecoder(() -> new HttpMessageConverters(weChatConverter));
