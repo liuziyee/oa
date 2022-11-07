@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class City implements Serializable {
     
     @TableId
-    private Integer id;
+    private Long id;
 
     private String city;
     

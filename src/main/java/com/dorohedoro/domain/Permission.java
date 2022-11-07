@@ -11,11 +11,11 @@ import java.io.Serializable;
 public class Permission implements Serializable {
     
     @TableId
-    private Integer id;
+    private Long id;
 
     private String permissionName;
 
-    private Integer moduleId;
+    private Long moduleId;
 
-    private Integer actionId;
+    private Long actionId;
 }

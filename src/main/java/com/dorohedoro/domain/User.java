@@ -1,19 +1,20 @@
 package com.dorohedoro.domain;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
 @TableName("`user`")
 public class User implements Serializable {
 
     @TableId
-    private Integer id;
+    private Long id;
 
     private String openId;
 
@@ -29,15 +30,16 @@ public class User implements Serializable {
 
     private String email;
 
-    private LocalDate hiredate;
+    private String hiredate;
 
     private String roles;
 
     private Boolean root;
 
-    private Integer deptId;
+    private Long deptId;
 
     private Integer status;
-
-    private LocalDateTime createTime;
+    
+    @TableField(fill = FieldFill.INSERT, select = false)
+    private Date createTime;
 }

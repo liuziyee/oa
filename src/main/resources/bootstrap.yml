@@ -53,7 +53,15 @@ mybatis-plus:
       id-type: auto
     banner: false
   type-aliases-package: com.dorohedoro.domain
-    
+  
+feign:
+  okhttp:
+    enabled: true
+  client:
+    config:
+      default:
+        logger-level: FULL
+
 logging:
   level:
     com.dorohedoro.mapper: DEBUG

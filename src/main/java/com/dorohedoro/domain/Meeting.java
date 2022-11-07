@@ -5,9 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.util.Date;
 
 @Data
 @TableName("`meeting`")
@@ -22,13 +20,13 @@ public class Meeting implements Serializable {
 
     private Long creatorId;
 
-    private LocalDate date;
+    private String date;
 
     private String place;
 
-    private LocalTime start;
+    private String start;
 
-    private LocalTime end;
+    private String end;
 
     private Integer type;
     
@@ -40,5 +38,5 @@ public class Meeting implements Serializable {
 
     private Integer status;
 
-    private LocalDateTime createTime;
+    private Date createTime;
 }

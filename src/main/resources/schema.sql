@@ -164,7 +164,7 @@ CREATE TABLE `qrtz_triggers`  (
 
 DROP TABLE IF EXISTS `sys_config`;
 CREATE TABLE `sys_config`  (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
   `param_key` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '参数名',
   `param_value` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '参数值',
   `status` tinyint(1) UNSIGNED NOT NULL COMMENT '状态',
@@ -200,8 +200,8 @@ INSERT INTO `action` VALUES (7, 'BACKUP', '备份');
 
 DROP TABLE IF EXISTS `checkin`;
 CREATE TABLE `checkin`  (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `user_id` int(10) UNSIGNED NOT NULL COMMENT '用户ID',
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `user_id` bigint(20) UNSIGNED NOT NULL COMMENT '用户ID',
   `address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '签到地址',
   `country` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '国家',
   `province` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '省份',
@@ -219,7 +219,7 @@ CREATE TABLE `checkin`  (
 
 DROP TABLE IF EXISTS `city`;
 CREATE TABLE `city`  (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
   `city` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '城市名称',
   `code` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '拼音简称',
   PRIMARY KEY (`id`) USING BTREE,
@@ -558,7 +558,7 @@ INSERT INTO `city` VALUES (329, '郑州市', 'zz');
 
 DROP TABLE IF EXISTS `dept`;
 CREATE TABLE `dept`  (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
   `dept_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '部门名称',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_dept_name`(`dept_name`) USING BTREE
@@ -573,8 +573,8 @@ INSERT INTO `dept` VALUES (2, '行政部');
 
 DROP TABLE IF EXISTS `face_model`;
 CREATE TABLE `face_model`  (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键值',
-  `user_id` int(10) UNSIGNED NOT NULL COMMENT '用户ID',
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键值',
+  `user_id` bigint(20) UNSIGNED NOT NULL COMMENT '用户ID',
   `face_model` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户人脸模型',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_user_id`(`user_id`) USING BTREE
@@ -582,7 +582,7 @@ CREATE TABLE `face_model`  (
 
 DROP TABLE IF EXISTS `holiday`;
 CREATE TABLE `holiday`  (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
   `date` date NOT NULL COMMENT '日期',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_date`(`date`) USING BTREE
@@ -613,7 +613,7 @@ CREATE TABLE `meeting`  (
 
 DROP TABLE IF EXISTS `module`;
 CREATE TABLE `module`  (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
   `module_code` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '模块编号',
   `module_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '模块名称',
   PRIMARY KEY (`id`) USING BTREE,
@@ -628,10 +628,10 @@ INSERT INTO `module` VALUES (5, 'WORKFLOW', '工作流管理');
 
 DROP TABLE IF EXISTS `permission`;
 CREATE TABLE `permission`  (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
   `permission_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '权限',
-  `module_id` int(10) UNSIGNED NOT NULL COMMENT '模块ID',
-  `action_id` int(10) UNSIGNED NOT NULL COMMENT '行为ID',
+  `module_id` bigint(20) UNSIGNED NOT NULL COMMENT '模块ID',
+  `action_id` bigint(20) UNSIGNED NOT NULL COMMENT '行为ID',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_permission_name`(`permission_name`) USING BTREE,
   UNIQUE INDEX `uk_module_id_and_action_id`(`module_id`, `action_id`) USING BTREE
@@ -658,7 +658,7 @@ INSERT INTO `permission` VALUES (17, 'WORKFLOW:APPROVAL', 5, 5);
 
 DROP TABLE IF EXISTS `role`;
 CREATE TABLE `role`  (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
   `role_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '角色名称',
   `permissions` json NOT NULL COMMENT '权限集合',
   PRIMARY KEY (`id`) USING BTREE,
@@ -672,7 +672,7 @@ INSERT INTO `role` VALUES (3, '普通员工', '[1, 2, 3, 4, 5, 6, 7, 8]');
 
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user`  (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
   `open_id` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '用户唯一标识',
   `nickname` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '昵称',
   `avatar_url` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '头像地址',
@@ -683,8 +683,8 @@ CREATE TABLE `user`  (
   `hiredate` date NULL DEFAULT NULL COMMENT '入职日期',
   `roles` json NOT NULL COMMENT '角色集合',
   `root` tinyint(1) NOT NULL COMMENT '是否是超级管理员',
-  `dept_id` int(10) UNSIGNED NULL DEFAULT NULL COMMENT '部门编号',
-  `status` tinyint(4) NOT NULL COMMENT '状态',
+  `dept_id` bigint(20) UNSIGNED NULL DEFAULT NULL COMMENT '部门编号',
+  `status` tinyint(4) NOT NULL COMMENT '状态(0:离职;1:在职)',
   `create_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_open_id`(`open_id`) USING BTREE,
@@ -713,6 +713,3 @@ SET FOREIGN_KEY_CHECKS = 1;
 # 把生成的访问令牌缓存到Redis(下面叫做缓存令牌),缓存令牌的过期时间设为访问令牌的一倍,下面以访问令牌过期时间5天为例
 # 如果访问令牌过期,缓存令牌没有过期,说明访问令牌过期后的间隔时间还没有超过5天,要生成新的访问令牌(即续期)并缓存到Redis
 # 如果访问令牌过期,缓存令牌也过期了,说明访问令牌过期后的间隔时间超过了5天,要重新登录
-
-# 注册流程:服务器接收注册码和code,校验注册码,用code换取openid,将openid绑定到员工账号
-# 登录流程:服务器接收code,用code换取openid,查询员工表是否存在该openid,不存在,则说明该微信账号没有绑定员工账号,拒绝登录

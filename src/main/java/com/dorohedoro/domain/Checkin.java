@@ -5,17 +5,16 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
 @TableName("`checkin`")
 public class Checkin implements Serializable {
 
     @TableId
-    private Integer id;
+    private Long id;
     
-    private Integer userId;
+    private Long userId;
     
     private String address;
     
@@ -31,7 +30,7 @@ public class Checkin implements Serializable {
     
     private Integer risk;
     
-    private LocalDate date;
+    private String date;
     
-    private LocalDateTime createTime;
+    private Date createTime;
 }

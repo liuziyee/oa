@@ -5,10 +5,11 @@ import org.zalando.problem.Status;
 
 import java.net.URI;
 
-public class DataDuplicateProblem extends AbstractThrowableProblem {
+public class BusinessProblem extends AbstractThrowableProblem {
     private static final URI TYPE = URI.create("/duplicate");
 
-    public DataDuplicateProblem(String message) {
-        super(TYPE, "重复数据", Status.CONFLICT, message);
+    public BusinessProblem(String message) {
+        super(TYPE, "服务器异常", Status.INTERNAL_SERVER_ERROR, message);
     }
 }
+
