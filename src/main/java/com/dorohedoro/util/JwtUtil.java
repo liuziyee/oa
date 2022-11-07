@@ -2,7 +2,6 @@ package com.dorohedoro.util;
 
 import cn.hutool.core.date.DateUtil;
 import com.dorohedoro.config.AppProperties;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -20,7 +19,7 @@ public class JwtUtil {
     public static final Key accessKey = Keys.secretKeyFor(SignatureAlgorithm.HS512); // 密钥
 
     // 生成访问令牌
-    public String generate(long userid) {
+    public String generate(Long userid) {
         return Jwts.builder()
                 .claim("userid", userid)
                 .setIssuedAt(new Date())
@@ -34,8 +33,7 @@ public class JwtUtil {
         Jwts.parserBuilder().setSigningKey(accessKey).build().parseClaimsJws(accessToken);
     }
 
-    // 获取负载信息
-    public Claims getClaim(String accessToken) {
-        return Jwts.parserBuilder().setSigningKey(accessKey).build().parseClaimsJws(accessToken).getBody();
+    public <T> T get(String accessToken, String key) {
+        return (T) Jwts.parserBuilder().setSigningKey(accessKey).build().parseClaimsJws(accessToken).getBody().get(key);
     }
 }

@@ -78,8 +78,9 @@ public class JwtFilter extends AuthenticatingFilter {
         } catch (ExpiredJwtException e) {
             if (redisUtil.hasKey(accessToken)) {
                 log.debug("访问令牌过期,缓存令牌未过期 => 生成新的访问令牌并缓存到Redis");
+                Long userid = redisUtil.<Long>get(accessToken);
                 redisUtil.delete(accessToken);
-                long userid = (long) jwtUtil.getClaim(accessToken).get("userid");
+                
                 String refreshToken = jwtUtil.generate(userid);
                 ThreadLocalUtil.set(refreshToken);
                 redisUtil.set(refreshToken, userid, appProperties.getJwt().getCacheExpire(), TimeUnit.DAYS);
