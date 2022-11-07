@@ -5,4 +5,11 @@
     <select id="isRootExist" resultType="boolean">
         select if(count(*), true, false) from user where root = 1;
     </select>
+    <select id="selectPermissions" resultType="string">
+        select permission.permission_name
+        from user
+        join role on json_contains(user.roles, cast(role.id as char))
+        join permission on json_contains(role.permissions, cast(permission.id as char))
+        where user.id = #{userid} and user.status = 1;
+    </select>
 </mapper>

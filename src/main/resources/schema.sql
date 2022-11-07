@@ -1,4 +1,5 @@
-SET FOREIGN_KEY_CHECKS = 0;
+SET FOREIGN_KEY_CHECKS=0;
+SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
 DROP TABLE IF EXISTS `qrtz_blob_triggers`;
 CREATE TABLE `qrtz_blob_triggers`  (
@@ -9,7 +10,7 @@ CREATE TABLE `qrtz_blob_triggers`  (
   PRIMARY KEY (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) USING BTREE,
   INDEX `SCHED_NAME`(`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) USING BTREE,
   CONSTRAINT `qrtz_blob_triggers_ibfk_1` FOREIGN KEY (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) REFERENCES `qrtz_triggers` (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 DROP TABLE IF EXISTS `qrtz_calendars`;
 CREATE TABLE `qrtz_calendars`  (
@@ -17,7 +18,7 @@ CREATE TABLE `qrtz_calendars`  (
   `CALENDAR_NAME` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `CALENDAR` blob NOT NULL,
   PRIMARY KEY (`SCHED_NAME`, `CALENDAR_NAME`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 DROP TABLE IF EXISTS `qrtz_cron_triggers`;
 CREATE TABLE `qrtz_cron_triggers`  (
@@ -28,7 +29,7 @@ CREATE TABLE `qrtz_cron_triggers`  (
   `TIME_ZONE_ID` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) USING BTREE,
   CONSTRAINT `qrtz_cron_triggers_ibfk_1` FOREIGN KEY (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) REFERENCES `qrtz_triggers` (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 DROP TABLE IF EXISTS `qrtz_fired_triggers`;
 CREATE TABLE `qrtz_fired_triggers`  (
@@ -52,7 +53,7 @@ CREATE TABLE `qrtz_fired_triggers`  (
   INDEX `IDX_QRTZ_FT_JG`(`SCHED_NAME`, `JOB_GROUP`) USING BTREE,
   INDEX `IDX_QRTZ_FT_T_G`(`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) USING BTREE,
   INDEX `IDX_QRTZ_FT_TG`(`SCHED_NAME`, `TRIGGER_GROUP`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 DROP TABLE IF EXISTS `qrtz_job_details`;
 CREATE TABLE `qrtz_job_details`  (
@@ -69,14 +70,14 @@ CREATE TABLE `qrtz_job_details`  (
   PRIMARY KEY (`SCHED_NAME`, `JOB_NAME`, `JOB_GROUP`) USING BTREE,
   INDEX `IDX_QRTZ_J_REQ_RECOVERY`(`SCHED_NAME`, `REQUESTS_RECOVERY`) USING BTREE,
   INDEX `IDX_QRTZ_J_GRP`(`SCHED_NAME`, `JOB_GROUP`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 DROP TABLE IF EXISTS `qrtz_locks`;
 CREATE TABLE `qrtz_locks`  (
   `SCHED_NAME` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `LOCK_NAME` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`SCHED_NAME`, `LOCK_NAME`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 INSERT INTO `qrtz_locks` VALUES ('quartzScheduler', 'TRIGGER_ACCESS');
 
@@ -85,7 +86,7 @@ CREATE TABLE `qrtz_paused_trigger_grps`  (
   `SCHED_NAME` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `TRIGGER_GROUP` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`SCHED_NAME`, `TRIGGER_GROUP`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 DROP TABLE IF EXISTS `qrtz_scheduler_state`;
 CREATE TABLE `qrtz_scheduler_state`  (
@@ -94,7 +95,7 @@ CREATE TABLE `qrtz_scheduler_state`  (
   `LAST_CHECKIN_TIME` bigint(13) NOT NULL,
   `CHECKIN_INTERVAL` bigint(13) NOT NULL,
   PRIMARY KEY (`SCHED_NAME`, `INSTANCE_NAME`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 DROP TABLE IF EXISTS `qrtz_simple_triggers`;
 CREATE TABLE `qrtz_simple_triggers`  (
@@ -106,7 +107,7 @@ CREATE TABLE `qrtz_simple_triggers`  (
   `TIMES_TRIGGERED` bigint(10) NOT NULL,
   PRIMARY KEY (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) USING BTREE,
   CONSTRAINT `qrtz_simple_triggers_ibfk_1` FOREIGN KEY (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) REFERENCES `qrtz_triggers` (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 DROP TABLE IF EXISTS `qrtz_simprop_triggers`;
 CREATE TABLE `qrtz_simprop_triggers`  (
@@ -126,7 +127,7 @@ CREATE TABLE `qrtz_simprop_triggers`  (
   `BOOL_PROP_2` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) USING BTREE,
   CONSTRAINT `qrtz_simprop_triggers_ibfk_1` FOREIGN KEY (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) REFERENCES `qrtz_triggers` (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 DROP TABLE IF EXISTS `qrtz_triggers`;
 CREATE TABLE `qrtz_triggers`  (
@@ -160,7 +161,7 @@ CREATE TABLE `qrtz_triggers`  (
   INDEX `IDX_QRTZ_T_NFT_ST_MISFIRE`(`SCHED_NAME`, `MISFIRE_INSTR`, `NEXT_FIRE_TIME`, `TRIGGER_STATE`) USING BTREE,
   INDEX `IDX_QRTZ_T_NFT_ST_MISFIRE_GRP`(`SCHED_NAME`, `MISFIRE_INSTR`, `NEXT_FIRE_TIME`, `TRIGGER_GROUP`, `TRIGGER_STATE`) USING BTREE,
   CONSTRAINT `qrtz_triggers_ibfk_1` FOREIGN KEY (`SCHED_NAME`, `JOB_NAME`, `JOB_GROUP`) REFERENCES `qrtz_job_details` (`SCHED_NAME`, `JOB_NAME`, `JOB_GROUP`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 DROP TABLE IF EXISTS `sys_config`;
 CREATE TABLE `sys_config`  (
@@ -172,7 +173,7 @@ CREATE TABLE `sys_config`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_param_key`(`param_key`) USING BTREE,
   INDEX `idx_status`(`status`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=7 CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 INSERT INTO `sys_config` VALUES (1, 'attendance_start_time', '06:00', 1, '上班考勤开始时间');
 INSERT INTO `sys_config` VALUES (2, 'attendance_time', '08:30', 1, '上班时间');
@@ -188,7 +189,7 @@ CREATE TABLE `action`  (
   `action_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '行为名称',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_action_name`(`action_name`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '行为表' ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=8 CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='行为表' ROW_FORMAT=DYNAMIC;
 
 INSERT INTO `action` VALUES (1, 'INSERT', '添加');
 INSERT INTO `action` VALUES (2, 'DELETE', '删除');
@@ -215,7 +216,7 @@ CREATE TABLE `checkin`  (
   UNIQUE INDEX `uk_user_id_and_date`(`user_id`, `date`) USING BTREE,
   INDEX `idx_date`(`date`) USING BTREE,
   INDEX `idx_status`(`status`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 33 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '签到表' ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=33 CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='签到表' ROW_FORMAT=DYNAMIC;
 
 DROP TABLE IF EXISTS `city`;
 CREATE TABLE `city`  (
@@ -224,7 +225,7 @@ CREATE TABLE `city`  (
   `code` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '拼音简称',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_city`(`city`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 330 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '疫情城市表' ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=330 CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='疫情城市表' ROW_FORMAT=DYNAMIC;
 
 INSERT INTO `city` VALUES (1, '阿坝市', 'ab');
 INSERT INTO `city` VALUES (2, '安康市', 'ak');
@@ -562,7 +563,7 @@ CREATE TABLE `dept`  (
   `dept_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '部门名称',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_dept_name`(`dept_name`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '部门表' ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=12 CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='部门表' ROW_FORMAT=DYNAMIC;
 
 INSERT INTO `dept` VALUES (11, '保安部');
 INSERT INTO `dept` VALUES (5, '后勤部');
@@ -578,7 +579,7 @@ CREATE TABLE `face_model`  (
   `face_model` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户人脸模型',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_user_id`(`user_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=3 CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 DROP TABLE IF EXISTS `holiday`;
 CREATE TABLE `holiday`  (
@@ -586,7 +587,7 @@ CREATE TABLE `holiday`  (
   `date` date NOT NULL COMMENT '日期',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_date`(`date`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '节假日表' ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=2 CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='节假日表' ROW_FORMAT=DYNAMIC;
 
 DROP TABLE IF EXISTS `meeting`;
 CREATE TABLE `meeting`  (
@@ -609,7 +610,7 @@ CREATE TABLE `meeting`  (
   INDEX `idx_date`(`date`) USING BTREE,
   INDEX `idx_type`(`type`) USING BTREE,
   INDEX `idx_status`(`status`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 48 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '会议表' ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=48 CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='会议表' ROW_FORMAT=DYNAMIC;
 
 DROP TABLE IF EXISTS `module`;
 CREATE TABLE `module`  (
@@ -618,7 +619,7 @@ CREATE TABLE `module`  (
   `module_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '模块名称',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_module_code`(`module_code`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '模块表' ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=6 CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='模块表' ROW_FORMAT=DYNAMIC;
 
 INSERT INTO `module` VALUES (1, 'USER', '用户管理');
 INSERT INTO `module` VALUES (2, 'EMPLOYEE', '员工管理');
@@ -635,7 +636,7 @@ CREATE TABLE `permission`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_permission_name`(`permission_name`) USING BTREE,
   UNIQUE INDEX `uk_module_id_and_action_id`(`module_id`, `action_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 19 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '权限表' ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=19 CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='权限表' ROW_FORMAT=DYNAMIC;
 
 INSERT INTO `permission` VALUES (0, 'ROOT', 0, 0);
 INSERT INTO `permission` VALUES (1, 'USER:INSERT', 1, 1);
@@ -663,7 +664,7 @@ CREATE TABLE `role`  (
   `permissions` json NOT NULL COMMENT '权限集合',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_role_name`(`role_name`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色表' ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=5 CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='角色表' ROW_FORMAT=DYNAMIC;
 
 INSERT INTO `role` VALUES (0, '超级管理员', '[0]');
 INSERT INTO `role` VALUES (1, '总经理', '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]');
@@ -691,7 +692,7 @@ CREATE TABLE `user`  (
   INDEX `uk_email`(`email`) USING BTREE,
   INDEX `idx_dept_id`(`dept_id`) USING BTREE,
   INDEX `idx_status`(`status`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '员工表' ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=3 CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='员工表' ROW_FORMAT=DYNAMIC;
 
 DROP TABLE IF EXISTS `workday`;
 CREATE TABLE `workday`  (
@@ -699,9 +700,9 @@ CREATE TABLE `workday`  (
   `date` date NULL DEFAULT NULL COMMENT '日期',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_date`(`date`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
-SET FOREIGN_KEY_CHECKS = 1;
+SET FOREIGN_KEY_CHECKS=1;
 
 # ubuntu安装mongodb:https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/
 # problem-spring-web参考文档:https://github.com/zalando/problem-spring-web/tree/main/problem-spring-web

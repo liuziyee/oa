@@ -3,7 +3,8 @@ package com.dorohedoro.config.shiro;
 import cn.hutool.core.util.StrUtil;
 import com.dorohedoro.config.AppProperties;
 import com.dorohedoro.util.JwtUtil;
-import com.dorohedoro.util.ThreadLocalAccessToken;
+import com.dorohedoro.util.RedisUtil;
+import com.dorohedoro.util.ThreadLocalUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -29,9 +30,8 @@ import java.util.concurrent.TimeUnit;
 public class JwtFilter extends AuthenticatingFilter {
 
     private final AppProperties appProperties;
-
     private final JwtUtil jwtUtil;
-
+    private final RedisUtil redisUtil;
     private final RedisTemplate redisTemplate;
 
     @Override
@@ -63,7 +63,7 @@ public class JwtFilter extends AuthenticatingFilter {
         resp.setCharacterEncoding("UTF-8");
 
         log.debug("清空ThreadLocal");
-        ThreadLocalAccessToken.clear();
+        ThreadLocalUtil.clear();
 
         String accessToken = getAccessToken(req);
         if (StrUtil.isBlank(accessToken)) {
@@ -76,13 +76,13 @@ public class JwtFilter extends AuthenticatingFilter {
         try {
             jwtUtil.check(accessToken);
         } catch (ExpiredJwtException e) {
-            if (redisTemplate.hasKey(accessToken)) {
+            if (redisUtil.hasKey(accessToken)) {
                 log.debug("访问令牌过期,缓存令牌未过期 => 生成新的访问令牌并缓存到Redis");
-                redisTemplate.delete("token");
+                redisUtil.delete(accessToken);
                 long userid = (long) jwtUtil.getClaim(accessToken).get("userid");
                 String refreshToken = jwtUtil.generate(userid);
-                ThreadLocalAccessToken.set(refreshToken);
-                redisTemplate.opsForValue().set(refreshToken, userid, appProperties.getJwt().getCacheExpire(), TimeUnit.DAYS);
+                ThreadLocalUtil.set(refreshToken);
+                redisUtil.set(refreshToken, userid, appProperties.getJwt().getCacheExpire(), TimeUnit.DAYS);
             } else {
                 log.debug("访问令牌过期,缓存令牌过期 => 令牌已过期");
                 resp.setStatus(HttpStatus.UNAUTHORIZED.value());

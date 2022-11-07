@@ -1,6 +1,6 @@
 package com.dorohedoro.util;
 
-public class ThreadLocalAccessToken {
+public class ThreadLocalUtil {
 
     private static final ThreadLocal<String> threadLocal = new ThreadLocal<>();
     

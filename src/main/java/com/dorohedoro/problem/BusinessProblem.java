@@ -9,7 +9,7 @@ public class BusinessProblem extends AbstractThrowableProblem {
     private static final URI TYPE = URI.create("/duplicate");
 
     public BusinessProblem(String message) {
-        super(TYPE, "服务器异常", Status.INTERNAL_SERVER_ERROR, message);
+        super(TYPE, "服务器错误", Status.INTERNAL_SERVER_ERROR, message);
     }
 }
 
