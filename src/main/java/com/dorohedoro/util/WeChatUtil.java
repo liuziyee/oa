@@ -24,7 +24,7 @@ public class WeChatUtil {
         map.put("grant_type", "authorization_code");
 
         Map<String, Object> res = weChatFeignService.code2Session(map);
-        if (!res.get("errcode").equals(0)) {
+        if (res.get("errcode") != null && !res.get("errcode").equals(0)) {
             throw new WeChatProblem(res.get("errmsg").toString());
         }
         return res.get("openid").toString();

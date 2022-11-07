@@ -21,7 +21,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
@@ -83,7 +82,7 @@ public class JwtFilter extends AuthenticatingFilter {
                 
                 String refreshToken = jwtUtil.generate(userid);
                 ThreadLocalUtil.set(refreshToken);
-                redisUtil.set(refreshToken, userid, appProperties.getJwt().getCacheExpire(), TimeUnit.DAYS);
+                redisUtil.set(refreshToken, userid);
             } else {
                 log.debug("访问令牌过期,缓存令牌过期 => 令牌已过期");
                 resp.setStatus(HttpStatus.UNAUTHORIZED.value());

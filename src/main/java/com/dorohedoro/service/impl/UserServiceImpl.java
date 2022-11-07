@@ -26,7 +26,7 @@ public class UserServiceImpl implements IUserService {
     public Long register(String registerCode, String code) {
         String openId = weChatUtil.getOpenId(code);
         if (registerCode.equals("000000")) {
-            log.debug("注册超级管理员账号");
+            log.debug("注册超级管理员");
             if (userMapper.isRootExist()) {
                 throw new BusinessProblem("超级管理员账号已存在");
             }
@@ -39,7 +39,8 @@ public class UserServiceImpl implements IUserService {
             userMapper.insert(root);
             return root.getId();
         }
-        
+
+        log.debug("注册员工");
         if (redisUtil.hasKey(registerCode)) {
             log.debug("绑定openid到员工账号");
             Long userid = redisUtil.<Long>get(registerCode);

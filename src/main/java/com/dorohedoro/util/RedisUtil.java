@@ -1,5 +1,6 @@
 package com.dorohedoro.util;
 
+import com.dorohedoro.config.AppProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 public class RedisUtil {
 
     private final RedisTemplate redisTemplate;
+    private final AppProperties appProperties;
     
     public boolean hasKey(String key) {
         return redisTemplate.hasKey(key);
@@ -18,6 +20,10 @@ public class RedisUtil {
     
     public <T> T get(String key) {
         return (T) redisTemplate.opsForValue().get(key);
+    }
+
+    public void set(String key, Object value) {
+        set(key, value, appProperties.getJwt().getCacheExpire(), TimeUnit.DAYS);
     }
 
     public void set(String key, Object value, long ttl, TimeUnit unit) {
