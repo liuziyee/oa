@@ -6,5 +6,7 @@ public interface IUserService {
 
     Long register(String registerCode, String code);
 
-    Set<String> getPermissions(Long userid);
+    Set<String> getPermissions(Long userId);
+
+    Long login(String code);
 }

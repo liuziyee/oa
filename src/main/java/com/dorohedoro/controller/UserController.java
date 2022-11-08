@@ -1,5 +1,6 @@
 package com.dorohedoro.controller;
 
+import com.dorohedoro.domain.dto.LoginDTO;
 import com.dorohedoro.domain.dto.RegisterDTO;
 import com.dorohedoro.service.IUserService;
 import com.dorohedoro.util.JwtUtil;
@@ -32,12 +33,25 @@ public class UserController {
     @ApiOperation("注册")
     @PostMapping("/register")
     public R register(@Valid @RequestBody RegisterDTO registerDTO) {
-        Long userid = userService.register(registerDTO.getRegisterCode(), registerDTO.getCode());
+        Long userId = userService.register(registerDTO.getRegisterCode(), registerDTO.getCode());
 
         log.debug("注册成功 => 查询权限列表,生成访问令牌并缓存到Redis");
-        Set<String> permissions = userService.getPermissions(userid);
-        String accessToken = jwtUtil.generate(userid);
-        redisUtil.set(accessToken, userid);
+        Set<String> permissions = userService.getPermissions(userId);
+        String accessToken = jwtUtil.generate(userId);
+        redisUtil.set(accessToken, userId);
+
+        return R.<Set<String>>builder().code(HttpStatus.OK.value())
+                .accessToken(accessToken).data(permissions).build();
+    }
+    
+    @ApiOperation("登录")
+    @PostMapping("/login")
+    public R login(@Valid @RequestBody LoginDTO loginDTO) {
+        Long userId = userService.login(loginDTO.getCode());
+
+        Set<String> permissions = userService.getPermissions(userId);
+        String accessToken = jwtUtil.generate(userId);
+        redisUtil.set(accessToken, userId);
 
         return R.<Set<String>>builder().code(HttpStatus.OK.value())
                 .accessToken(accessToken).data(permissions).build();

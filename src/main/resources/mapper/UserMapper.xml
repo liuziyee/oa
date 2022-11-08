@@ -10,6 +10,10 @@
         from user
         join role on json_contains(user.roles, cast(role.id as char))
         join permission on json_contains(role.permissions, cast(permission.id as char))
-        where user.id = #{userid} and user.status = 1;
+        where user.id = #{userId} and user.status = 1;
+    </select>
+    
+    <select id="selectByOpenId" resultType="long">
+        select id from user where open_id = #{openId} and status = 1;
     </select>
 </mapper>

@@ -77,12 +77,12 @@ public class JwtFilter extends AuthenticatingFilter {
         } catch (ExpiredJwtException e) {
             if (redisUtil.hasKey(accessToken)) {
                 log.debug("访问令牌过期,缓存令牌未过期 => 生成新的访问令牌并缓存到Redis");
-                Long userid = redisUtil.<Long>get(accessToken);
+                Long userId = redisUtil.<Long>get(accessToken);
                 redisUtil.delete(accessToken);
                 
-                String refreshToken = jwtUtil.generate(userid);
+                String refreshToken = jwtUtil.generate(userId);
                 ThreadLocalUtil.set(refreshToken);
-                redisUtil.set(refreshToken, userid);
+                redisUtil.set(refreshToken, userId);
             } else {
                 log.debug("访问令牌过期,缓存令牌过期 => 令牌已过期");
                 resp.setStatus(HttpStatus.UNAUTHORIZED.value());
@@ -102,7 +102,6 @@ public class JwtFilter extends AuthenticatingFilter {
     @Override
     @SneakyThrows
     protected boolean onLoginFailure(AuthenticationToken token, AuthenticationException e, ServletRequest request, ServletResponse response) {
-        HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
 
         resp.setContentType("application/json");

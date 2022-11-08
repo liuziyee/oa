@@ -65,6 +65,7 @@ feign:
 logging:
   level:
     com.dorohedoro.mapper: DEBUG
+    com.dorohedoro.controller: DEBUG
     com.dorohedoro.service: DEBUG
 
 app:

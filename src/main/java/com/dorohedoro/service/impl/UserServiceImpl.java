@@ -3,7 +3,7 @@ package com.dorohedoro.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dorohedoro.domain.User;
 import com.dorohedoro.mapper.UserMapper;
-import com.dorohedoro.problem.BusinessProblem;
+import com.dorohedoro.problem.BizProblem;
 import com.dorohedoro.service.IUserService;
 import com.dorohedoro.util.RedisUtil;
 import com.dorohedoro.util.WeChatUtil;
@@ -28,7 +28,7 @@ public class UserServiceImpl implements IUserService {
         if (registerCode.equals("000000")) {
             log.debug("注册超级管理员");
             if (userMapper.isRootExist()) {
-                throw new BusinessProblem("超级管理员账号已存在");
+                throw new BizProblem("超级管理员账号已存在");
             }
             log.debug("创建超级管理员账号,绑定openid");
             User root = new User();
@@ -43,18 +43,27 @@ public class UserServiceImpl implements IUserService {
         log.debug("注册员工");
         if (redisUtil.hasKey(registerCode)) {
             log.debug("绑定openid到员工账号");
-            Long userid = redisUtil.<Long>get(registerCode);
-            User user = userMapper.selectOne(Wrappers.<User>lambdaQuery().eq(User::getId, userid));
+            Long userId = redisUtil.<Long>get(registerCode);
+            User user = userMapper.selectOne(Wrappers.<User>lambdaQuery().eq(User::getId, userId));
             user.setOpenId(openId);
             userMapper.insert(user);
-            return userid;
+            return userId;
         } else {
-            throw new BusinessProblem("注册码无效或已过期");
+            throw new BizProblem("注册码无效或已过期");
         }
     }
 
     @Override
-    public Set<String> getPermissions(Long userid) {
-        return userMapper.selectPermissions(userid);
+    public Set<String> getPermissions(Long userId) {
+        return userMapper.selectPermissions(userId);
+    }
+
+    @Override
+    public Long login(String code) {
+        log.debug("根据openid查询员工表,有记录,说明微信账号已经和员工账号绑定并注册,没有记录,说明微信账号没有注册");
+        String openId = weChatUtil.getOpenId(code);
+        Long userId = userMapper.selectByOpenId(openId).orElseThrow(() -> new BizProblem("账号不存在"));
+        // TODO 消息队列
+        return userId;
     }
 }

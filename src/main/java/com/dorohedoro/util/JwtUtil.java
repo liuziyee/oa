@@ -19,9 +19,9 @@ public class JwtUtil {
     public static final Key accessKey = Keys.secretKeyFor(SignatureAlgorithm.HS512); // 密钥
 
     // 生成访问令牌
-    public String generate(Long userid) {
+    public String generate(Long userId) {
         return Jwts.builder()
-                .claim("userid", userid)
+                .claim("userId", userId)
                 .setIssuedAt(new Date())
                 .setExpiration(DateUtil.offsetDay(new Date(), appProperties.getJwt().getExpire()))
                 .signWith(accessKey, SignatureAlgorithm.HS512)
