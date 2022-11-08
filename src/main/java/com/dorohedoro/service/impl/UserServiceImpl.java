@@ -39,7 +39,7 @@ public class UserServiceImpl implements IUserService {
             userMapper.insert(root);
             return root.getId();
         }
-
+        // TODO 注册员工
         log.debug("注册员工");
         if (redisUtil.hasKey(registerCode)) {
             log.debug("绑定openid到员工账号");

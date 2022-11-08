@@ -8,8 +8,8 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-@Order(Ordered.HIGHEST_PRECEDENCE)
 @WebFilter(urlPatterns = "/*")
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class XssFilter implements Filter {
     
     @Override
