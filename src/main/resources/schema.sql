@@ -168,7 +168,7 @@ CREATE TABLE `sys_config`  (
   `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
   `param_key` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '参数名',
   `param_value` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '参数值',
-  `status` tinyint(1) UNSIGNED NOT NULL COMMENT '状态',
+  `status` tinyint(1) UNSIGNED NOT NULL COMMENT '状态(0:不可用;1:可用)',
   `remark` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_param_key`(`param_key`) USING BTREE,

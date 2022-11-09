@@ -2,4 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dorohedoro.mapper.SysConfigMapper">
 
+    <resultMap id="baseResultMap" type="sysConfig">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="param_key" jdbcType="VARCHAR" property="paramKey" />
+    <result column="param_value" jdbcType="VARCHAR" property="paramValue" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    </resultMap>
+    
+    <select id="selectAll" resultMap="baseResultMap">
+        select param_key, param_value from sys_config where status = 1;
+    </select>
 </mapper>

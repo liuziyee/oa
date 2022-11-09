@@ -88,7 +88,7 @@ public class JwtFilter extends AuthenticatingFilter {
                 resp.getWriter().write("令牌已过期");
                 return false;
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debug("访问令牌为空或校验失败 => 无效的令牌");
             resp.setStatus(HttpStatus.UNAUTHORIZED.value());
             resp.getWriter().write("无效的令牌");
