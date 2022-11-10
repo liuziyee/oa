@@ -1,11 +1,10 @@
 package com.dorohedoro.config.shiro;
 
+import com.dorohedoro.domain.User;
+import com.dorohedoro.service.IUserService;
 import com.dorohedoro.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationInfo;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.SimpleAuthenticationInfo;
+import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Component;
 public class DefaultRealm extends AuthorizingRealm {
 
     private final JwtUtil jwtUtil;
+    private final IUserService userService;
 
     @Override
     public boolean supports(AuthenticationToken token) {
@@ -32,8 +32,10 @@ public class DefaultRealm extends AuthorizingRealm {
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-        // TODO 检查账户是否被冻结
-        SimpleAuthenticationInfo info = new SimpleAuthenticationInfo();
+        String accessToken = (String) token.getCredentials();
+        Long userId = jwtUtil.<Long>get(accessToken, "userid");
+        User userDetail = userService.getUserDetail(userId).orElseThrow(() -> new LockedAccountException("账号已冻结"));
+        SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(userDetail, accessToken, getName());
         return info;
     }
 }

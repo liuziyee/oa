@@ -13,4 +13,6 @@ public interface UserMapper extends BaseMapper<User> {
     Set<String> selectPermissions(Long userId);
 
     Optional<Long> selectByOpenId(String openId);
+
+    Optional<User> selectById(Long userId);
 }

@@ -26,8 +26,8 @@ public class CheckinServiceImpl implements ICheckinService {
     @Override
     public String check(Long userId) {
         log.debug("检查当天是否为工作日");
-        log.debug("是工作日 => 检查当前时间是否在签到区间内");
-        log.debug("在签到区间内 => 查询当天是否有签到记录");
+        log.debug("是工作日 => 检查当前时间是否在签到时间范围内");
+        log.debug("在签到时间范围内 => 查询当天是否有签到记录");
         
         log.debug("默认周一到周五为工作日,周末为节假日");
         String today = Constants.WORKDAY;

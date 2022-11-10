@@ -6,7 +6,7 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="param_key" jdbcType="VARCHAR" property="paramKey" />
     <result column="param_value" jdbcType="VARCHAR" property="paramValue" />
-    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="status" jdbcType="TINYINT" property="status" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
     </resultMap>
     

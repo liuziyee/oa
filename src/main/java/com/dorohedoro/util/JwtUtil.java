@@ -21,7 +21,7 @@ public class JwtUtil {
     // 生成访问令牌
     public String generate(Long userId) {
         return Jwts.builder()
-                .claim("userId", userId)
+                .claim("userid", userId)
                 .setIssuedAt(new Date())
                 .setExpiration(DateUtil.offsetDay(new Date(), appProperties.getJwt().getExpire()))
                 .signWith(accessKey, SignatureAlgorithm.HS512)

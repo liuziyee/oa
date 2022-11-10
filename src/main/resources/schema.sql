@@ -693,7 +693,7 @@ CREATE TABLE `user`  (
   `roles` json NOT NULL COMMENT '角色集合',
   `root` tinyint(1) NOT NULL COMMENT '是否是超级管理员',
   `dept_id` bigint(20) UNSIGNED NULL DEFAULT NULL COMMENT '部门编号',
-  `status` tinyint(4) NOT NULL COMMENT '状态(0:离职;1:在职)',
+  `status` tinyint(4) NOT NULL COMMENT '状态(0:离职(冻结);1:在职(可用))',
   `create_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_open_id`(`open_id`) USING BTREE,

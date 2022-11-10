@@ -100,6 +100,10 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
         if (!StrUtil.isBlank(header)) {
             header = HtmlUtil.filter(header);
         }
+        if (header != null && header.startsWith("Bearer")) {
+            log.info("截取Authorization请求头");
+            return header.replace("Bearer", "").trim();
+        }
         return header;
     }
 }

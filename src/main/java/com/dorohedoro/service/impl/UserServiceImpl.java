@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
@@ -60,10 +61,15 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public Long login(String code) {
-        log.debug("根据openid查询员工表,有记录,说明微信账号已经和员工(或超级管理员)账号绑定并注册,没有记录,说明微信账号没有注册");
+        log.debug("根据openid查询员工表,有记录,说明微信账号已经和员工(或超级管理员)账号绑定并注册,没有记录,说明微信账号没有注册或已冻结");
         String openId = weChatUtil.getOpenId(code);
-        Long userId = userMapper.selectByOpenId(openId).orElseThrow(() -> new BizProblem("账号不存在"));
+        Long userId = userMapper.selectByOpenId(openId).orElseThrow(() -> new BizProblem("未注册或已冻结"));
         // TODO 消息队列
         return userId;
+    }
+
+    @Override
+    public Optional<User> getUserDetail(Long userId) {
+        return userMapper.selectById(userId);
     }
 }

@@ -10,5 +10,17 @@ public class Constants {
     public static String attendanceEndTime;
     public static String closingStartTime;
     public static String closingEndTime;
-    
+
+    public enum Status {
+        UNAVAILABLE(0, "不可用"),
+        AVAILABLE(1, "可用");
+        
+        private int status;
+        private String desc;
+
+        Status(int status, String desc) {
+            this.status = status;
+            this.desc = desc;
+        }
+    }
 }
