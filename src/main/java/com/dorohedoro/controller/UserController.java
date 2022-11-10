@@ -52,6 +52,7 @@ public class UserController {
         Set<String> permissions = userService.getPermissions(userId);
         String accessToken = jwtUtil.generate(userId);
         redisUtil.set(accessToken, userId);
+        log.debug("访问令牌: {}", accessToken);
 
         return R.<Set<String>>builder().code(HttpStatus.OK.value())
                 .accessToken(accessToken).data(permissions).build();

@@ -1,9 +1,11 @@
 package com.dorohedoro.config.shiro;
 
+import cn.hutool.core.convert.Convert;
 import com.dorohedoro.domain.User;
 import com.dorohedoro.service.IUserService;
 import com.dorohedoro.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
@@ -11,6 +13,7 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class DefaultRealm extends AuthorizingRealm {
@@ -32,8 +35,9 @@ public class DefaultRealm extends AuthorizingRealm {
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+        log.debug("这里的访问令牌是从请求头获取的,有可能过期");
         String accessToken = (String) token.getCredentials();
-        Long userId = jwtUtil.<Long>get(accessToken, "userid");
+        Long userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
         User userDetail = userService.getUserDetail(userId).orElseThrow(() -> new LockedAccountException("账号已冻结"));
         SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(userDetail, accessToken, getName());
         return info;

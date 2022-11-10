@@ -99,10 +99,10 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
         String header = super.getHeader(name);
         if (!StrUtil.isBlank(header)) {
             header = HtmlUtil.filter(header);
-        }
-        if (header != null && header.startsWith("Bearer")) {
-            log.info("截取Authorization请求头");
-            return header.replace("Bearer", "").trim();
+            if (header.startsWith("Bearer")) {
+                log.info("截取Authorization请求头");
+                return header.replace("Bearer", "").trim();
+            }
         }
         return header;
     }
