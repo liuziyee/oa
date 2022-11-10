@@ -1,7 +1,7 @@
 package com.dorohedoro.mapper;
 
-import com.dorohedoro.domain.Role;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.dorohedoro.domain.Role;
 
 public interface RoleMapper extends BaseMapper<Role> {
 
