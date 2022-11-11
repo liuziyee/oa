@@ -94,12 +94,12 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
     @Override
     public String getHeader(String name) {
-        String header = super.getHeader(name);
-        return doFilter(header);
+        return doFilter(super.getHeader(name));
     }
 
     @Override
     public Enumeration<String> getHeaders(String name) {
+        log.debug("要让@RequestHeader拿到的是截取后的请求头,要重写getHeaders()");
         Enumeration<String> enums = super.getHeaders(name);
         Vector<String> headers = new Vector<>();
         while (enums.hasMoreElements()) {
@@ -112,10 +112,8 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
     private String doFilter(String header) {
         if (!StrUtil.isBlank(header)) {
             header = HtmlUtil.filter(header);
-            if (header.startsWith("Bearer")) {
-                log.info("截取Authorization请求头");
-                return header.replace("Bearer", "").trim();
-            }
+            log.debug("截取Authorization请求头");
+            return header.replace("Bearer", "").trim();
         }
         return header;
     }

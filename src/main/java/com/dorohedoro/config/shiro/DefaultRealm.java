@@ -13,6 +13,8 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -28,8 +30,10 @@ public class DefaultRealm extends AuthorizingRealm {
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+        User userDetail = (User) principals.getPrimaryPrincipal();
+        Set<String> permissions = userService.getPermissions(userDetail.getId());
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
-        // TODO 查询用户角色和权限
+        info.setStringPermissions(permissions);
         return info;
     }
 

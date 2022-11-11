@@ -15,14 +15,14 @@ import java.security.Key;
 public class JwtUtil {
 
     private final AppProperties appProperties;
-    public static final Key accessKey = Keys.secretKeyFor(SignatureAlgorithm.HS512); // 密钥
+    public static final Key accessKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     public String generate(Long userId) {
         return Jwts.builder()
                 .claim("userid", userId)
                 .setIssuedAt(DateUtil.date())
                 .setExpiration(DateUtil.offsetDay(DateUtil.date(), appProperties.getJwt().getExpire()))
-                .signWith(accessKey, SignatureAlgorithm.HS512)
+                .signWith(accessKey)
                 .compact();
     }
 

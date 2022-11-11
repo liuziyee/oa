@@ -68,7 +68,7 @@ public class JwtFilter extends AuthenticatingFilter {
 
         String accessToken = req.getHeader("Authorization");
         if (StrUtil.isBlank(accessToken)) {
-            log.debug("访问令牌为空或校验失败 => 无效的令牌");
+            log.debug("访问令牌为空 => 无效的令牌");
             R r = R.error(HttpStatus.UNAUTHORIZED.value(), "无效的访问令牌");
             resp.getWriter().write(JSONObject.toJSONString(r));
             return false;
@@ -92,7 +92,8 @@ public class JwtFilter extends AuthenticatingFilter {
                 return false;
             }
         } catch (Throwable e) {
-            log.debug("访问令牌为空或校验失败 => 无效的令牌");
+            log.error("JWT错误信息: {}", e.getMessage());
+            log.debug("访问令牌校验失败 => 无效的令牌");
             R r = R.error(HttpStatus.UNAUTHORIZED.value(), "无效的访问令牌");
             resp.getWriter().write(JSONObject.toJSONString(r));
             return false;

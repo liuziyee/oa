@@ -65,6 +65,7 @@ logging:
     com.dorohedoro.mapper: DEBUG
     com.dorohedoro.service: DEBUG
     com.dorohedoro.controller: DEBUG
+    com.dorohedoro.config.shiro: DEBUG
 
 app:
   jwt:

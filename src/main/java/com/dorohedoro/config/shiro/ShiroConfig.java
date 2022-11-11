@@ -50,7 +50,6 @@ public class ShiroConfig {
         map.put("/captcha.jpg", "anon");
         map.put("/user/register", "anon");
         map.put("/user/login", "anon");
-        map.put("/demo/**", "anon");
         map.put("/meeting/receiveNotify", "anon");
         map.put("/**", "jwt");
         factoryBean.setFilterChainDefinitionMap(map);
