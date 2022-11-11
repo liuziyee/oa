@@ -46,8 +46,6 @@ spring:
       password: 12345
 
 mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     db-config:
       id-type: auto
@@ -65,8 +63,8 @@ feign:
 logging:
   level:
     com.dorohedoro.mapper: DEBUG
-    com.dorohedoro.controller: DEBUG
     com.dorohedoro.service: DEBUG
+    com.dorohedoro.controller: DEBUG
 
 app:
   jwt:

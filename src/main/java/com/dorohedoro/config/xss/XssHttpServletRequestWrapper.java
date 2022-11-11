@@ -11,9 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -97,6 +95,21 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
     @Override
     public String getHeader(String name) {
         String header = super.getHeader(name);
+        return doFilter(header);
+    }
+
+    @Override
+    public Enumeration<String> getHeaders(String name) {
+        Enumeration<String> enums = super.getHeaders(name);
+        Vector<String> headers = new Vector<>();
+        while (enums.hasMoreElements()) {
+            String header = doFilter(enums.nextElement());
+            headers.add(header);
+        }
+        return headers.elements();
+    }
+
+    private String doFilter(String header) {
         if (!StrUtil.isBlank(header)) {
             header = HtmlUtil.filter(header);
             if (header.startsWith("Bearer")) {

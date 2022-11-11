@@ -9,10 +9,9 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @Api(tags = "签到模块")
@@ -26,8 +25,7 @@ public class CheckinController {
 
     @GetMapping("/check")
     @ApiOperation("检查当天是否可以签到")
-    public R check(HttpServletRequest request) {
-        String accessToken = request.getHeader("Authorization");
+    public R check(@RequestHeader("Authorization") String accessToken) {
         Long userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
         return R.ok(checkinService.check(userId));
     }
