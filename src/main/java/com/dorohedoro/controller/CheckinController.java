@@ -26,7 +26,7 @@ public class CheckinController {
     private final JwtUtil jwtUtil;
 
     @GetMapping("/check")
-    @ApiOperation("检查当天是否可以签到")
+    @ApiOperation("检查当前时间点是否可以签到")
     @RequiresPermissions(value = {"ROOT", "USER:ADD"}, logical = Logical.OR)
     public R check(@RequestHeader("Authorization") String accessToken) {
         Long userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));

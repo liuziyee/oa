@@ -59,9 +59,9 @@ public class JwtFilter extends AuthenticatingFilter {
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
         HttpServletRequest req = (HttpServletRequest) request;
-        HttpServletResponse resp = (HttpServletResponse) response;
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
+        HttpServletResponse res = (HttpServletResponse) response;
+        res.setContentType("application/json");
+        res.setCharacterEncoding("UTF-8");
 
         log.debug("清空ThreadLocal");
         ThreadLocalUtil.clear();
@@ -70,7 +70,7 @@ public class JwtFilter extends AuthenticatingFilter {
         if (StrUtil.isBlank(accessToken)) {
             log.debug("访问令牌为空 => 无效的令牌");
             R r = R.error(HttpStatus.UNAUTHORIZED.value(), "无效的访问令牌");
-            resp.getWriter().write(JSONObject.toJSONString(r));
+            res.getWriter().write(JSONObject.toJSONString(r));
             return false;
         }
 
@@ -88,14 +88,14 @@ public class JwtFilter extends AuthenticatingFilter {
             } else {
                 log.debug("访问令牌过期,缓存令牌过期 => 令牌已过期");
                 R r = R.error(HttpStatus.UNAUTHORIZED.value(), "访问令牌已过期");
-                resp.getWriter().write(JSONObject.toJSONString(r));
+                res.getWriter().write(JSONObject.toJSONString(r));
                 return false;
             }
         } catch (Throwable e) {
             log.error("JWT错误信息: {}", e.getMessage());
             log.debug("访问令牌校验失败 => 无效的令牌");
             R r = R.error(HttpStatus.UNAUTHORIZED.value(), "无效的访问令牌");
-            resp.getWriter().write(JSONObject.toJSONString(r));
+            res.getWriter().write(JSONObject.toJSONString(r));
             return false;
         }
 
@@ -105,12 +105,12 @@ public class JwtFilter extends AuthenticatingFilter {
     @Override
     @SneakyThrows
     protected boolean onLoginFailure(AuthenticationToken token, AuthenticationException e, ServletRequest request, ServletResponse response) {
-        HttpServletResponse resp = (HttpServletResponse) response;
+        HttpServletResponse res = (HttpServletResponse) response;
 
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        resp.setStatus(HttpStatus.UNAUTHORIZED.value());
-        resp.getWriter().write(e.getMessage());
+        res.setContentType("application/json");
+        res.setCharacterEncoding("UTF-8");
+        res.setStatus(HttpStatus.UNAUTHORIZED.value());
+        res.getWriter().write(e.getMessage());
         return false;
     }
 

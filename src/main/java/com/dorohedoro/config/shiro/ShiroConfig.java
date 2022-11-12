@@ -31,7 +31,7 @@ public class ShiroConfig {
         ShiroFilterFactoryBean factoryBean = new ShiroFilterFactoryBean();
         factoryBean.setSecurityManager(securityManager);
 
-        log.debug("这里不能用Map.of()创建Map,因为Map.of()得到的Map是不可变的,Shiro的源码会调用put(),就会抛出uoe异常");
+        log.debug("这里不能用Map.of()创建Map,因为Map.of()得到的Map是不可变的,Shiro的源码会调用put(),就会抛出uoe");
         Map<String, Filter> filters = new HashMap<>() {};
         filters.put("jwt", jwtFilter);
         factoryBean.setFilters(filters);
