@@ -9,7 +9,7 @@
 >> ###### 如果访问令牌过期,缓存令牌没有过期,说明访问令牌过期后的间隔时间还没有超过5天,要生成新的访问令牌(即续期)并缓存到Redis
 >> ###### 如果访问令牌过期,缓存令牌也过期了,说明访问令牌过期后的间隔时间超过了5天,要重新登录
 
-`keytool -genkeypair -alias [keypair] -keyalg RSA -keystore [keypair.keystore] -keypass [dorohedoro] -storepass [dorohedoro]`
+`keytool -genkeypair -alias [keypair] -keyalg RSA -keystore [keypair.keystore] -keypass [dorohedoro] -storepass [dorohedoro]`  
 `docker load < /usr/local/face.tar.gz`  
 `docker run -d -it -p 3000:3000 -v /usr/local/python/demo:/usr/local/demo --name face-recognition face`  
 `docker exec -it face-recognition bash`  
