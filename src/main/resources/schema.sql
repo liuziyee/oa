@@ -703,17 +703,3 @@ CREATE TABLE `user`  (
 ) ENGINE=InnoDB AUTO_INCREMENT=3 CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='员工表' ROW_FORMAT=DYNAMIC;
 
 SET FOREIGN_KEY_CHECKS=1;
-
-# ubuntu安装mongodb:https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/
-# problem-spring-web参考文档:https://github.com/zalando/problem-spring-web/tree/main/problem-spring-web
-
-# swagger访问地址:http://localhost:30000/oa/swagger-ui.html
-# knife4j访问地址:http://localhost:30000/oa/doc.html
-
-# 关于如何刷新访问令牌
-# 把生成的访问令牌缓存到Redis(下面叫做缓存令牌),缓存令牌的过期时间设为访问令牌的一倍,下面以访问令牌过期时间5天为例
-# 如果访问令牌过期,缓存令牌没有过期,说明访问令牌过期后的间隔时间还没有超过5天,要生成新的访问令牌(即续期)并缓存到Redis
-# 如果访问令牌过期,缓存令牌也过期了,说明访问令牌过期后的间隔时间超过了5天,要重新登录
-
-# 用户ID可以从访问令牌或Redis(访问令牌做为key)取得
-# 考虑到访问令牌有可能过期,刷新令牌会删掉旧的缓存令牌,从Redis取得用户ID要先看key是否存在

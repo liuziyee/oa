@@ -22,7 +22,7 @@ public class JwtUtil {
                 .claim("userid", userId)
                 .setIssuedAt(DateUtil.date())
                 .setExpiration(DateUtil.offsetDay(DateUtil.date(), appProperties.getJwt().getExpire()))
-                .signWith(accessKey)
+                .signWith(accessKey, SignatureAlgorithm.HS512)
                 .compact();
     }
 

@@ -92,7 +92,6 @@ public class JwtFilter extends AuthenticatingFilter {
                 return false;
             }
         } catch (Throwable e) {
-            log.error("JWT错误信息: {}", e.getMessage());
             log.debug("访问令牌校验失败 => 无效的令牌");
             R r = R.error(HttpStatus.UNAUTHORIZED.value(), "无效的访问令牌");
             res.getWriter().write(JSONObject.toJSONString(r));
