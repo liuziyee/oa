@@ -3,20 +3,26 @@ package com.dorohedoro.service.impl;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dorohedoro.config.Constants;
 import com.dorohedoro.config.Properties;
+import com.dorohedoro.domain.Checkin;
+import com.dorohedoro.domain.City;
 import com.dorohedoro.domain.dto.CheckinDTO;
-import com.dorohedoro.mapper.CheckinMapper;
-import com.dorohedoro.mapper.FaceModelMapper;
-import com.dorohedoro.mapper.HolidayMapper;
-import com.dorohedoro.mapper.WorkdayMapper;
+import com.dorohedoro.mapper.*;
 import com.dorohedoro.problem.BizProblem;
 import com.dorohedoro.service.ICheckinService;
 import com.dorohedoro.util.Enums;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -31,6 +37,7 @@ public class CheckinServiceImpl implements ICheckinService {
     private final HolidayMapper holidayMapper;
     private final CheckinMapper checkinMapper;
     private final FaceModelMapper faceModelMapper;
+    private final CityMapper cityMapper;
     private final Properties properties;
 
     @Override
@@ -77,23 +84,43 @@ public class CheckinServiceImpl implements ICheckinService {
 
     @Override
     public void checkin(CheckinDTO checkinDTO) {
-        log.debug("确定签到状态");
-        log.debug("上传照片和人脸模型");
+        log.debug("确定签到状态(正常或迟到),旷工不会生成签到记录");
+        log.debug("上传签到照片和人脸模型");
+        log.debug("匹配 => 查询疫情风险等级,生成签到记录");
         
-        DateTime now = DateUtil.date();
+        DateTime checkinTime = DateUtil.date(); // 签到时间
         DateTime attendanceTime = DateUtil.parse(DateUtil.today() + " " + Constants.attendanceTime);
         DateTime attendanceEndTime = DateUtil.parse(DateUtil.today() + " " + Constants.attendanceEndTime);
         
         int status = Enums.CheckinStatus.NORMAL.getCode();
-        if (now.compareTo(attendanceTime) > 0 && now.compareTo(attendanceEndTime) <= 0) {
+        if (checkinTime.compareTo(attendanceTime) > 0 && checkinTime.compareTo(attendanceEndTime) <= 0) {
             status = Enums.CheckinStatus.ABSENT.getCode();
         }
-
+        
         Long userId = checkinDTO.getUserId();
         String faceModel = faceModelMapper.selectByUserId(userId).orElseThrow(() -> new BizProblem("未创建人脸模型"));
+        uploadImgAndFaceModel(checkinDTO.getImgPath(), faceModel);
+        
+        Integer risk = null;
+        String city = checkinDTO.getCity();
+        String district = checkinDTO.getDistrict();
+        if (!StrUtil.isBlank(city) && !StrUtil.isBlank(district)) {
+            risk = getRisk(city, district);
+        }
 
+        Checkin checkin = new Checkin();
+        checkin.setUserId(userId);
+        checkin.setStatus(status);
+        checkin.setRisk(risk);
+        checkin.setDate(DateUtil.today());
+        checkin.setCreateTime(checkinTime);
+        BeanUtils.copyProperties(checkinDTO, checkin);
+        checkinMapper.insert(checkin);
+    }
+    
+    private void uploadImgAndFaceModel(String imgPath, String faceModel) {
         HttpResponse response = HttpUtil.createPost(properties.getFace().getCheckin_url())
-                .form("photo", FileUtil.file(checkinDTO.getImgPath()), "targetModel", faceModel)
+                .form("photo", FileUtil.file(imgPath), "targetModel", faceModel)
                 .execute();
 
         if (response.getStatus() != 200) {
@@ -107,8 +134,16 @@ public class CheckinServiceImpl implements ICheckinService {
         if ("False".equals(body)) {
             throw new BizProblem("签到无效,非本人签到");
         }
-        if ("True".equals(body)) {
-            log.debug("签到照片和人脸模型匹配");
-        }
+
+        log.debug("响应为True,签到照片和人脸模型匹配");
+    }
+    
+    @SneakyThrows
+    private Integer getRisk(String city, String district) {
+        String code = cityMapper.selectOne(Wrappers.<City>lambdaQuery().eq(City::getCity, city)).getCode();
+        String url = StrUtil.format("http://m.{}.bendibao.com/news/yqdengji/?qu={}", code, district);
+        Document document = Jsoup.connect(url).get();
+        Element element = document.getElementsByClass("cls18").get(0);
+        return Enums.Risk.desc2Code(element.text());
     }
 }

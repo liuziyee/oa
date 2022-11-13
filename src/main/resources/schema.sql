@@ -208,8 +208,8 @@ CREATE TABLE `checkin`  (
   `province` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '省份',
   `city` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '城市',
   `district` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '区划',
-  `status` tinyint(3) UNSIGNED NOT NULL COMMENT '考勤结果',
-  `risk` int(255) UNSIGNED NULL DEFAULT 0 COMMENT '风险等级',
+  `status` tinyint(3) UNSIGNED NOT NULL COMMENT '考勤结果(0:旷工;1:正常;2:迟到)',
+  `risk` int(255) UNSIGNED NULL DEFAULT 0 COMMENT '风险等级(1:低风险;2:中风险;3:高风险'),
   `date` date NOT NULL COMMENT '签到日期',
   `create_time` datetime(0) NOT NULL COMMENT '签到时间',
   PRIMARY KEY (`id`) USING BTREE,
@@ -222,7 +222,7 @@ DROP TABLE IF EXISTS `city`;
 CREATE TABLE `city`  (
   `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
   `city` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '城市名称',
-  `code` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '拼音简称',
+  `code` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '城市编码',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_city`(`city`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=330 CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='疫情城市表' ROW_FORMAT=DYNAMIC;
