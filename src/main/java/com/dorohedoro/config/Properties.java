@@ -5,11 +5,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
 @ConfigurationProperties(prefix = "app")
-public class AppProperties {
+public class Properties {
     
     private Jwt jwt = new Jwt();
 
     private WeChat wechat = new WeChat();
+    
+    private Face face = new Face();
 
     @Data
     public static class Jwt {
@@ -21,5 +23,11 @@ public class AppProperties {
     public static class WeChat {
         private String appid;
         private String appSecret;
+    }
+
+    @Data
+    public static class Face {
+        private String create_url;
+        private String checkin_url;
     }
 }

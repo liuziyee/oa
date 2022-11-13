@@ -1,6 +1,6 @@
 package com.dorohedoro.util;
 
-import com.dorohedoro.config.AppProperties;
+import com.dorohedoro.config.Properties;
 import com.dorohedoro.problem.WeChatProblem;
 import com.dorohedoro.service.WeChatFeignService;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +14,12 @@ import java.util.Map;
 public class WeChatUtil {
 
     private final WeChatFeignService weChatFeignService;
-    private final AppProperties appProperties;
+    private final Properties properties;
     
     public String getOpenId(String code) {
         Map<String, String> map = new HashMap<>();
-        map.put("appid", appProperties.getWechat().getAppid());
-        map.put("secret", appProperties.getWechat().getAppSecret());
+        map.put("appid", properties.getWechat().getAppid());
+        map.put("secret", properties.getWechat().getAppSecret());
         map.put("js_code", code);
         map.put("grant_type", "authorization_code");
 

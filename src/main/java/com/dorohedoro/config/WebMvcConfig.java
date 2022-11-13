@@ -17,7 +17,7 @@ import java.security.*;
 
 @Slf4j
 @Configuration
-@EnableConfigurationProperties(AppProperties.class)
+@EnableConfigurationProperties(Properties.class)
 public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override

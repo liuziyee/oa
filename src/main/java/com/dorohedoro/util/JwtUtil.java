@@ -1,7 +1,7 @@
 package com.dorohedoro.util;
 
 import cn.hutool.core.date.DateUtil;
-import com.dorohedoro.config.AppProperties;
+import com.dorohedoro.config.Properties;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -12,14 +12,14 @@ import java.security.KeyPair;
 @RequiredArgsConstructor
 public class JwtUtil {
 
-    private final AppProperties appProperties;
+    private final Properties properties;
     private final KeyPair keyPair;
 
     public String generate(Long userId) {
         return Jwts.builder()
                 .claim("userid", userId)
                 .setIssuedAt(DateUtil.date())
-                .setExpiration(DateUtil.offsetDay(DateUtil.date(), appProperties.getJwt().getExpire()))
+                .setExpiration(DateUtil.offsetDay(DateUtil.date(), properties.getJwt().getExpire()))
                 .signWith(keyPair.getPrivate())
                 .compact();
     }
