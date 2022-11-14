@@ -1,7 +1,9 @@
 package com.dorohedoro;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import com.dorohedoro.config.Constants;
+import com.dorohedoro.config.Properties;
 import com.dorohedoro.domain.SysConfig;
 import com.dorohedoro.mapper.SysConfigMapper;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,7 @@ import static java.util.stream.Collectors.toSet;
 public class OAWeChatApplication {
 
     private final SysConfigMapper sysConfigMapper;
+    private final Properties properties;
     
     public static void main(String[] args) {
         SpringApplication.run(OAWeChatApplication.class, args);
@@ -47,5 +50,8 @@ public class OAWeChatApplication {
                 log.error(e.getMessage(), e);
             }
         }).collect(toSet());
+
+        log.info("创建本地文件夹,用于存储签到照片");
+        FileUtil.mkdir(properties.getImgDir());
     }
 }

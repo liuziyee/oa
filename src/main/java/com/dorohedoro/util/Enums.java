@@ -12,8 +12,8 @@ public class Enums {
     @Getter
     @AllArgsConstructor
     public enum Status {
-        UNAVAILABLE(0, "不可用"),
-        AVAILABLE(1, "可用");
+        UNAVAILABLE(0, "unavailable"),
+        AVAILABLE(1, "available");
         
         private int code;
         private String desc;

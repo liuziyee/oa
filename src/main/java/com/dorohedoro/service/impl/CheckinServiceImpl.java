@@ -11,6 +11,7 @@ import com.dorohedoro.config.Constants;
 import com.dorohedoro.config.Properties;
 import com.dorohedoro.domain.Checkin;
 import com.dorohedoro.domain.City;
+import com.dorohedoro.domain.FaceModel;
 import com.dorohedoro.domain.User;
 import com.dorohedoro.domain.dto.CheckinDTO;
 import com.dorohedoro.mapper.*;
@@ -46,10 +47,11 @@ public class CheckinServiceImpl implements ICheckinService {
     private final MailTask mailTask;
 
     @Override
-    public String check(Long userId) {
+    public String check(Long userId, Long distance) {
         log.debug("检查当天是否为工作日");
-        log.debug("是工作日 => 检查当前时间是否在签到时间范围内");
-        log.debug("在签到时间范围内 => 查询当天是否有签到记录");
+        log.debug("检查签到地点是否在公司附近");
+        log.debug("检查当前时间点是否在签到时间范围内");
+        log.debug("查询当天是否有签到记录");
         
         log.debug("默认周一到周五为工作日,周末为节假日");
         String today = Constants.WORKDAY;
@@ -68,6 +70,10 @@ public class CheckinServiceImpl implements ICheckinService {
 
         if (today.equals(Constants.HOLIDAY)) {
             return "非考勤日";
+        }
+
+        if (Enums.Status.AVAILABLE.getDesc().equals(Constants.checkDistance)) {
+            
         }
 
         DateTime now = DateUtil.date();
@@ -133,9 +139,26 @@ public class CheckinServiceImpl implements ICheckinService {
         BeanUtils.copyProperties(checkinDTO, checkin);
         checkinMapper.insert(checkin);
     }
-    
+
+    @Override
+    public void createFaceModel(Long userId, String imgPath) {
+        HttpResponse response = HttpUtil.createPost(properties.getFace().getCreateUrl())
+                .form("photo", FileUtil.file(imgPath))
+                .execute();
+
+        String body = response.body();
+        if ("无法识别人脸".equals(body) || "照片中存在多张人脸".equals(body)) {
+            throw new BizProblem(body);
+        }
+
+        FaceModel faceModel = new FaceModel();
+        faceModel.setUserId(userId);
+        faceModel.setFaceModel(body);
+        faceModelMapper.insert(faceModel);
+    }
+
     private void uploadImgAndFaceModel(String imgPath, String faceModel) {
-        HttpResponse response = HttpUtil.createPost(properties.getFace().getCheckin_url())
+        HttpResponse response = HttpUtil.createPost(properties.getFace().getCheckinUrl())
                 .form("photo", FileUtil.file(imgPath), "targetModel", faceModel)
                 .execute();
 
