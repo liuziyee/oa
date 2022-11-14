@@ -11,10 +11,12 @@ import com.dorohedoro.config.Constants;
 import com.dorohedoro.config.Properties;
 import com.dorohedoro.domain.Checkin;
 import com.dorohedoro.domain.City;
+import com.dorohedoro.domain.User;
 import com.dorohedoro.domain.dto.CheckinDTO;
 import com.dorohedoro.mapper.*;
 import com.dorohedoro.problem.BizProblem;
 import com.dorohedoro.service.ICheckinService;
+import com.dorohedoro.task.MailTask;
 import com.dorohedoro.util.Enums;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -23,6 +25,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.beans.BeanUtils;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -37,8 +40,10 @@ public class CheckinServiceImpl implements ICheckinService {
     private final HolidayMapper holidayMapper;
     private final CheckinMapper checkinMapper;
     private final FaceModelMapper faceModelMapper;
+    private final UserMapper userMapper;
     private final CityMapper cityMapper;
     private final Properties properties;
+    private final MailTask mailTask;
 
     @Override
     public String check(Long userId) {
@@ -86,7 +91,7 @@ public class CheckinServiceImpl implements ICheckinService {
     public void checkin(CheckinDTO checkinDTO) {
         log.debug("确定签到状态(正常或迟到),旷工不会生成签到记录");
         log.debug("上传签到照片和人脸模型");
-        log.debug("匹配 => 查询疫情风险等级,生成签到记录");
+        log.debug("匹配 => 查询疫情风险等级(高风险 => 发送告警邮件),生成签到记录");
         
         DateTime checkinTime = DateUtil.date(); // 签到时间
         DateTime attendanceTime = DateUtil.parse(DateUtil.today() + " " + Constants.attendanceTime);
@@ -104,8 +109,19 @@ public class CheckinServiceImpl implements ICheckinService {
         Integer risk = null;
         String city = checkinDTO.getCity();
         String district = checkinDTO.getDistrict();
+        String address = checkinDTO.getAddress();
         if (!StrUtil.isBlank(city) && !StrUtil.isBlank(district)) {
             risk = getRisk(city, district);
+            if (risk == Enums.Risk.HIGH.getCode()) {
+                User user = userMapper.selectById(userId).orElseThrow();
+
+                SimpleMailMessage msg = new SimpleMailMessage();
+                msg.setTo(properties.getMail().getHr());
+                msg.setSubject("疫情告警");
+                msg.setText(StrUtil.format("{}员工{}于{}的位置信息为: {}, 属于疫情高风险地区", 
+                        user.getDeptName(), user.getName(), DateUtil.today(), address));
+                mailTask.run(msg);
+            }
         }
 
         Checkin checkin = new Checkin();
@@ -144,6 +160,7 @@ public class CheckinServiceImpl implements ICheckinService {
         String url = StrUtil.format("http://m.{}.bendibao.com/news/yqdengji/?qu={}", code, district);
         Document document = Jsoup.connect(url).get();
         Element element = document.getElementsByClass("cls18").get(0);
-        return Enums.Risk.desc2Code(element.text());
+        int risk = Enums.Risk.desc2Code(element.text());
+        return risk;
     }
 }

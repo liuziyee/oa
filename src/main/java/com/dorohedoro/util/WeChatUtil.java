@@ -2,7 +2,7 @@ package com.dorohedoro.util;
 
 import com.dorohedoro.config.Properties;
 import com.dorohedoro.problem.WeChatProblem;
-import com.dorohedoro.service.WeChatFeignService;
+import com.dorohedoro.service.WeChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +13,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class WeChatUtil {
 
-    private final WeChatFeignService weChatFeignService;
+    private final WeChatService weChatService;
     private final Properties properties;
     
     public String getOpenId(String code) {
@@ -23,7 +23,7 @@ public class WeChatUtil {
         map.put("js_code", code);
         map.put("grant_type", "authorization_code");
 
-        Map<String, Object> res = weChatFeignService.code2Session(map);
+        Map<String, Object> res = weChatService.code2Session(map);
         if (res.get("errcode") != null && !res.get("errcode").equals(0)) {
             throw new WeChatProblem(res.get("errmsg").toString());
         }

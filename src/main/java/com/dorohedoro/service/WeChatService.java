@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.Map;
 
 @FeignClient(value = "wechat", url = "https://api.weixin.qq.com/sns", configuration = FeignConfig.class)
-public interface WeChatFeignService {
+public interface WeChatService {
 
     @GetMapping("/jscode2session")
     Map<String, Object> code2Session(@RequestParam Map<String, String> map);

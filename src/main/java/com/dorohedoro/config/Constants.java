@@ -10,4 +10,6 @@ public class Constants {
     public static String attendanceEndTime;
     public static String closingStartTime;
     public static String closingEndTime;
+    public static String checkDistance;
+    public static String checkinDistance;
 }

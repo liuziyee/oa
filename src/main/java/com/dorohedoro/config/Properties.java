@@ -13,6 +13,8 @@ public class Properties {
     
     private Face face = new Face();
 
+    private Mail mail = new Mail();
+
     @Data
     public static class Jwt {
         private int expire = 5; // 访问令牌过期时间(天)
@@ -29,5 +31,11 @@ public class Properties {
     public static class Face {
         private String create_url;
         private String checkin_url;
+    }
+
+    @Data
+    public static class Mail {
+        private String system;
+        private String hr;
     }
 }

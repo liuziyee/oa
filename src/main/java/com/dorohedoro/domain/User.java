@@ -38,6 +38,8 @@ public class User implements Serializable {
 
     private Long deptId;
 
+    private String deptName;
+
     private Integer status;
     
     @TableField(fill = FieldFill.INSERT, select = false)

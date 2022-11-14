@@ -11,6 +11,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Field;
@@ -19,10 +20,11 @@ import java.util.List;
 import static java.util.stream.Collectors.toSet;
 
 @Slf4j
+@EnableAsync
+@EnableFeignClients
 @SpringBootApplication
 @MapperScan("com.dorohedoro.mapper")
 @ServletComponentScan
-@EnableFeignClients
 @RequiredArgsConstructor
 public class OAWeChatApplication {
 
@@ -34,7 +36,7 @@ public class OAWeChatApplication {
     
     @PostConstruct
     public void doInit() {
-        log.info("读取系统配置");
+        log.info("读取SYS_CONFIG表");
         List<SysConfig> configs = sysConfigMapper.selectAll();
         configs.stream().peek(config -> {
             String key = StrUtil.toCamelCase(config.getParamKey());

@@ -12,6 +12,7 @@
         <result column="tel" jdbcType="CHAR" property="tel" />
         <result column="roles" jdbcType="VARCHAR" property="roles" />
         <result column="dept_id" jdbcType="BIGINT" property="deptId" />
+        <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
         <result column="status" jdbcType="TINYINT" property="status" />
     </resultMap>
     
@@ -31,6 +32,7 @@
     </select>
     
     <select id="selectById" resultMap="baseResultMap">
-        select id, open_id, nickname, avatar_url, name, sex, tel, roles, root, dept_id, status from user where id = #{userId} and status = 1;
+        select user.id, open_id, nickname, avatar_url, name, sex, tel, roles, root, dept_id, status, ifnull(dept.dept_name, '') as dept_name
+        from user left join dept on user.dept_id = dept.id where user.id = #{userId} and status = 1;
     </select>
 </mapper>

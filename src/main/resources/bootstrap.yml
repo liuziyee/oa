@@ -44,6 +44,12 @@ spring:
       authentication-database: admin
       username: root
       password: 12345
+    
+  mail:
+    default-encoding: UTF-8
+    host: smtp.163.com
+    username: liuziyee1994@163.com
+    password: LELPXQUVIPWVCVEK
 
 mybatis-plus:
   global-config:
@@ -77,3 +83,6 @@ app:
   face:
     create-url: http://192.168.1.5:3000/create_face_model
     checkin-url: http://192.168.1.5:3000/checkin
+  mail:
+    system: liuziyee1994@163.com
+    hr: liuziyee@yeah.net
