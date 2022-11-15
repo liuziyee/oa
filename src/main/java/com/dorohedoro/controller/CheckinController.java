@@ -38,23 +38,36 @@ public class CheckinController {
 
     @PostMapping("/checkin.do")
     @ApiOperation("签到")
-    public R checkin(@RequestHeader("Authorization") String accessToken, @RequestParam("photo") MultipartFile file,
-                     @RequestBody CheckinDTO checkinDTO) {
-        String imgPath = copyCheckinImg(file);
-        checkinDTO.setUserId(Convert.toLong(jwtUtil.get(accessToken, "userid")));
-        checkinDTO.setImgPath(imgPath);
-        checkinService.checkin(checkinDTO);
-        FileUtil.del(imgPath);
-        return R.ok(null, "已签到");
+    public R checkin(@RequestHeader("Authorization") String accessToken, @RequestParam("photo") MultipartFile file, 
+                     CheckinDTO checkinDTO) {
+        log.debug("签到接口会接收签到照片和位置信息(JSON),用@RequestParam接收文件,不要用@RequestBody接收JSON");
+        String imgPath = null;
+        try {
+            imgPath = copyCheckinImg(file);
+            checkinDTO.setUserId(Convert.toLong(jwtUtil.get(accessToken, "userid")));
+            checkinDTO.setImgPath(imgPath);
+            checkinService.checkin(checkinDTO);
+            return R.ok(null, "已签到");
+        } finally {
+            if (imgPath != null) {
+                FileUtil.del(imgPath);
+            }
+        }
     }
-    
+
     @PostMapping("/createFaceModel")
     @ApiOperation("创建人脸模型")
     public R createFaceModel(@RequestParam("photo") MultipartFile file, @RequestHeader("Authorization") String accessToken) {
-        String imgPath = copyCheckinImg(file);
-        checkinService.createFaceModel(Convert.toLong(jwtUtil.get(accessToken, "userid")), imgPath);
-        FileUtil.del(imgPath);
-        return R.ok(null, "已创建人脸模型");
+        String imgPath = null;
+        try {
+            imgPath = copyCheckinImg(file);
+            checkinService.createFaceModel(Convert.toLong(jwtUtil.get(accessToken, "userid")), imgPath);
+            return R.ok(null, "已创建人脸模型");
+        } finally {
+            if (imgPath != null) {
+                FileUtil.del(imgPath);
+            }
+        }
     }
 
     private String copyCheckinImg(MultipartFile file) {
