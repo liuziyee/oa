@@ -4,7 +4,7 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.io.FileUtil;
 import com.dorohedoro.config.Properties;
 import com.dorohedoro.domain.dto.CheckinDTO;
-import com.dorohedoro.problem.BizProblem;
+import com.dorohedoro.problem.ServerProblem;
 import com.dorohedoro.service.ICheckinService;
 import com.dorohedoro.util.JwtUtil;
 import com.dorohedoro.util.R;
@@ -33,7 +33,7 @@ public class CheckinController {
     @ApiOperation("检查当前时间点是否可以签到")
     public R check(@RequestHeader("Authorization") String accessToken, @RequestParam Long distance) {
         Long userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
-        return R.ok(checkinService.check(userId, distance));
+        return R.ok(null, checkinService.check(userId, distance));
     }
 
     @PostMapping("/checkin.do")
@@ -45,7 +45,7 @@ public class CheckinController {
         checkinDTO.setImgPath(imgPath);
         checkinService.checkin(checkinDTO);
         FileUtil.del(imgPath);
-        return R.ok("已签到");
+        return R.ok(null, "已签到");
     }
     
     @PostMapping("/createFaceModel")
@@ -54,16 +54,16 @@ public class CheckinController {
         String imgPath = copyCheckinImg(file);
         checkinService.createFaceModel(Convert.toLong(jwtUtil.get(accessToken, "userid")), imgPath);
         FileUtil.del(imgPath);
-        return R.ok("已创建人脸模型");
+        return R.ok(null, "已创建人脸模型");
     }
 
     private String copyCheckinImg(MultipartFile file) {
         if (file == null) {
-            throw new BizProblem("未上传文件");
+            throw new ServerProblem("未上传文件");
         }
         String fileName = file.getOriginalFilename().toLowerCase();
         if (!fileName.endsWith(".jpg")) {
-            throw new BizProblem("必须上传JPG格式图片");
+            throw new ServerProblem("必须上传JPG格式图片");
         }
 
         try {
@@ -73,7 +73,7 @@ public class CheckinController {
             return imgPath;
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            throw new BizProblem("签到照片保存错误");
+            throw new ServerProblem("签到照片保存错误");
         }
     }
 }

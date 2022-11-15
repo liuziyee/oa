@@ -5,11 +5,15 @@ import org.zalando.problem.Status;
 
 import java.net.URI;
 
-public class BizProblem extends AbstractThrowableProblem {
+public class ServerProblem extends AbstractThrowableProblem {
     private static final URI TYPE = URI.create("/server");
 
-    public BizProblem(String detail) {
+    public ServerProblem(String detail) {
         super(TYPE, "服务器错误", Status.INTERNAL_SERVER_ERROR, detail);
+    }
+
+    public ServerProblem(Status status, String detail) {
+        super(TYPE, "服务器错误", status, detail);
     }
 }
 

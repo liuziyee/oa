@@ -182,7 +182,7 @@ INSERT INTO `sys_config` VALUES (4, 'closing_start_time', '16:30', 1, '下班考
 INSERT INTO `sys_config` VALUES (5, 'closing_time', '17:30', 1, '下班时间');
 INSERT INTO `sys_config` VALUES (6, 'closing_end_time', '23:59', 1, '下班考勤截止时间');
 INSERT INTO `sys_config` VALUES (7, 'check_distance', 'available', 1, '检查签到地点是否在公司附近');
-INSERT INTO `sys_config` VALUES (8, 'checkin_distance', '500', 1, '签到有效距离');
+INSERT INTO `sys_config` VALUES (8, 'checkin_distance', '3000', 1, '签到有效距离');
 
 DROP TABLE IF EXISTS `action`;
 CREATE TABLE `action`  (

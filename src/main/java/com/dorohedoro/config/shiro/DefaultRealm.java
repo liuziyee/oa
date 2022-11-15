@@ -39,7 +39,7 @@ public class DefaultRealm extends AuthorizingRealm {
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-        log.debug("这里的访问令牌是从请求头获取的,有可能过期");
+        // 这里的访问令牌是从请求头获取的,有可能过期
         String accessToken = (String) token.getCredentials();
         Long userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
         User userDetail = userService.getUserDetail(userId).orElseThrow(() -> new LockedAccountException("账号已冻结"));

@@ -1,8 +1,10 @@
 package com.dorohedoro.service.impl;
 
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
@@ -15,7 +17,7 @@ import com.dorohedoro.domain.FaceModel;
 import com.dorohedoro.domain.User;
 import com.dorohedoro.domain.dto.CheckinDTO;
 import com.dorohedoro.mapper.*;
-import com.dorohedoro.problem.BizProblem;
+import com.dorohedoro.problem.ServerProblem;
 import com.dorohedoro.service.ICheckinService;
 import com.dorohedoro.task.MailTask;
 import com.dorohedoro.util.Enums;
@@ -72,8 +74,9 @@ public class CheckinServiceImpl implements ICheckinService {
             return "非考勤日";
         }
 
-        if (Enums.Status.AVAILABLE.getDesc().equals(Constants.checkDistance)) {
-            
+        if (Enums.Status.AVAILABLE.getDesc().equals(Constants.checkDistance) && 
+                distance > Convert.toLong(Constants.checkinDistance)) {
+            return "签到地点不在公司附近";
         }
 
         DateTime now = DateUtil.date();
@@ -109,7 +112,7 @@ public class CheckinServiceImpl implements ICheckinService {
         }
         
         Long userId = checkinDTO.getUserId();
-        String faceModel = faceModelMapper.selectByUserId(userId).orElseThrow(() -> new BizProblem("未创建人脸模型"));
+        String faceModel = faceModelMapper.selectByUserId(userId).orElseThrow(() -> new ServerProblem("未创建人脸模型"));
         uploadImgAndFaceModel(checkinDTO.getImgPath(), faceModel);
         
         Integer risk = null;
@@ -142,13 +145,16 @@ public class CheckinServiceImpl implements ICheckinService {
 
     @Override
     public void createFaceModel(Long userId, String imgPath) {
-        HttpResponse response = HttpUtil.createPost(properties.getFace().getCreateUrl())
-                .form("photo", FileUtil.file(imgPath))
-                .execute();
+        String body = RandomUtil.randomString(25);
+        if ("true" == "true") {
+            HttpResponse response = HttpUtil.createPost(properties.getFace().getCreateUrl())
+                    .form("photo", FileUtil.file(imgPath))
+                    .execute();
 
-        String body = response.body();
-        if ("无法识别人脸".equals(body) || "照片中存在多张人脸".equals(body)) {
-            throw new BizProblem(body);
+            body = response.body();
+            if ("无法识别人脸".equals(body) || "照片中存在多张人脸".equals(body)) {
+                throw new ServerProblem(body);
+            }
         }
 
         FaceModel faceModel = new FaceModel();
@@ -158,20 +164,22 @@ public class CheckinServiceImpl implements ICheckinService {
     }
 
     private void uploadImgAndFaceModel(String imgPath, String faceModel) {
-        HttpResponse response = HttpUtil.createPost(properties.getFace().getCheckinUrl())
-                .form("photo", FileUtil.file(imgPath), "targetModel", faceModel)
-                .execute();
+        if ("true" == "true") {
+            HttpResponse response = HttpUtil.createPost(properties.getFace().getCheckinUrl())
+                    .form("photo", FileUtil.file(imgPath), "targetModel", faceModel)
+                    .execute();
 
-        if (response.getStatus() != 200) {
-            throw new BizProblem("人脸识别服务不可用");
-        }
+            if (response.getStatus() != 200) {
+                throw new ServerProblem("人脸识别服务不可用");
+            }
 
-        String body = response.body();
-        if ("无法识别人脸".equals(body) || "照片中存在多张人脸".equals(body)) {
-            throw new BizProblem(body);
-        }
-        if ("False".equals(body)) {
-            throw new BizProblem("签到无效,非本人签到");
+            String body = response.body();
+            if ("无法识别人脸".equals(body) || "照片中存在多张人脸".equals(body)) {
+                throw new ServerProblem(body);
+            }
+            if ("False".equals(body)) {
+                throw new ServerProblem("签到无效,非本人签到");
+            }
         }
 
         log.debug("响应为True,签到照片和人脸模型匹配");

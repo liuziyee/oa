@@ -2,8 +2,8 @@ package com.dorohedoro.config.shiro;
 
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.dorohedoro.problem.ServerProblem;
 import com.dorohedoro.util.JwtUtil;
-import com.dorohedoro.util.R;
 import com.dorohedoro.util.RedisUtil;
 import com.dorohedoro.util.ThreadLocalUtil;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -16,14 +16,12 @@ import org.apache.shiro.web.filter.authc.AuthenticatingFilter;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.zalando.problem.Status;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 @Slf4j
 @Component
@@ -69,8 +67,7 @@ public class JwtFilter extends AuthenticatingFilter {
         String accessToken = req.getHeader("Authorization");
         if (StrUtil.isBlank(accessToken)) {
             log.debug("访问令牌为空 => 无效的令牌");
-            R r = R.error(HttpStatus.UNAUTHORIZED.value(), "无效的访问令牌");
-            res.getWriter().write(JSONObject.toJSONString(r));
+            res.getWriter().write(JSONObject.toJSONString(new ServerProblem(Status.UNAUTHORIZED, "无效的访问令牌")));
             return false;
         }
 
@@ -87,14 +84,12 @@ public class JwtFilter extends AuthenticatingFilter {
                 redisUtil.set(refreshToken, userId);
             } else {
                 log.debug("访问令牌过期,缓存令牌过期 => 令牌已过期");
-                R r = R.error(HttpStatus.UNAUTHORIZED.value(), "访问令牌已过期");
-                res.getWriter().write(JSONObject.toJSONString(r));
+                res.getWriter().write(JSONObject.toJSONString(new ServerProblem(Status.UNAUTHORIZED, "访问令牌已过期")));
                 return false;
             }
         } catch (Throwable e) {
             log.debug("访问令牌校验失败 => 无效的令牌");
-            R r = R.error(HttpStatus.UNAUTHORIZED.value(), "无效的访问令牌");
-            res.getWriter().write(JSONObject.toJSONString(r));
+            res.getWriter().write(JSONObject.toJSONString(new ServerProblem(Status.UNAUTHORIZED, "无效的访问令牌")));
             return false;
         }
 
@@ -111,10 +106,5 @@ public class JwtFilter extends AuthenticatingFilter {
         res.setStatus(HttpStatus.UNAUTHORIZED.value());
         res.getWriter().write(e.getMessage());
         return false;
-    }
-
-    @Override
-    public void doFilterInternal(ServletRequest request, ServletResponse response, FilterChain chain) throws ServletException, IOException {
-        super.doFilterInternal(request, response, chain);
     }
 }

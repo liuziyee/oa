@@ -3,7 +3,7 @@ package com.dorohedoro.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dorohedoro.domain.User;
 import com.dorohedoro.mapper.UserMapper;
-import com.dorohedoro.problem.BizProblem;
+import com.dorohedoro.problem.ServerProblem;
 import com.dorohedoro.service.IUserService;
 import com.dorohedoro.util.RedisUtil;
 import com.dorohedoro.util.WeChatUtil;
@@ -29,7 +29,7 @@ public class UserServiceImpl implements IUserService {
         if (registerCode.equals("000000")) {
             log.debug("注册超级管理员");
             if (userMapper.isRootExist()) {
-                throw new BizProblem("超级管理员账号已存在");
+                throw new ServerProblem("超级管理员账号已存在");
             }
             log.debug("创建超级管理员账号,绑定openid");
             User root = new User();
@@ -50,7 +50,7 @@ public class UserServiceImpl implements IUserService {
             userMapper.insert(user);
             return userId;
         } else {
-            throw new BizProblem("注册码无效或已过期");
+            throw new ServerProblem("注册码无效或已过期");
         }
     }
 
@@ -63,7 +63,7 @@ public class UserServiceImpl implements IUserService {
     public Long login(String code) {
         log.debug("根据openid查询员工表,有记录,说明微信账号已经和员工(或超级管理员)账号绑定并注册,没有记录,说明微信账号没有注册或已冻结");
         String openId = weChatUtil.getOpenId(code);
-        Long userId = userMapper.selectByOpenId(openId).orElseThrow(() -> new BizProblem("未注册或已冻结"));
+        Long userId = userMapper.selectByOpenId(openId).orElseThrow(() -> new ServerProblem("未注册或已冻结"));
         // TODO 消息队列
         return userId;
     }

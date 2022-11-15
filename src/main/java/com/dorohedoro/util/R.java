@@ -16,8 +16,8 @@ public class R<T> {
 
     private String accessToken;
     
-    public static <T> R<T> ok(T data) {
-        return R.<T>builder().code(HttpStatus.HTTP_OK).data(data).build();
+    public static <T> R<T> ok(T data, String msg) {
+        return R.<T>builder().code(HttpStatus.HTTP_OK).msg(msg).data(data).build();
     }
     
     public static R error(int code, String msg) {
