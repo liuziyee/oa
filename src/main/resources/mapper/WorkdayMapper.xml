@@ -5,4 +5,8 @@
     <select id="selectToday" resultType="long">
         select id from workday where date = current_date limit 1;
     </select>
+    
+    <select id="selectByDate" resultType="string">
+        select date from workday where date between #{start} and #{end}
+    </select>
 </mapper>

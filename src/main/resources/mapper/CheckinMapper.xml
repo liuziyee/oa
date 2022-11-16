@@ -3,17 +3,9 @@
 <mapper namespace="com.dorohedoro.mapper.CheckinMapper">
 
     <resultMap id="baseResultMap" type="checkin">
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="user_id" jdbcType="BIGINT" property="userId" />
-    <result column="address" jdbcType="VARCHAR" property="address" />
-    <result column="country" jdbcType="VARCHAR" property="country" />
-    <result column="province" jdbcType="VARCHAR" property="province" />
-    <result column="city" jdbcType="VARCHAR" property="city" />
-    <result column="district" jdbcType="VARCHAR" property="district" />
-    <result column="date" jdbcType="VARCHAR" property="date" />
-    <result column="status_desc" jdbcType="VARCHAR" property="statusDesc" />
-    <result column="risk_desc" jdbcType="VARCHAR" property="riskDesc" />
-    <result column="create_time" jdbcType="DATE" property="createTime" />
+        <result column="date" jdbcType="VARCHAR" property="date" />
+        <result column="status_desc" jdbcType="VARCHAR" property="statusDesc" />
+        <result column="create_time" jdbcType="DATE" property="createTime" />
     </resultMap>
     
     <select id="selectToday" resultType="long">

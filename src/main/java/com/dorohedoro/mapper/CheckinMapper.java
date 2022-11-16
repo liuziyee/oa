@@ -11,6 +11,6 @@ public interface CheckinMapper extends BaseMapper<Checkin> {
     Long selectToday(Map map);
     // 查询签到天数
     int selectDays(Long userId);
-    // 查询一周签到记录
+    // 查询周签到记录
     List<Checkin> selectWeek(Map map);
 }
