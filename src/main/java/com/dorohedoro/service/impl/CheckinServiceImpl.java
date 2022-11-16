@@ -26,9 +26,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -83,12 +80,8 @@ public class CheckinServiceImpl implements ICheckinService {
         if (now.isAfter(attendanceEndTime)) {
             return "超出上班考勤结束时间";
         }
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("userId", userId);
-        map.put("start", attendanceStartTime);
-        map.put("end", attendanceEndTime);
-        return checkinMapper.selectToday(map) == null ? "可以签到" : "已签到";
+        
+        return checkinMapper.selectToday(userId, attendanceStartTime, attendanceEndTime) == null ? "可以签到" : "已签到";
     }
 
     @Override
