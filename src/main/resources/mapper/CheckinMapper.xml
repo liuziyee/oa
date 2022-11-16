@@ -2,7 +2,31 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dorohedoro.mapper.CheckinMapper">
 
+    <resultMap id="baseResultMap" type="checkin">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="country" jdbcType="VARCHAR" property="country" />
+    <result column="province" jdbcType="VARCHAR" property="province" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="district" jdbcType="VARCHAR" property="district" />
+    <result column="date" jdbcType="VARCHAR" property="date" />
+    <result column="status_desc" jdbcType="VARCHAR" property="statusDesc" />
+    <result column="risk_desc" jdbcType="VARCHAR" property="riskDesc" />
+    <result column="create_time" jdbcType="DATE" property="createTime" />
+    </resultMap>
+    
     <select id="selectToday" resultType="long">
         select id from checkin where user_id = #{userId} and date = current_date and create_time between #{start} and #{end} limit 1;
+    </select>
+    
+    <select id="selectDays" resultType="int">
+        select count(*) as days from checkin where user_id = #{userId};
+    </select>
+    
+    <select id="selectWeek" resultMap="baseResultMap">
+        select cast(date as char) as date, if(status = 1, "正常", "迟到") as status_desc
+        from checkin
+        where user_id = #{userId} and date between #{start} and #{end}
     </select>
 </mapper>

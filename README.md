@@ -20,4 +20,5 @@
 `docker load < /usr/local/face.tar.gz`  
 `docker run -d -it -p 3000:3000 -v /usr/local/python/demo:/usr/local/demo --name face-recognition face`  
 `docker exec -it face-recognition bash`  
-`nohup python3 -c "from app import app;" > log.out 2>&1 &`
+`nohup python3 -c "from app import app;" > log.out 2>&1 &`  
+`用到的mysql函数:if,ifnull,json_contains,date_format,current_date,case when then,cast`

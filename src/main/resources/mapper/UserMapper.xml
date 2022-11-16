@@ -14,13 +14,20 @@
         <result column="dept_id" jdbcType="BIGINT" property="deptId" />
         <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
         <result column="status" jdbcType="TINYINT" property="status" />
+        <association property="todayCheckinRecord" javaType="checkin">
+            <result column="address" jdbcType="VARCHAR" property="address" />
+            <result column="checkin_time" jdbcType="VARCHAR" property="checkinTime" />
+            <result column="date" jdbcType="VARCHAR" property="date" />
+            <result column="status_desc" jdbcType="VARCHAR" property="statusDesc" />
+            <result column="risk_desc" jdbcType="VARCHAR" property="riskDesc" />
+        </association>
     </resultMap>
     
     <select id="isRootExist" resultType="boolean">
         select if(count(*), true, false) from user where root = 1;
     </select>
     <select id="selectPermissions" resultType="string">
-        select permission.permission_name
+        select permission_name
         from user
         join role on json_contains(user.roles, cast(role.id as char))
         join permission on json_contains(role.permissions, cast(permission.id as char))
@@ -32,7 +39,20 @@
     </select>
     
     <select id="selectById" resultMap="baseResultMap">
-        select user.id, open_id, nickname, avatar_url, name, sex, tel, roles, root, dept_id, status, ifnull(dept.dept_name, '') as dept_name
-        from user left join dept on user.dept_id = dept.id where user.id = #{userId} and status = 1;
+        select user.id as id, open_id, nickname, avatar_url, name, sex, tel, roles, root, dept_id, status, 
+               ifnull(dept_name, '') as dept_name,
+               address,
+               date_format(checkin.creat_time, "%H:%i") as checkin_time,
+               cast(checkin.date, as char) as date,
+               if(checkin.status = 1, "正常", "迟到") as status_desc,
+               case
+                   when checkin.risk = 1 then '低风险'
+                   when checkin.risk = 2 then '中风险'
+                   when checkin.risk = 3 then '高风险'
+               end as risk_desc
+        from user
+        left join dept on user.dept_id = dept.id
+        left join checkin on user.id = checkin.user_id and checkin.date = current_date
+        where user.id = #{userId} and status = 1;
     </select>
 </mapper>
