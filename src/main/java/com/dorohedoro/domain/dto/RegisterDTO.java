@@ -16,4 +16,8 @@ public class RegisterDTO {
 
     @NotBlank(message = "微信授权码不能为空")
     private String code;
+    
+    private String nickName;
+    
+    private String avatarUrl;
 }

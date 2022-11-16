@@ -2,6 +2,7 @@ package com.dorohedoro.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dorohedoro.domain.User;
+import com.dorohedoro.domain.dto.RegisterDTO;
 import com.dorohedoro.mapper.UserMapper;
 import com.dorohedoro.problem.ServerProblem;
 import com.dorohedoro.service.IUserService;
@@ -24,7 +25,12 @@ public class UserServiceImpl implements IUserService {
     private final RedisUtil redisUtil;
     
     @Override
-    public Long register(String registerCode, String code) {
+    public Long register(RegisterDTO registerDTO) {
+        String code = registerDTO.getCode();
+        String registerCode = registerDTO.getRegisterCode();
+        String nickName = registerDTO.getNickName();
+        String avatarUrl = registerDTO.getAvatarUrl();
+        
         String openId = weChatUtil.getOpenId(code);
         if (registerCode.equals("000000")) {
             log.debug("注册超级管理员");
@@ -37,7 +43,8 @@ public class UserServiceImpl implements IUserService {
             root.setRoles("[0]");
             root.setRoot(true);
             root.setStatus(1);
-            root.setName("超级管理员");
+            root.setNickname(nickName);
+            root.setAvatarUrl(avatarUrl);
             userMapper.insert(root);
             return root.getId();
         }
@@ -48,6 +55,8 @@ public class UserServiceImpl implements IUserService {
             Long userId = redisUtil.<Long>get(registerCode);
             User user = userMapper.selectOne(Wrappers.<User>lambdaQuery().eq(User::getId, userId));
             user.setOpenId(openId);
+            user.setNickname(nickName);
+            user.setAvatarUrl(avatarUrl);
             userMapper.insert(user);
             return userId;
         } else {

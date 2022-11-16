@@ -33,7 +33,7 @@ public class UserController {
     @ApiOperation("注册")
     @PostMapping("/register")
     public R register(@Valid @RequestBody RegisterDTO registerDTO) {
-        Long userId = userService.register(registerDTO.getRegisterCode(), registerDTO.getCode());
+        Long userId = userService.register(registerDTO);
 
         log.debug("注册成功 => 查询权限列表,生成访问令牌并缓存到Redis");
         Set<String> permissions = userService.getPermissions(userId);
