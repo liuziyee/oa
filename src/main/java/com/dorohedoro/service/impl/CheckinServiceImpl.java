@@ -8,11 +8,9 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dorohedoro.config.Constants;
 import com.dorohedoro.config.Properties;
 import com.dorohedoro.domain.Checkin;
-import com.dorohedoro.domain.City;
 import com.dorohedoro.domain.FaceModel;
 import com.dorohedoro.domain.User;
 import com.dorohedoro.domain.dto.CheckinDTO;
@@ -24,9 +22,6 @@ import com.dorohedoro.util.Enums;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.springframework.beans.BeanUtils;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
@@ -146,7 +141,7 @@ public class CheckinServiceImpl implements ICheckinService {
     @Override
     public void createFaceModel(Long userId, String imgPath) {
         String body = RandomUtil.randomString(25);
-        if ("true" == "true") {
+        if ("true" == "false") {
             HttpResponse response = HttpUtil.createPost(properties.getFace().getCreateUrl())
                     .form("photo", FileUtil.file(imgPath))
                     .execute();
@@ -164,7 +159,7 @@ public class CheckinServiceImpl implements ICheckinService {
     }
 
     private void uploadImgAndFaceModel(String imgPath, String faceModel) {
-        if ("true" == "true") {
+        if ("true" == "false") {
             HttpResponse response = HttpUtil.createPost(properties.getFace().getCheckinUrl())
                     .form("photo", FileUtil.file(imgPath), "targetModel", faceModel)
                     .execute();
@@ -180,18 +175,14 @@ public class CheckinServiceImpl implements ICheckinService {
             if ("False".equals(body)) {
                 throw new ServerProblem("签到无效,非本人签到");
             }
-        }
 
-        log.debug("响应为True,签到照片和人脸模型匹配");
+            log.debug("响应为True,签到照片和人脸模型匹配");
+        }
     }
     
     @SneakyThrows
     private Integer getRisk(String city, String district) {
-        String code = cityMapper.selectOne(Wrappers.<City>lambdaQuery().eq(City::getCity, city)).getCode();
-        String url = StrUtil.format("http://m.{}.bendibao.com/news/yqdengji/?qu={}", code, district);
-        Document document = Jsoup.connect(url).get();
-        Element element = document.getElementsByClass("cls18").get(0);
-        int risk = Enums.Risk.desc2Code(element.text());
-        return risk;
+        log.debug("这里用本地宝查询疫情风险行不通");
+        return Enums.Risk.HIGH.getCode();
     }
 }

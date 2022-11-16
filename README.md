@@ -11,6 +11,11 @@
 >> ###### MySQL的datetime映射为Java的Date(下同)
 >> ###### date映射为String,不用Java的Date是因为Date同时包含日期和时间,而MySQL的date只包含日期,所以这里用日期字符串来替代Date
 >> ###### JDK8+: datetime,timestamp映射为LocalDateTime,date映射为LocalDate
+> ##### 踩坑
+>> ###### MySQL的时区要设置为Asia/Shanghai
+>> ###### 签到接口会接收签到照片和位置信息(JSON),用@RequestParam接收文件,不要用@RequestBody接收JSON
+>> ###### Stream的map,peek等中间操作为惰性操作,Optional的map不是惰性操作
+>> ###### 接口用到了@RequestBody,会执行XssHttpServletRequestWrapper的getInputStream()
 `keytool -genkeypair -alias [keypair] -keyalg RSA -keystore [keypair.keystore] -keypass [dorohedoro] -storepass [dorohedoro]`  
 `docker load < /usr/local/face.tar.gz`  
 `docker run -d -it -p 3000:3000 -v /usr/local/python/demo:/usr/local/demo --name face-recognition face`  

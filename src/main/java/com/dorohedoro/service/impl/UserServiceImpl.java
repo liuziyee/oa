@@ -37,6 +37,7 @@ public class UserServiceImpl implements IUserService {
             root.setRoles("[0]");
             root.setRoot(true);
             root.setStatus(1);
+            root.setName("超级管理员");
             userMapper.insert(root);
             return root.getId();
         }

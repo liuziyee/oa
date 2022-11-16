@@ -40,7 +40,6 @@ public class CheckinController {
     @ApiOperation("签到")
     public R checkin(@RequestHeader("Authorization") String accessToken, @RequestParam("photo") MultipartFile file, 
                      CheckinDTO checkinDTO) {
-        log.debug("签到接口会接收签到照片和位置信息(JSON),用@RequestParam接收文件,不要用@RequestBody接收JSON");
         String imgPath = null;
         try {
             imgPath = copyCheckinImg(file);

@@ -57,7 +57,6 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
     @Override
     public ServletInputStream getInputStream() throws IOException {
-        log.debug("接口用到了@RequestBody");
         log.debug("将输入流(即请求体数据)转为Map");
         Map<String, Object> payload = JSONObject.parseObject(super.getInputStream(), Map.class);
 
