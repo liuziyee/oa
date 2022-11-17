@@ -2,6 +2,7 @@ package com.dorohedoro.controller;
 
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.io.FileUtil;
+import com.dorohedoro.config.Constants;
 import com.dorohedoro.config.Properties;
 import com.dorohedoro.domain.dto.CheckinDTO;
 import com.dorohedoro.problem.ServerProblem;
@@ -17,6 +18,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Api(tags = "签到模块")
@@ -28,6 +32,7 @@ public class CheckinController {
     private final ICheckinService checkinService;
     private final JwtUtil jwtUtil;
     private final Properties properties;
+    private final Constants constants;
 
     @GetMapping("/check")
     @ApiOperation("检查当前时间点是否可以签到")
@@ -67,6 +72,23 @@ public class CheckinController {
                 FileUtil.del(imgPath);
             }
         }
+    }
+
+    @GetMapping("/todayAndWeek")
+    @ApiOperation("查询今日和本周的签到数据")
+    public R getTodayAndWeek(@RequestHeader("Authorization") String accessToken) {
+        Long userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
+        Map<String, Object> map = new HashMap<>();
+        CheckinDTO today = checkinService.getToday(userId);
+        List<CheckinDTO> week = checkinService.getWeek(userId);
+        int days = checkinService.getDays(userId);
+        
+        map.put("today", today);
+        map.put("week", week);
+        map.put("days", days);
+        map.put("attendanceTime", Constants.attendanceTime);
+        map.put("closingTime", Constants.closingTime);
+        return R.ok(map, null);
     }
 
     private String copyCheckinImg(MultipartFile file) {

@@ -1,6 +1,5 @@
 package com.dorohedoro.service;
 
-import cn.hutool.core.date.DateTime;
 import com.dorohedoro.domain.dto.CheckinDTO;
 
 import java.util.List;
@@ -12,6 +11,10 @@ public interface ICheckinService {
     void checkin(CheckinDTO checkinDTO);
 
     void createFaceModel(Long userId, String imgPath);
+    
+    CheckinDTO getToday(Long userId);
 
-    List<CheckinDTO> getWeekStatus(Long userId, DateTime monday, DateTime sunday);
+    List<CheckinDTO> getWeek(Long userId);
+
+    int getDays(Long userId);
 }

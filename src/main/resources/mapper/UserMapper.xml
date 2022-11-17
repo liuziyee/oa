@@ -11,16 +11,7 @@
         <result column="sex" jdbcType="CHAR" property="sex" />
         <result column="tel" jdbcType="CHAR" property="tel" />
         <result column="roles" jdbcType="VARCHAR" property="roles" />
-        <result column="dept_id" jdbcType="BIGINT" property="deptId" />
         <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
-        <result column="status" jdbcType="TINYINT" property="status" />
-        <association property="today" javaType="checkinDTO">
-            <result column="address" jdbcType="VARCHAR" property="address" />
-            <result column="date" jdbcType="VARCHAR" property="date" />
-            <result column="create_time" jdbcType="VARCHAR" property="createTime" />
-            <result column="status" jdbcType="VARCHAR" property="status" />
-            <result column="risk" jdbcType="VARCHAR" property="risk" />
-        </association>
     </resultMap>
     
     <select id="isRootExist" resultType="boolean">
@@ -39,19 +30,9 @@
     </select>
     
     <select id="selectById" resultMap="baseResultMap">
-        select user.id as id, open_id, nickname, avatar_url, name, sex, tel, roles, root, dept_id, address,
-               ifnull(dept_name, '') as dept_name,
-               cast(checkin.date as char) as date,
-               date_format(checkin.create_time, '%H:%i') as create_time,
-               if(checkin.status = 1, '正常', '迟到') as status,
-               case
-                   when checkin.risk = 1 then '低风险'
-                   when checkin.risk = 2 then '中风险'
-                   when checkin.risk = 3 then '高风险'
-               end as risk
+        select user.id as id, open_id, nickname, avatar_url, name, sex, tel, roles, ifnull(dept_name, '') as dept_name
         from user
         left join dept on user.dept_id = dept.id
-        left join checkin on user.id = checkin.user_id and checkin.date = current_date
         where user.id = #{userId} and user.status = 1;
     </select>
 </mapper>

@@ -21,4 +21,5 @@
 `docker run -d -it -p 3000:3000 -v /usr/local/python/demo:/usr/local/demo --name face-recognition face`  
 `docker exec -it face-recognition bash`  
 `nohup python3 -c "from app import app;" > log.out 2>&1 &`  
-`用到的mysql函数:if,ifnull,json_contains,date_format,current_date,case when then,cast`
+`用到的mysql函数:if,ifnull,json_contains,date_format,current_date,case when then,cast`  
+`A.isBeforeOrEquals(B)等价于A.compareTo(B)<=0"`

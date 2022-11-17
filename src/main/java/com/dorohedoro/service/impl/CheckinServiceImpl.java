@@ -10,6 +10,7 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dorohedoro.config.Constants;
 import com.dorohedoro.config.Properties;
 import com.dorohedoro.domain.Checkin;
@@ -83,7 +84,7 @@ public class CheckinServiceImpl implements ICheckinService {
             return "超出上班考勤结束时间";
         }
 
-        return checkinMapper.selectToday(userId, attendanceStartTime, attendanceEndTime) == null ? "可以签到" : "已签到";
+        return checkinMapper.selectByCreateTime(userId, attendanceStartTime, attendanceEndTime) == null ? "可以签到" : "已签到";
     }
 
     @Override
@@ -154,8 +155,23 @@ public class CheckinServiceImpl implements ICheckinService {
     }
 
     @Override
-    public List<CheckinDTO> getWeekStatus(Long userId, DateTime monday, DateTime sunday) {
+    public CheckinDTO getToday(Long userId) {
+        return checkinMapper.selectToday(userId);
+    }
+
+    @Override
+    public List<CheckinDTO> getWeek(Long userId) {
         log.debug("统计一周的签到状态");
+
+        DateTime monday = DateUtil.beginOfWeek(DateUtil.date());
+        DateTime sunday = DateUtil.endOfWeek(DateUtil.date());
+        User user = userMapper.selectOne(Wrappers.<User>lambdaQuery().eq(User::getId, userId));
+        DateTime hiredate = DateUtil.parse(user.getHiredate());
+        if (monday.isBefore(hiredate)) {
+            log.debug("员工在本周中入职 => 入职日期要做为统计的开始时间");
+            monday = hiredate;
+        }
+
         List<Checkin> checkins = checkinMapper.selectByDate(userId, monday, sunday);
         List<String> workdays = workdayMapper.selectByDate(monday, sunday);
         List<String> holidays = holidayMapper.selectByDate(monday, sunday);
@@ -166,8 +182,8 @@ public class CheckinServiceImpl implements ICheckinService {
             String date = day.toString("yyyy-MM-dd");
             String status = "";
             String type = Constants.WORKDAY;
-            if (day.compareTo(DateUtil.date()) <= 0) {
-                log.debug("该日{}在当前日期之前", day.toString());
+            if (day.isBeforeOrEquals(DateUtil.date())) {
+                log.debug("该日{}为当前日期或在当前日期之前", day.toString());
                 log.debug("检查该日是否为工作日");
                 log.debug("是工作日 => 查询该日的签到记录,没有则记为缺勤");
 
@@ -192,7 +208,7 @@ public class CheckinServiceImpl implements ICheckinService {
 
                     DateTime attendanceEndTime = DateUtil.parse(DateUtil.today() + " " + Constants.attendanceEndTime);
                     if (date.equals(DateUtil.today()) && DateUtil.date().isBefore(attendanceEndTime) && dayCheckin == null) {
-                        log.debug("该日是今日,且当前统计时间{}在考勤结束时间{}之前,且没有签到记录 => 签到状态不应该记为缺勤", 
+                        log.debug("该日是今日,且当前统计时间{}在考勤结束时间{}之前(也即今日的考勤还没有结束),且没有签到记录 => 签到状态不应该记为缺勤", 
                                 DateUtil.date().toString(), attendanceEndTime.toString());
                         status = "";
                     }
@@ -207,6 +223,11 @@ public class CheckinServiceImpl implements ICheckinService {
             checkinStatus.add(checkinDTO);
         });
         return checkinStatus;
+    }
+
+    @Override
+    public int getDays(Long userId) {
+        return checkinMapper.selectDays(userId);
     }
 
     private void uploadImgAndFaceModel(String imgPath, String faceModel) {
