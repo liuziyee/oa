@@ -13,5 +13,5 @@ public interface ICheckinService {
 
     void createFaceModel(Long userId, String imgPath);
 
-    List<CheckinDTO> getWeekRecords(Long userId, DateTime monday, DateTime sunday);
+    List<CheckinDTO> getWeekStatus(Long userId, DateTime monday, DateTime sunday);
 }

@@ -154,7 +154,7 @@ public class CheckinServiceImpl implements ICheckinService {
     }
 
     @Override
-    public List<CheckinDTO> getWeekRecords(Long userId, DateTime monday, DateTime sunday) {
+    public List<CheckinDTO> getWeekStatus(Long userId, DateTime monday, DateTime sunday) {
         log.debug("统计一周的签到状态");
         List<Checkin> checkins = checkinMapper.selectByDate(userId, monday, sunday);
         List<String> workdays = workdayMapper.selectByDate(monday, sunday);
