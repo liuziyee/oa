@@ -183,18 +183,17 @@ public class CheckinServiceImpl implements ICheckinService {
 
                 if (type.equals(Constants.WORKDAY)) {
                     status = "缺勤";
-                    boolean hasCheckin = false;
                     Checkin dayCheckin = checkins.stream().filter(item -> item.getDate().equals(date)).findAny()
                             .orElse(null);
                     if (dayCheckin != null) {
                         log.debug("该天有签到记录");
-                        hasCheckin = true;
                         status = Enums.CheckinStatus.code2Desc(dayCheckin.getStatus());
                     }
 
                     DateTime attendanceEndTime = DateUtil.parse(DateUtil.today() + " " + Constants.attendanceEndTime);
-                    if (date.equals(DateUtil.today()) && DateUtil.date().isBefore(attendanceEndTime) && !hasCheckin) {
-                        log.debug("该日是今日,且当前统计时间在考勤结束时间之前,且没有签到记录 => 签到状态不应该记为缺勤");
+                    if (date.equals(DateUtil.today()) && DateUtil.date().isBefore(attendanceEndTime) && dayCheckin == null) {
+                        log.debug("该日是今日,且当前统计时间{}在考勤结束时间{}之前,且没有签到记录 => 签到状态不应该记为缺勤", 
+                                DateUtil.date().toString(), attendanceEndTime.toString());
                         status = "";
                     }
                 }
