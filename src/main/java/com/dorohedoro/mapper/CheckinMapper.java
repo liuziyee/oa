@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface CheckinMapper extends BaseMapper<Checkin> {
 
-    Long selectToday(@Param("userId") Long userId, @Param("start") DateTime start, @Param("end") DateTime end);
-    // 查询签到天数
+    Long selectToday(@Param("userId") Long userId, @Param("start") DateTime startTime, @Param("end") DateTime endTime);
+    
     int selectDays(Long userId);
-    // 查询周签到记录
-    List<Checkin> selectWeek(@Param("userId") Long userId, @Param("start") DateTime start, @Param("end") DateTime end);
+    
+    List<Checkin> selectByDate(@Param("userId") Long userId, @Param("start") DateTime startDate, @Param("end") DateTime endDate);
 }

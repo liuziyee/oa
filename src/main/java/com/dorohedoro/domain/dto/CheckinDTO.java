@@ -31,7 +31,7 @@ public class CheckinDTO {
     @ApiModelProperty("签到状态")
     private String status;
     
-    @ApiModelProperty("疫情风险等级")
+    @ApiModelProperty("疫情风险")
     private String risk;
     
     @ApiModelProperty("工作日或节假日")

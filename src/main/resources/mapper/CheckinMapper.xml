@@ -4,7 +4,7 @@
 
     <resultMap id="baseResultMap" type="checkin">
         <result column="date" jdbcType="VARCHAR" property="date" />
-        <result column="status_desc" jdbcType="VARCHAR" property="statusDesc" />
+        <result column="status" jdbcType="BIGINT" property="status" />
         <result column="create_time" jdbcType="DATE" property="createTime" />
     </resultMap>
     
@@ -16,8 +16,8 @@
         select count(*) as days from checkin where user_id = #{userId};
     </select>
     
-    <select id="selectWeek" resultMap="baseResultMap">
-        select cast(date as char) as date, if(status = 1, "正常", "迟到") as status_desc
+    <select id="selectByDate" resultMap="baseResultMap">
+        select date, status
         from checkin
         where user_id = #{userId} and date between #{start} and #{end}
     </select>

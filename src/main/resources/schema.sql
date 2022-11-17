@@ -211,7 +211,7 @@ CREATE TABLE `checkin`  (
   `city` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '城市',
   `district` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '区划',
   `status` tinyint(3) UNSIGNED NOT NULL COMMENT '考勤结果(0:缺勤;1:正常;2:迟到)',
-  `risk` int(255) UNSIGNED NULL DEFAULT 0 COMMENT '风险等级(1:低风险;2:中风险;3:高风险'),
+  `risk` int(255) UNSIGNED NULL DEFAULT 0 COMMENT '疫情风险(1:低风险;2:中风险;3:高风险'),
   `date` date NOT NULL COMMENT '签到日期',
   `create_time` datetime(0) NOT NULL COMMENT '签到时间',
   PRIMARY KEY (`id`) USING BTREE,
