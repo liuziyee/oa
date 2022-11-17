@@ -33,8 +33,4 @@ public class Checkin implements Serializable {
     private String date;
     
     private Date createTime;
-    
-    private String statusDesc;
-    private String riskDesc;
-    private String checkinTime;
 }

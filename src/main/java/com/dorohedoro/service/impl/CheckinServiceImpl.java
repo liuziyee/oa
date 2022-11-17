@@ -36,23 +36,20 @@ public class CheckinServiceImpl implements ICheckinService {
     private final CheckinMapper checkinMapper;
     private final FaceModelMapper faceModelMapper;
     private final UserMapper userMapper;
-    private final CityMapper cityMapper;
     private final Properties properties;
     private final MailTask mailTask;
 
     @Override
     public String check(Long userId, Long distance) {
-        log.debug("检查当天是否为工作日");
+        log.debug("检查今日是否为工作日:1.默认周一到周五为工作日,周末为节假日;2.查询今日是否为特殊的工作日或节假日");
         log.debug("检查签到地点是否在公司附近");
         log.debug("检查当前时间点是否在签到时间范围内");
-        log.debug("查询当天是否有签到记录");
+        log.debug("查询今日是否有签到记录");
         
-        log.debug("默认周一到周五为工作日,周末为节假日");
         String today = Constants.WORKDAY;
         if (DateUtil.date().isWeekend()) {
             today = Constants.HOLIDAY;
         }
-        log.debug("查询当天是否为工作日或节假日");
         boolean isWorkday = workdayMapper.selectToday() != null;
         boolean isHoliday = holidayMapper.selectToday() != null;
         if (isWorkday) {
@@ -86,7 +83,7 @@ public class CheckinServiceImpl implements ICheckinService {
 
     @Override
     public void checkin(CheckinDTO checkinDTO) {
-        log.debug("确定签到状态(正常或迟到),旷工不会生成签到记录");
+        log.debug("确定签到状态(正常或迟到),缺勤不会生成签到记录");
         log.debug("上传签到照片和人脸模型");
         log.debug("匹配 => 查询疫情风险等级(高风险 => 发送告警邮件),生成签到记录");
         
