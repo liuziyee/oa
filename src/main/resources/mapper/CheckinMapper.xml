@@ -23,7 +23,7 @@
     </select>
     
     <select id="selectToday" resultType="checkinDTO">
-        select address, date, date_format(create_time, '%H:%i') as create_time, if(status = 1, '正常', '迟到') as status,
+        select address, date, date_format(checkin.create_time, '%H:%i') as create_time, if(checkin.status = 1, '正常', '迟到') as status,
                case when risk = 1 then '低风险' when risk = 2 then '中风险' when risk = 3 then '高风险' end as risk
         from user
         join checkin on user.id = checkin.user_id and checkin.date = current_date

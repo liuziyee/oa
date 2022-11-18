@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.dorohedoro.domain.dto.CheckinDTO;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -44,6 +43,6 @@ public class User implements Serializable {
     @TableField(fill = FieldFill.INSERT, select = false)
     private Date createTime;
     
-    private CheckinDTO today; // 今日签到记录
+    @TableField(exist = false) // 不是表字段
     private String deptName;
 }

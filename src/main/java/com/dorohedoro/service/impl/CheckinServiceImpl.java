@@ -99,7 +99,7 @@ public class CheckinServiceImpl implements ICheckinService {
 
         int status = Enums.CheckinStatus.NORMAL.getCode();
         if (checkinTime.compareTo(attendanceTime) > 0 && checkinTime.compareTo(attendanceEndTime) <= 0) {
-            status = Enums.CheckinStatus.ABSENT.getCode();
+            status = Enums.CheckinStatus.LATE.getCode();
         }
 
         Long userId = checkinDTO.getUserId();
@@ -125,12 +125,12 @@ public class CheckinServiceImpl implements ICheckinService {
         }
 
         Checkin checkin = new Checkin();
+        BeanUtils.copyProperties(checkinDTO, checkin);
         checkin.setUserId(userId);
         checkin.setStatus(status);
         checkin.setRisk(risk);
         checkin.setDate(DateUtil.today());
         checkin.setCreateTime(checkinTime);
-        BeanUtils.copyProperties(checkinDTO, checkin);
         checkinMapper.insert(checkin);
     }
 
@@ -162,13 +162,17 @@ public class CheckinServiceImpl implements ICheckinService {
     @Override
     public List<CheckinDTO> getWeek(Long userId) {
         log.debug("统计一周的签到状态");
+        log.debug("默认统计本周一到周日,如果员工在本周中入职,入职日期要做为统计的开始时间");
+        log.debug("该日为工作日,且该日为当前日期或在当前日期之前");
+        log.debug("查询该日的签到记录,没有则记为缺勤");
+        log.debug("该日是今日,且当前统计时间在考勤结束时间之前(也即今日的考勤还没有结束),且没有签到记录 => 签到状态不应该记为缺勤");
 
         DateTime monday = DateUtil.beginOfWeek(DateUtil.date());
         DateTime sunday = DateUtil.endOfWeek(DateUtil.date());
         User user = userMapper.selectOne(Wrappers.<User>lambdaQuery().eq(User::getId, userId));
         DateTime hiredate = DateUtil.parse(user.getHiredate());
         if (monday.isBefore(hiredate)) {
-            log.debug("员工在本周中入职 => 入职日期要做为统计的开始时间");
+            log.debug("员工{}入职日期: {}", user.getName(), user.getHiredate());
             monday = hiredate;
         }
 
@@ -182,38 +186,31 @@ public class CheckinServiceImpl implements ICheckinService {
             String date = day.toString("yyyy-MM-dd");
             String status = "";
             String type = Constants.WORKDAY;
-            if (day.isBeforeOrEquals(DateUtil.date())) {
-                log.debug("该日{}为当前日期或在当前日期之前", day.toString());
-                log.debug("检查该日是否为工作日");
-                log.debug("是工作日 => 查询该日的签到记录,没有则记为缺勤");
-
-                if (day.isWeekend()) {
-                    type = Constants.HOLIDAY;
+            if (day.isWeekend()) {
+                type = Constants.HOLIDAY;
+            }
+            if (workdays != null && workdays.contains(date)) {
+                type = Constants.WORKDAY;
+            }
+            if (holidays != null && holidays.contains(date)) {
+                type = Constants.HOLIDAY;
+            }
+            
+            if (type.equals(Constants.WORKDAY) && day.isBeforeOrEquals(DateUtil.date())) {
+                status = "缺勤";
+                Checkin dayCheckin = checkins.stream().filter(item -> item.getDate().equals(date)).findAny()
+                        .orElse(null);
+                if (dayCheckin != null) {
+                    status = Enums.CheckinStatus.code2Desc(dayCheckin.getStatus());
                 }
-                if (workdays != null && workdays.contains(date)) {
-                    type = Constants.WORKDAY;
-                }
-                if (holidays != null && holidays.contains(date)) {
-                    type = Constants.HOLIDAY;
-                }
 
-                if (type.equals(Constants.WORKDAY)) {
-                    status = "缺勤";
-                    Checkin dayCheckin = checkins.stream().filter(item -> item.getDate().equals(date)).findAny()
-                            .orElse(null);
-                    if (dayCheckin != null) {
-                        log.debug("该天有签到记录");
-                        status = Enums.CheckinStatus.code2Desc(dayCheckin.getStatus());
-                    }
-
-                    DateTime attendanceEndTime = DateUtil.parse(DateUtil.today() + " " + Constants.attendanceEndTime);
-                    if (date.equals(DateUtil.today()) && DateUtil.date().isBefore(attendanceEndTime) && dayCheckin == null) {
-                        log.debug("该日是今日,且当前统计时间{}在考勤结束时间{}之前(也即今日的考勤还没有结束),且没有签到记录 => 签到状态不应该记为缺勤", 
-                                DateUtil.date().toString(), attendanceEndTime.toString());
-                        status = "";
-                    }
+                DateTime attendanceEndTime = DateUtil.parse(DateUtil.today() + " " + Constants.attendanceEndTime);
+                if (date.equals(DateUtil.today()) && DateUtil.date().isBefore(attendanceEndTime) && dayCheckin == null) {
+                    log.debug("当前统计时间: {}, 考勤结束时间: {}", DateUtil.date().toString(), attendanceEndTime.toString());
+                    status = "";
                 }
             }
+            log.debug("{} {} {} {}", date, day.dayOfWeekEnum().toChinese("周"), type, status);
 
             CheckinDTO checkinDTO = new CheckinDTO();
             checkinDTO.setStatus(status);

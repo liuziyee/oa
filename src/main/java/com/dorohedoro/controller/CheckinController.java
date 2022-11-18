@@ -4,9 +4,11 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.io.FileUtil;
 import com.dorohedoro.config.Constants;
 import com.dorohedoro.config.Properties;
+import com.dorohedoro.domain.User;
 import com.dorohedoro.domain.dto.CheckinDTO;
 import com.dorohedoro.problem.ServerProblem;
 import com.dorohedoro.service.ICheckinService;
+import com.dorohedoro.service.IUserService;
 import com.dorohedoro.util.JwtUtil;
 import com.dorohedoro.util.R;
 import io.swagger.annotations.Api;
@@ -32,7 +34,7 @@ public class CheckinController {
     private final ICheckinService checkinService;
     private final JwtUtil jwtUtil;
     private final Properties properties;
-    private final Constants constants;
+    private final IUserService userService;
 
     @GetMapping("/check")
     @ApiOperation("检查当前时间点是否可以签到")
@@ -79,10 +81,13 @@ public class CheckinController {
     public R getTodayAndWeek(@RequestHeader("Authorization") String accessToken) {
         Long userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
         Map<String, Object> map = new HashMap<>();
+
+        User user = userService.getUserDetail(userId).orElse(null);
         CheckinDTO today = checkinService.getToday(userId);
         List<CheckinDTO> week = checkinService.getWeek(userId);
         int days = checkinService.getDays(userId);
-        
+
+        map.put("user", user);
         map.put("today", today);
         map.put("week", week);
         map.put("days", days);

@@ -19,8 +19,4 @@ public class R<T> {
     public static <T> R<T> ok(T data, String msg) {
         return R.<T>builder().code(HttpStatus.HTTP_OK).msg(msg).data(data).build();
     }
-    
-    public static R error(int code, String msg) {
-        return R.builder().code(code).msg(msg).build();
-    }
 }
