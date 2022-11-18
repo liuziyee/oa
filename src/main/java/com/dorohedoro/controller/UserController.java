@@ -1,5 +1,7 @@
 package com.dorohedoro.controller;
 
+import cn.hutool.core.convert.Convert;
+import com.dorohedoro.domain.User;
 import com.dorohedoro.domain.dto.LoginDTO;
 import com.dorohedoro.domain.dto.RegisterDTO;
 import com.dorohedoro.service.IUserService;
@@ -11,10 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Set;
@@ -56,5 +55,13 @@ public class UserController {
 
         return R.<Set<String>>builder().code(HttpStatus.OK.value())
                 .accessToken(accessToken).data(permissions).build();
+    }
+
+    @GetMapping("/detail")
+    @ApiOperation("查询用户信息")
+    public R getDetail(@RequestHeader("Authorization") String accessToken) {
+        Long userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
+        User user = userService.getDetail(userId).orElse(null);
+        return R.ok(user, null);
     }
 }

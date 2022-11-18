@@ -30,8 +30,8 @@ public class DefaultRealm extends AuthorizingRealm {
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        User userDetail = (User) principals.getPrimaryPrincipal();
-        Set<String> permissions = userService.getPermissions(userDetail.getId());
+        User user = (User) principals.getPrimaryPrincipal();
+        Set<String> permissions = userService.getPermissions(user.getId());
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
         info.setStringPermissions(permissions);
         return info;
@@ -42,8 +42,8 @@ public class DefaultRealm extends AuthorizingRealm {
         // 这里的访问令牌是从请求头获取的,有可能过期
         String accessToken = (String) token.getCredentials();
         Long userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
-        User userDetail = userService.getUserDetail(userId).orElseThrow(() -> new LockedAccountException("账号已冻结"));
-        SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(userDetail, accessToken, getName());
+        User user = userService.getDetail(userId).orElseThrow(() -> new LockedAccountException("账号已冻结"));
+        SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user, accessToken, getName());
         return info;
     }
 }

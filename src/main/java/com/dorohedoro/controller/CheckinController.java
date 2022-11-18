@@ -82,7 +82,7 @@ public class CheckinController {
         Long userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
         Map<String, Object> map = new HashMap<>();
 
-        User user = userService.getUserDetail(userId).orElse(null);
+        User user = userService.getDetail(userId).orElse(null);
         CheckinDTO today = checkinService.getToday(userId);
         List<CheckinDTO> week = checkinService.getWeek(userId);
         int days = checkinService.getDays(userId);

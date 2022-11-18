@@ -14,5 +14,5 @@ public interface IUserService {
 
     Long login(String code);
 
-    Optional<User> getUserDetail(Long userId);
+    Optional<User> getDetail(Long userId);
 }

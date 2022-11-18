@@ -17,6 +17,7 @@ import com.dorohedoro.domain.Checkin;
 import com.dorohedoro.domain.FaceModel;
 import com.dorohedoro.domain.User;
 import com.dorohedoro.domain.dto.CheckinDTO;
+import com.dorohedoro.domain.dto.GetMonthDTO;
 import com.dorohedoro.mapper.*;
 import com.dorohedoro.problem.ServerProblem;
 import com.dorohedoro.service.ICheckinService;
@@ -161,64 +162,42 @@ public class CheckinServiceImpl implements ICheckinService {
 
     @Override
     public List<CheckinDTO> getWeek(Long userId) {
-        log.debug("统计一周的签到状态");
-        log.debug("默认统计本周一到周日,如果员工在本周中入职,入职日期要做为统计的开始时间");
-        log.debug("该日为工作日,且该日为当前日期或在当前日期之前");
-        log.debug("查询该日的签到记录,没有则记为缺勤");
-        log.debug("该日是今日,且当前统计时间在考勤结束时间之前(也即今日的考勤还没有结束),且没有签到记录 => 签到状态不应该记为缺勤");
+        log.debug("统计本周的签到数据(入职日期之前不做统计)");
+        log.debug("默认统计本周一到周日,如果员工在本周入职,入职日期要做为统计的开始日期");
 
-        DateTime monday = DateUtil.beginOfWeek(DateUtil.date());
-        DateTime sunday = DateUtil.endOfWeek(DateUtil.date());
+        DateTime monday = DateUtil.beginOfWeek(DateUtil.date()); // 本周一
+        DateTime sunday = DateUtil.endOfWeek(DateUtil.date()); // 本周日
         User user = userMapper.selectOne(Wrappers.<User>lambdaQuery().eq(User::getId, userId));
         DateTime hiredate = DateUtil.parse(user.getHiredate());
-        if (monday.isBefore(hiredate)) {
-            log.debug("员工{}入职日期: {}", user.getName(), user.getHiredate());
+        if (hiredate.isAfter(monday)) {
+            log.debug("入职时间在本周一之后,说明员工在本周入职,入职日期要做为统计的开始日期");
             monday = hiredate;
         }
+        return getPeriod(userId, monday, sunday);
+    }
 
-        List<Checkin> checkins = checkinMapper.selectByDate(userId, monday, sunday);
-        List<String> workdays = workdayMapper.selectByDate(monday, sunday);
-        List<String> holidays = holidayMapper.selectByDate(monday, sunday);
-        List<CheckinDTO> checkinStatus = new ArrayList<>();
+    @Override
+    public List<CheckinDTO> getMonth(Long userId, GetMonthDTO getMonthDTO) {
+        log.debug("查询某月的签到数据(入职日期之前不做统计)");
+        log.debug("默认统计该月第一天到最后一天,如果员工在本月入职,入职日期要做为统计的开始日期");
 
-        DateRange weekRange = DateUtil.range(monday, sunday, DateField.DAY_OF_MONTH); // 以天做为分割单位
-        weekRange.forEach(day -> {
-            String date = day.toString("yyyy-MM-dd");
-            String status = "";
-            String type = Constants.WORKDAY;
-            if (day.isWeekend()) {
-                type = Constants.HOLIDAY;
-            }
-            if (workdays != null && workdays.contains(date)) {
-                type = Constants.WORKDAY;
-            }
-            if (holidays != null && holidays.contains(date)) {
-                type = Constants.HOLIDAY;
-            }
-            
-            if (type.equals(Constants.WORKDAY) && day.isBeforeOrEquals(DateUtil.date())) {
-                status = "缺勤";
-                Checkin dayCheckin = checkins.stream().filter(item -> item.getDate().equals(date)).findAny()
-                        .orElse(null);
-                if (dayCheckin != null) {
-                    status = Enums.CheckinStatus.code2Desc(dayCheckin.getStatus());
-                }
+        Integer year = getMonthDTO.getYear();
+        Integer month = getMonthDTO.getMonth();
+        DateTime monthStart = DateUtil.parse(String.format("{}-{}-01", 
+                year, month < 10 ? "0" + month : month.toString())); // 该月第一天
+        DateTime monthEnd = DateUtil.endOfMonth(monthStart); // 该月最后一天
 
-                DateTime attendanceEndTime = DateUtil.parse(DateUtil.today() + " " + Constants.attendanceEndTime);
-                if (date.equals(DateUtil.today()) && DateUtil.date().isBefore(attendanceEndTime) && dayCheckin == null) {
-                    status = "";
-                }
-            }
-            log.debug("{} {} {} {}", date, day.dayOfWeekEnum().toChinese("周"), type, status);
-
-            CheckinDTO checkinDTO = new CheckinDTO();
-            checkinDTO.setStatus(status);
-            checkinDTO.setDate(date);
-            checkinDTO.setType(type);
-            checkinDTO.setDay(day.dayOfWeekEnum().toChinese("周"));
-            checkinStatus.add(checkinDTO);
-        });
-        return checkinStatus;
+        User user = userMapper.selectOne(Wrappers.<User>lambdaQuery().eq(User::getId, userId));
+        DateTime hiredate = DateUtil.parse(user.getHiredate());
+        if (monthStart.isBefore(DateUtil.beginOfMonth(hiredate))) {
+            log.debug("该月第一天在入职月份的第一天之前,无签到数据");
+            throw new ServerProblem("无签到数据");
+        }
+        if (monthStart.isBefore(hiredate)) {
+            log.debug("该月第一天在入职日期之前,说明员工在该月入职,入职日期要做为统计的开始时间");
+            monthStart = hiredate;
+        }
+        return getPeriod(userId, monthStart, monthEnd);
     }
 
     @Override
@@ -252,5 +231,56 @@ public class CheckinServiceImpl implements ICheckinService {
     private Integer getRisk(String city, String district) {
         log.debug("这里用本地宝查询疫情风险行不通");
         return Enums.Risk.HIGH.getCode();
+    }
+
+    private List<CheckinDTO> getPeriod(Long userId, DateTime startDate, DateTime endDate) {
+        log.debug("统计给定日期范围内的签到数据");
+        log.debug("该日为工作日,且该日为当前日期或在当前日期之前");
+        log.debug("查询该日的签到记录,没有则记为缺勤");
+        log.debug("该日是今日,且当前统计时间在考勤结束时间之前(也即今日的考勤还没有结束),且没有签到记录 => 签到状态不应该记为缺勤");
+        
+        List<Checkin> checkins = checkinMapper.selectByDate(userId, startDate, endDate);
+        List<String> workdays = workdayMapper.selectByDate(startDate, endDate);
+        List<String> holidays = holidayMapper.selectByDate(startDate, endDate);
+        List<CheckinDTO> res = new ArrayList<>();
+
+        DateRange weekRange = DateUtil.range(startDate, endDate, DateField.DAY_OF_MONTH); // 以天做为分割单位
+        weekRange.forEach(day -> {
+            String date = day.toString("yyyy-MM-dd");
+            String status = "";
+            String type = Constants.WORKDAY;
+            if (day.isWeekend()) {
+                type = Constants.HOLIDAY;
+            }
+            if (workdays != null && workdays.contains(date)) {
+                type = Constants.WORKDAY;
+            }
+            if (holidays != null && holidays.contains(date)) {
+                type = Constants.HOLIDAY;
+            }
+
+            if (type.equals(Constants.WORKDAY) && day.isBeforeOrEquals(DateUtil.date())) {
+                status = "缺勤";
+                Checkin dayCheckin = checkins.stream().filter(item -> item.getDate().equals(date)).findAny()
+                        .orElse(null);
+                if (dayCheckin != null) {
+                    status = Enums.CheckinStatus.code2Desc(dayCheckin.getStatus());
+                }
+
+                DateTime attendanceEndTime = DateUtil.parse(DateUtil.today() + " " + Constants.attendanceEndTime);
+                if (date.equals(DateUtil.today()) && DateUtil.date().isBefore(attendanceEndTime) && dayCheckin == null) {
+                    status = "";
+                }
+            }
+            log.debug("{} {} {} {}", date, day.dayOfWeekEnum().toChinese("周"), type, status);
+
+            CheckinDTO checkinDTO = new CheckinDTO();
+            checkinDTO.setStatus(status);
+            checkinDTO.setDate(date);
+            checkinDTO.setType(type);
+            checkinDTO.setDay(day.dayOfWeekEnum().toChinese("周"));
+            res.add(checkinDTO);
+        });
+        return res;
     }
 }

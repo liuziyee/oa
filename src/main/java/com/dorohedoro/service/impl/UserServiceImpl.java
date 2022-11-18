@@ -79,7 +79,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public Optional<User> getUserDetail(Long userId) {
+    public Optional<User> getDetail(Long userId) {
         return userMapper.selectById(userId);
     }
 }

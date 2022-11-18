@@ -1,6 +1,7 @@
 package com.dorohedoro.service;
 
 import com.dorohedoro.domain.dto.CheckinDTO;
+import com.dorohedoro.domain.dto.GetMonthDTO;
 
 import java.util.List;
 
@@ -16,5 +17,8 @@ public interface ICheckinService {
 
     List<CheckinDTO> getWeek(Long userId);
 
+    List<CheckinDTO> getMonth(Long userId, GetMonthDTO getMonthDTO);
+    
     int getDays(Long userId);
+
 }
