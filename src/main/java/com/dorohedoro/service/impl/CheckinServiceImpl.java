@@ -206,7 +206,6 @@ public class CheckinServiceImpl implements ICheckinService {
 
                 DateTime attendanceEndTime = DateUtil.parse(DateUtil.today() + " " + Constants.attendanceEndTime);
                 if (date.equals(DateUtil.today()) && DateUtil.date().isBefore(attendanceEndTime) && dayCheckin == null) {
-                    log.debug("当前统计时间: {}, 考勤结束时间: {}", DateUtil.date().toString(), attendanceEndTime.toString());
                     status = "";
                 }
             }
