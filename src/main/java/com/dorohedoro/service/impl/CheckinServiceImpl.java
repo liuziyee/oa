@@ -183,8 +183,8 @@ public class CheckinServiceImpl implements ICheckinService {
 
         Integer year = getMonthDTO.getYear();
         Integer month = getMonthDTO.getMonth();
-        DateTime monthStart = DateUtil.parse(String.format("{}-{}-01", 
-                year, month < 10 ? "0" + month : month.toString())); // 该月第一天
+        DateTime monthStart = DateUtil.parse(StrUtil.format("{}-{}-01", 
+                year, month < 10 ? "0" + month : month)); // 该月第一天
         DateTime monthEnd = DateUtil.endOfMonth(monthStart); // 该月最后一天
 
         User user = userMapper.selectOne(Wrappers.<User>lambdaQuery().eq(User::getId, userId));
