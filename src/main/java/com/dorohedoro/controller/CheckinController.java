@@ -6,9 +6,11 @@ import com.dorohedoro.config.Constants;
 import com.dorohedoro.config.Properties;
 import com.dorohedoro.domain.User;
 import com.dorohedoro.domain.dto.CheckinDTO;
+import com.dorohedoro.domain.dto.GetMonthDTO;
 import com.dorohedoro.problem.ServerProblem;
 import com.dorohedoro.service.ICheckinService;
 import com.dorohedoro.service.IUserService;
+import com.dorohedoro.util.Enums;
 import com.dorohedoro.util.JwtUtil;
 import com.dorohedoro.util.R;
 import io.swagger.annotations.Api;
@@ -18,9 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -80,19 +82,40 @@ public class CheckinController {
     @ApiOperation("查询今日和本周的签到数据")
     public R getTodayAndWeek(@RequestHeader("Authorization") String accessToken) {
         Long userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
-        Map<String, Object> map = new HashMap<>();
 
         User user = userService.getDetail(userId).orElse(null);
         CheckinDTO today = checkinService.getToday(userId);
         List<CheckinDTO> week = checkinService.getWeek(userId);
         int days = checkinService.getDays(userId);
+        
+        Map<String, Object> map = Map.of("user", user, "today", today, "week", week, "days", days, 
+                "attendanceTime", Constants.attendanceTime, "closingTime", Constants.closingTime);
+        return R.ok(map, null);
+    }
 
-        map.put("user", user);
-        map.put("today", today);
-        map.put("week", week);
-        map.put("days", days);
-        map.put("attendanceTime", Constants.attendanceTime);
-        map.put("closingTime", Constants.closingTime);
+    @PostMapping("/month")
+    @ApiOperation("查询某月的签到数据")
+    public R getMonth(@Valid @RequestBody GetMonthDTO getMonthDTO, @RequestHeader("Authorization") String accessToken) {
+        Long userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
+        List<CheckinDTO> month = checkinService.getMonth(userId, getMonthDTO);
+        int normal = 0;
+        int late = 0;
+        int absent = 0;
+
+        for (CheckinDTO day : month) {
+            if (day.getStatus().equals(Enums.CheckinStatus.NORMAL.getDesc())) {
+                normal++;
+            }
+            if (day.getStatus().equals(Enums.CheckinStatus.LATE.getDesc())) {
+                late++;
+            }
+            if (day.getStatus().equals(Enums.CheckinStatus.ABSENT.getDesc())) {
+                absent++;
+            }
+        }
+
+        Map<String, Object> map = Map.of("month", month, "normal", normal, "late", late, 
+                "absent", absent);
         return R.ok(map, null);
     }
 

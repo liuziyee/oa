@@ -234,7 +234,7 @@ public class CheckinServiceImpl implements ICheckinService {
     }
 
     private List<CheckinDTO> getPeriod(Long userId, DateTime startDate, DateTime endDate) {
-        log.debug("统计给定日期范围内的签到数据");
+        log.debug("统计给定日期范围的签到数据");
         log.debug("该日为工作日,且该日为当前日期或在当前日期之前");
         log.debug("查询该日的签到记录,没有则记为缺勤");
         log.debug("该日是今日,且当前统计时间在考勤结束时间之前(也即今日的考勤还没有结束),且没有签到记录 => 签到状态不应该记为缺勤");

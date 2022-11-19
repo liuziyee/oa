@@ -22,7 +22,7 @@ public class WeChatUtil {
         map.put("secret", properties.getWechat().getAppSecret());
         map.put("js_code", code);
         map.put("grant_type", "authorization_code");
-
+        
         Map<String, Object> res = weChatService.code2Session(map);
         if (res.get("errcode") != null && !res.get("errcode").equals(0)) {
             throw new WeChatProblem(res.get("errmsg").toString());
