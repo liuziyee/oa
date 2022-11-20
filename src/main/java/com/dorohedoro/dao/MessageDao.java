@@ -1,4 +1,4 @@
-package com.dorohedoro.mapper;
+package com.dorohedoro.dao;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
@@ -35,6 +35,7 @@ public class MessageDao {
     }
     
     public List<Map> selectPage(Long userId, long skip, int size) {
+        log.debug("分页查询用户的消息推送记录");
         JSONObject json = new JSONObject();
         json.put("$toString", "$_id");
         Aggregation aggregation = Aggregation.newAggregation(
@@ -63,8 +64,8 @@ public class MessageDao {
         }).collect(toList());
     }
     
-    public Map selectById(String msgId) {
-        Map map = mongoTemplate.findById(msgId, HashMap.class, "message");
+    public Map selectById(String id) {
+        Map map = mongoTemplate.findById(id, HashMap.class, "message");
         DateTime createTime = DateUtil.offsetHour((Date) map.get("createTime"), -8);
         map.put("createTime", DateUtil.format(createTime, "yyyy-MM-dd HH:mm"));
         return map;
