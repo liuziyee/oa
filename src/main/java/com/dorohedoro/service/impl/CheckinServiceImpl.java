@@ -30,8 +30,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.StreamSupport;
+
+import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Service
@@ -242,10 +244,10 @@ public class CheckinServiceImpl implements ICheckinService {
         List<Checkin> checkins = checkinMapper.selectByDate(userId, startDate, endDate);
         List<String> workdays = workdayMapper.selectByDate(startDate, endDate);
         List<String> holidays = holidayMapper.selectByDate(startDate, endDate);
-        List<CheckinDTO> res = new ArrayList<>();
 
-        DateRange weekRange = DateUtil.range(startDate, endDate, DateField.DAY_OF_MONTH); // 以天做为分割单位
-        weekRange.forEach(day -> {
+        DateRange range = DateUtil.range(startDate, endDate, DateField.DAY_OF_MONTH); // 以天做为分割单位
+        log.debug("Iterable转为Stream流");
+        return StreamSupport.stream(range.spliterator(), false).map(day -> {
             String date = day.toString("yyyy-MM-dd");
             String status = "";
             String type = Constants.WORKDAY;
@@ -260,7 +262,7 @@ public class CheckinServiceImpl implements ICheckinService {
             }
 
             if (type.equals(Constants.WORKDAY) && day.isBeforeOrEquals(DateUtil.date())) {
-                status = "缺勤";
+                status = Enums.CheckinStatus.ABSENT.getDesc();
                 Checkin dayCheckin = checkins.stream().filter(item -> item.getDate().equals(date)).findAny()
                         .orElse(null);
                 if (dayCheckin != null) {
@@ -279,8 +281,7 @@ public class CheckinServiceImpl implements ICheckinService {
             checkinDTO.setDate(date);
             checkinDTO.setType(type);
             checkinDTO.setDay(day.dayOfWeekEnum().toChinese("周"));
-            res.add(checkinDTO);
-        });
-        return res;
+            return checkinDTO;
+        }).collect(toList());
     }
 }

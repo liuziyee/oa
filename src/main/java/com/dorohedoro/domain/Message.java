@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Data
-@Document("message") // 消息集合
+@Document("message")
 public class Message implements Serializable {
     
     @Id

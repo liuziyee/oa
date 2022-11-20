@@ -10,7 +10,6 @@ import com.dorohedoro.domain.dto.GetMonthDTO;
 import com.dorohedoro.problem.ServerProblem;
 import com.dorohedoro.service.ICheckinService;
 import com.dorohedoro.service.IUserService;
-import com.dorohedoro.util.Enums;
 import com.dorohedoro.util.JwtUtil;
 import com.dorohedoro.util.R;
 import io.swagger.annotations.Api;
@@ -98,21 +97,10 @@ public class CheckinController {
     public R getMonth(@Valid @RequestBody GetMonthDTO getMonthDTO, @RequestHeader("Authorization") String accessToken) {
         Long userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
         List<CheckinDTO> month = checkinService.getMonth(userId, getMonthDTO);
-        int normal = 0;
-        int late = 0;
-        int absent = 0;
 
-        for (CheckinDTO day : month) {
-            if (day.getStatus().equals(Enums.CheckinStatus.NORMAL.getDesc())) {
-                normal++;
-            }
-            if (day.getStatus().equals(Enums.CheckinStatus.LATE.getDesc())) {
-                late++;
-            }
-            if (day.getStatus().equals(Enums.CheckinStatus.ABSENT.getDesc())) {
-                absent++;
-            }
-        }
+        long normal = month.stream().filter(day -> day.getStatus().equals("正常")).count();
+        long late = month.stream().filter(day -> day.getStatus().equals("迟到")).count();
+        long absent = month.stream().filter(day -> day.getStatus().equals("缺勤")).count();
 
         Map<String, Object> map = Map.of("month", month, "normal", normal, "late", late, 
                 "absent", absent);

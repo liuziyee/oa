@@ -18,7 +18,7 @@ db.message_push_record.insert({
     isRead: false,
     isLast: true
 })
-// 查询用户收到的推送消息
+// 查询某一用户的消息推送记录
 db.message.aggregate([
     {
         $set: {
@@ -31,8 +31,8 @@ db.message.aggregate([
             from: "message_push_record",
             localField: "id",
             foreignField: "messageId",
-            // 一个消息一般对应多个推送记录(即一对多),连接查询到的推送记录会放入到push_records字段,存储为数组
-            // 指定了接收者ID的话,一个消息就对应一个推送记录(即一对一),只会有一个推送记录放入到这个字段
+            // 一个消息一般有多个推送记录(即一对多),推送记录会放入到push_records字段,存储为数组
+            // 指定了用户ID的话,一个消息就对应一个推送记录(即一对一),该用户的推送记录会放入到这个字段
             as: "push_records" 
         }
     },

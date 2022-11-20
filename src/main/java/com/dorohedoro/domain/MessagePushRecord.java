@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.io.Serializable;
 
 @Data
-@Document("message_push_record") // 消息推送记录集合
+@Document("message_push_record")
 public class MessagePushRecord implements Serializable {
     
     @Id
