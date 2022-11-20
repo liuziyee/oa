@@ -18,25 +18,24 @@ db.message_push_record.insert({
     isRead: false,
     isLast: true
 })
-// 查询某一用户的消息推送记录
-db.message.aggregate([
+// 查询用户的消息推送记录
+db.message_push_record.aggregate([
     {
         $set: {
-            "id": { $toString: "$_id" }
+            "msgId": { $toObjectId: "$messageId" } // string转为对象
         }
     },
     {
-        // 集合连接,可以理解为message join message_push_record on message.id = message_push_record.messageId
+        // 可以理解为message_push_record join message on message_push_record.messageId = message.id
         $lookup: {
-            from: "message_push_record",
-            localField: "id",
-            foreignField: "messageId",
-            // 一个消息一般有多个推送记录(即一对多),推送记录会放入到push_records字段,存储为数组
-            // 指定了用户ID的话,一个消息就对应一个推送记录(即一对一),该用户的推送记录会放入到这个字段
-            as: "push_records" 
+            from: "message",
+            localField: "msgId",
+            foreignField: "_id",
+            // 关联的message记录会放入到push_records字段,存储为数组
+            as: "messages" 
         }
     },
-    { $match: {"push_records.receiverId": 0} },
+    { $match: {receiverId: 0} },
     { $sort: {createTime: -1} },
     { $skip: 0 },
     { $limit: 50 }

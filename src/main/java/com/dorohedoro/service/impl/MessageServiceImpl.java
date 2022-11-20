@@ -24,13 +24,13 @@ public class MessageServiceImpl implements IMessageService {
     }
 
     @Override
-    public List<Map> getMsgPushRecords(Long userId, long skip, int size) {
-        return messageDao.selectPage(userId, skip, size);
+    public Map getMessage(String msgId) {
+        return messageDao.selectById(msgId);
     }
 
     @Override
-    public Map getMessage(String msgId) {
-        return messageDao.selectById(msgId);
+    public List<Map> getMsgPushRecords(Long userId, long skip, int size) {
+        return msgPushRecordDao.selectPage(userId, skip, size);
     }
 
     @Override

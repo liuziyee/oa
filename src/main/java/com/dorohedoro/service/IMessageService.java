@@ -10,10 +10,10 @@ public interface IMessageService {
 
     String createMessage(Message message);
 
+    Map getMessage(String msgId);
+    
     List<Map> getMsgPushRecords(Long userId, long skip, int size);
     
-    Map getMessage(String msgId);
-
     String createMsgPushRecord(MessagePushRecord messagePushRecord);
 
     long getUnreadMsgCount(Long userId);
