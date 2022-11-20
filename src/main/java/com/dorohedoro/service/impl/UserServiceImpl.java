@@ -39,6 +39,7 @@ public class UserServiceImpl implements IUserService {
             }
             log.debug("创建超级管理员账号,绑定openid");
             User root = new User();
+            root.setId(0L);
             root.setOpenId(openId);
             root.setRoles("[0]");
             root.setRoot(true);

@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Data
-@Document("message")
+@Document("message") // 消息集合
 public class Message implements Serializable {
     
     @Id
@@ -28,5 +28,5 @@ public class Message implements Serializable {
     private String msg;
     
     @Indexed
-    private Date createTime;
+    private Date createTime; // 推送时间
 }

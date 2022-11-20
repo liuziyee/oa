@@ -1,0 +1,41 @@
+use admin
+db.createUser({user:"root",pwd:"12345",roles:[{role:"root",db:"admin"}],mechanisms:["SCRAM-SHA-1"]})
+
+db.message.insert({
+    _id: ObjectId("600bea9ab5bafb311f147506"),
+    uuid: "bfcb7c47-5886-5127-ce285bc2322a",
+    senderId: 0,
+    senderAvatarUrl: "https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132",
+    senderName: "超级管理员",
+    msg: "helloworld",
+    createTime: ISODate("2022-01-23T17:21:30Z")
+})
+
+db.message_push_record.insert({
+    _id: ObjectId("600bea9ab5bafb311f1436f3"),
+    messageId: "600bea9ab5bafb311f147506",
+    receiverId: 0,
+    isRead: false,
+    isLast: true
+})
+
+db.message.aggregate([
+    {
+        $set: {
+            "id": { $toString: "$_id" }
+        }
+    },
+    {
+        $lookup: {
+            from: "message_push_record",
+            localField: "id",
+            foreignField: "messageId",
+            @as: "push_records字段接收消息的多条推送记录(数组)"
+            as: "push_records"
+        }
+    },
+    { $match: {"push_records.receiverId": 0} },
+    { $sort: {createTime: -1} },
+    { $skip: 0 },
+    { $limit: 50 }
+])
