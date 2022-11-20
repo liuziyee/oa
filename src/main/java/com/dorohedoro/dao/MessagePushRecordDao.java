@@ -48,19 +48,19 @@ public class MessagePushRecordDao {
         );
         List<HashMap> msgPushRecords = mongoTemplate.aggregate(aggregation, "message_push_record", HashMap.class)
                 .getMappedResults();
-        return msgPushRecords.stream().peek(map -> {
+        return msgPushRecords.stream().peek(msgPushRecord -> {
             log.debug("取出该条消息推送记录关联的消息记录,转为Map,合并两个Map");
-            Message message = ((List<Message>) map.get("messages")).get(0);
-            BeanUtil.beanToMap(message).forEach((k, v) -> {
+            Message message = ((List<Message>) msgPushRecord.get("messages")).get(0);
+            BeanUtil.beanToMap(message).forEach((key, value) -> {
                 log.debug("键_id会重复,这里保留消息推送记录的主键ID");
-                map.merge(k, v, (v1, v2) -> v1);
+                msgPushRecord.merge(key, value, (one, two) -> one);
             });
 
-            DateTime createTime = DateUtil.offsetHour((Date) map.get("createTime"), -8);
-            map.put("createTime", DateUtil.format(createTime, "yyyy/MM/dd"));
+            DateTime createTime = DateUtil.offsetHour((Date) msgPushRecord.get("createTime"), -8);
+            msgPushRecord.put("createTime", DateUtil.format(createTime, "yyyy/MM/dd"));
             if (DateUtil.today().equals(createTime.toDateStr())) {
                 log.debug("消息是在今日推送的");
-                map.put("createTime", DateUtil.format(createTime, "HH:mm"));
+                msgPushRecord.put("createTime", DateUtil.format(createTime, "HH:mm"));
             }
         }).collect(toList());
     }
