@@ -25,5 +25,4 @@
 `nohup python3 -c "from app import app;" > log.out 2>&1 &`  
 `用到的mysql函数:if,ifnull,json_contains,date_format,current_date,case when then,cast`  
 `A.isBeforeOrEquals(B)等价于A.compareTo(B)<=0`  
-`mongo message:消息集合 message_push_record:消息推送记录集合`  
-`message,message_push_record连接查询语句可以看看navicat上查询的结果来理解`
+`mongo message:消息集合 message_push_record:消息推送记录集合`
