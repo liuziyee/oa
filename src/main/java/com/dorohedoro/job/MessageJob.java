@@ -47,7 +47,7 @@ public class MessageJob {
                 GetResponse response = channel.basicGet(topic, false); // 拉取消息
                 if (response != null) {
                     String message = new String(response.getBody());
-                    log.debug("拉取到的推送消息正文:{}", message);
+                    log.debug("拉取到的推送消息:{}", message);
 
                     Map<String, Object> headers = response.getProps().getHeaders();
                     MessagePushRecord msgPushRecord = new MessagePushRecord();
