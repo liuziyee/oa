@@ -1,6 +1,8 @@
 package com.dorohedoro.config;
 
+import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
+import lombok.SneakyThrows;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -8,10 +10,11 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitConfig {
     
     @Bean
-    public ConnectionFactory factory() {
+    @SneakyThrows
+    public Channel channel() {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("192.168.1.4");
         factory.setPort(5672);
-        return factory;
+        return factory.newConnection().createChannel();
     }
 }

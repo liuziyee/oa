@@ -18,7 +18,7 @@ public class MessagePushRecord implements Serializable {
     private String messageId;
     
     @Indexed
-    private String receiverId;
+    private Long receiverId;
     
     @Indexed
     private Boolean isRead;

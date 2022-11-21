@@ -21,7 +21,7 @@ import com.dorohedoro.domain.dto.GetMonthDTO;
 import com.dorohedoro.mapper.*;
 import com.dorohedoro.problem.ServerProblem;
 import com.dorohedoro.service.ICheckinService;
-import com.dorohedoro.task.MailTask;
+import com.dorohedoro.job.MailJob;
 import com.dorohedoro.util.Enums;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -46,7 +46,7 @@ public class CheckinServiceImpl implements ICheckinService {
     private final FaceModelMapper faceModelMapper;
     private final UserMapper userMapper;
     private final Properties properties;
-    private final MailTask mailTask;
+    private final MailJob mailJob;
 
     @Override
     public String check(Long userId, Long distance) {
@@ -123,7 +123,7 @@ public class CheckinServiceImpl implements ICheckinService {
                 msg.setSubject("疫情告警");
                 msg.setText(StrUtil.format("{}员工{}于{}的位置信息为: {}, 属于疫情高风险地区",
                         user.getDeptName(), user.getName(), DateUtil.today(), address));
-                mailTask.run(msg);
+                mailJob.send(msg);
             }
         }
 

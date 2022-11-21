@@ -1,4 +1,4 @@
-package com.dorohedoro.task;
+package com.dorohedoro.job;
 
 import com.dorohedoro.config.Properties;
 import lombok.RequiredArgsConstructor;
@@ -9,13 +9,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class MailTask {
+public class MailJob {
 
     private final JavaMailSender mailSender;
     private final Properties properties;
     
     @Async
-    public void run(SimpleMailMessage msg) {
+    public void send(SimpleMailMessage msg) {
         String mailBox = properties.getMail().getSystem();
         msg.setFrom(mailBox);
         msg.setCc(mailBox);
