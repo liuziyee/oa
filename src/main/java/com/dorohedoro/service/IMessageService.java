@@ -1,7 +1,7 @@
 package com.dorohedoro.service;
 
-import com.dorohedoro.domain.Message;
-import com.dorohedoro.domain.MessagePushRecord;
+import com.dorohedoro.mongo.entity.Message;
+import com.dorohedoro.mongo.entity.MessagePushRecord;
 
 import java.util.List;
 import java.util.Map;

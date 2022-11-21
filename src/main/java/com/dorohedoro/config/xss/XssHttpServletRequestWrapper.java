@@ -99,7 +99,7 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
     @Override
     public Enumeration<String> getHeaders(String name) {
-        log.debug("要让@RequestHeader拿到的是截取后的请求头,要重写getHeaders()");
+        log.debug("要让@RequestHeader拿到的是访问令牌,要重写getHeaders()");
         Enumeration<String> enums = super.getHeaders(name);
         Vector<String> headers = new Vector<>();
         while (enums.hasMoreElements()) {

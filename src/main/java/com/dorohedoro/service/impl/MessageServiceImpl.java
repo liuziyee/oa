@@ -1,9 +1,9 @@
 package com.dorohedoro.service.impl;
 
-import com.dorohedoro.dao.MessageDao;
-import com.dorohedoro.dao.MessagePushRecordDao;
-import com.dorohedoro.domain.Message;
-import com.dorohedoro.domain.MessagePushRecord;
+import com.dorohedoro.mongo.dao.MessageDao;
+import com.dorohedoro.mongo.dao.MessagePushRecordDao;
+import com.dorohedoro.mongo.entity.Message;
+import com.dorohedoro.mongo.entity.MessagePushRecord;
 import com.dorohedoro.service.IMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -50,7 +50,7 @@ public class MessageServiceImpl implements IMessageService {
 
     @Override
     public long messageRead(String msgPushRecordId) {
-        return msgPushRecordDao.updateUnreadById(msgPushRecordId);
+        return msgPushRecordDao.updateIsReadById(msgPushRecordId);
     }
 
     @Override

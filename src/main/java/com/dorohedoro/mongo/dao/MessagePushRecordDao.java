@@ -1,11 +1,11 @@
-package com.dorohedoro.dao;
+package com.dorohedoro.mongo.dao;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.dorohedoro.domain.Message;
-import com.dorohedoro.domain.MessagePushRecord;
+import com.dorohedoro.mongo.entity.Message;
+import com.dorohedoro.mongo.entity.MessagePushRecord;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
@@ -79,7 +79,7 @@ public class MessagePushRecordDao {
         return mongoTemplate.updateMulti(query, update, "message_push_record").getModifiedCount();
     }
 
-    public long updateUnreadById(String id) {
+    public long updateIsReadById(String id) {
         log.debug("消息置为已读");
         Query query = Query.query(Criteria.where("_id").is(id));
         Update update = Update.update("isRead", true);

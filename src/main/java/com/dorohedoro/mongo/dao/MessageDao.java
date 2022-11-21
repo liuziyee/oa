@@ -1,8 +1,8 @@
-package com.dorohedoro.dao;
+package com.dorohedoro.mongo.dao;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
-import com.dorohedoro.domain.Message;
+import com.dorohedoro.mongo.entity.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;

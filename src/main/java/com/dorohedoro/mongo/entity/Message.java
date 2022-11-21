@@ -1,4 +1,4 @@
-package com.dorohedoro.domain;
+package com.dorohedoro.mongo.entity;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
