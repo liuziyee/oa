@@ -15,9 +15,6 @@ public class Message implements Serializable {
     @Id
     private String _id;
     
-    @Indexed(unique = true) // 唯一索引
-    private String uuid;
-    
     @Indexed
     private Long senderId;
     

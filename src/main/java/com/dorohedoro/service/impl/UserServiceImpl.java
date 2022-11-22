@@ -1,7 +1,6 @@
 package com.dorohedoro.service.impl;
 
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dorohedoro.domain.User;
 import com.dorohedoro.domain.dto.RegisterDTO;
@@ -56,7 +55,6 @@ public class UserServiceImpl implements IUserService {
             Message message = new Message();
             message.setSenderId(0L);
             message.setSenderName("通知");
-            message.setUuid(IdUtil.simpleUUID());
             message.setCreateTime(DateUtil.date());
             message.setMsg("你已注册为超级管理员,请及时更新你的个人信息");
             messageJob.send(userId.toString(), message);

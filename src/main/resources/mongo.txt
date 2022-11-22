@@ -3,7 +3,6 @@ db.createUser({user:"root",pwd:"12345",roles:[{role:"root",db:"admin"}],mechanis
 
 db.message.insert({
     _id: ObjectId("600bea9ab5bafb311f147506"),
-    uuid: "bfcb7c47-5886-5127-ce285bc2322a",
     senderId: 0,
     senderAvatarUrl: "https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132",
     senderName: "超级管理员",
@@ -13,6 +12,7 @@ db.message.insert({
 
 db.message_push_record.insert({
     _id: ObjectId("600bea9ab5bafb311f1436f3"),
+    uuid: "bfcb7c47-5886-5127-ce285bc2322a",
     messageId: "600bea9ab5bafb311f147506",
     receiverId: 0,
     isRead: false,

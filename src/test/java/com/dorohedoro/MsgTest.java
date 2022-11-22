@@ -1,7 +1,6 @@
 package com.dorohedoro;
 
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.IdUtil;
 import com.dorohedoro.mongo.entity.Message;
 import com.dorohedoro.mongo.entity.MessagePushRecord;
 import com.dorohedoro.service.IMessageService;
@@ -24,7 +23,6 @@ public class MsgTest {
     public void generateMsgPushRecords() {
         IntStream.range(0, 100).forEach(no -> {
             Message message = new Message();
-            message.setUuid(IdUtil.simpleUUID());
             message.setSenderId(0L);
             message.setSenderName("通知");
             message.setCreateTime(DateUtil.date());

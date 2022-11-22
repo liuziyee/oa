@@ -1,6 +1,7 @@
 package com.dorohedoro.job;
 
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.util.IdUtil;
 import com.dorohedoro.mongo.entity.Message;
 import com.dorohedoro.mongo.entity.MessagePushRecord;
 import com.dorohedoro.service.IMessageService;
@@ -13,6 +14,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
@@ -28,8 +30,9 @@ public class MessageJob {
         try {
             channel.queueDeclare(topic, true, false, false, null); // 声明队列,该队列会绑定到默认交换机
             String msgId = messageService.createMessage(message);
+            Map<String, Object> map = Map.of("msgId", msgId, "uuid", IdUtil.simpleUUID());
             AMQP.BasicProperties props = new AMQP.BasicProperties().builder()
-                    .headers(Map.of("msgId", msgId)).build();
+                    .headers(map).build();
             channel.basicPublish("", topic, props, message.getMsg().getBytes()); // 投递消息到默认交换机
         } catch (Throwable e) {
             log.error(e.getMessage(), e);
@@ -47,10 +50,12 @@ public class MessageJob {
                     Map<String, Object> headers = response.getProps().getHeaders();
                     MessagePushRecord msgPushRecord = new MessagePushRecord();
                     msgPushRecord.setMessageId(headers.get("msgId").toString());
+                    msgPushRecord.setUuid(headers.get("uuid").toString());
                     msgPushRecord.setReceiverId(Convert.toLong(topic));
                     msgPushRecord.setIsRead(false);
                     msgPushRecord.setIsLast(true);
                     messageService.createMsgPushRecord(msgPushRecord);
+                    TimeUnit.SECONDS.sleep(10);
                     channel.basicAck(response.getEnvelope().getDeliveryTag(), false); // 手动签收
                     continue;
                 }
