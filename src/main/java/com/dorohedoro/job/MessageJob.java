@@ -37,9 +37,8 @@ public class MessageJob {
     }
 
     @Async
-    public int receive(String topic) {
+    public void receive(String topic) {
         log.debug("拉取MQ消息,创建消息推送记录");
-        int count = 0;
         try {
             channel.queueDeclare(topic, true, false, false, null);
             while (true) {
@@ -53,7 +52,6 @@ public class MessageJob {
                     msgPushRecord.setIsLast(true);
                     messageService.createMsgPushRecord(msgPushRecord);
                     channel.basicAck(response.getEnvelope().getDeliveryTag(), false); // 手动签收
-                    count++;
                     continue;
                 }
                 break;
@@ -61,7 +59,6 @@ public class MessageJob {
         } catch (Throwable e) {
             log.error(e.getMessage(), e);
         }
-        return count;
     }
     
     @Async
