@@ -50,7 +50,7 @@ public class JwtFilter extends AuthenticatingFilter {
             log.debug("放行Options请求");
             return true;
         }
-        log.debug("该请求交给Shiro处理");
+        log.debug("请求路径: {} {}", req.getRequestURI(), req.getMethod());
         return false;
     }
 

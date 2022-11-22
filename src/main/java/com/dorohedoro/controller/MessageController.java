@@ -58,9 +58,9 @@ public class MessageController {
         return R.ok(messageService.deleteMsgPushRecord(id) == 1, null);
     }
     
-    @GetMapping("getLastAndUnread")
-    @ApiOperation("查询新接收消息数和未读消息数")
-    public R getLastAndUnread(@RequestHeader("Authorization") String accessToken) {
+    @GetMapping("refreshMsgPushRecords")
+    @ApiOperation("刷新消息推送记录")
+    public R refreshMsgPushRecords(@RequestHeader("Authorization") String accessToken) {
         Long userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
         messageJob.receive(userId.toString()); // 拉取MQ消息,刷新消息推送记录
         long last = messageService.getLastMsgCount(userId);

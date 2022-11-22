@@ -24,7 +24,7 @@ public class MessageJob {
 
     @Async
     public void send(String topic, Message message) {
-        log.debug("创建推送消息,发送MQ消息,该MQ消息用于创建消息推送记录");
+        log.debug("创建推送消息,投递MQ消息,该MQ消息用于创建消息推送记录");
         try {
             channel.queueDeclare(topic, true, false, false, null); // 声明队列,该队列会绑定到默认交换机
             String msgId = messageService.createMessage(message);

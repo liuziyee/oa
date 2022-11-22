@@ -55,7 +55,7 @@ public class UserServiceImpl implements IUserService {
 
             Message message = new Message();
             message.setSenderId(0L);
-            message.setSenderName("系统消息");
+            message.setSenderName("通知");
             message.setUuid(IdUtil.simpleUUID());
             message.setCreateTime(DateUtil.date());
             message.setMsg("你已注册为超级管理员,请及时更新你的个人信息");
