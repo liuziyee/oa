@@ -24,14 +24,13 @@ public class MessageJob {
 
     @Async
     public void send(String topic, Message message) {
-        log.debug("创建推送消息,发送MQ消息到消息队列,该MQ消息用于创建消息推送记录");
+        log.debug("创建推送消息,发送MQ消息,该MQ消息用于创建消息推送记录");
         try {
-            channel.queueDeclare(topic, true, false, false, null); // 声明队列
+            channel.queueDeclare(topic, true, false, false, null); // 声明队列,该队列会绑定到默认交换机
             String msgId = messageService.createMessage(message);
             AMQP.BasicProperties props = new AMQP.BasicProperties().builder()
                     .headers(Map.of("msgId", msgId)).build();
-            log.debug("这里的topic就是routing key,推送消息正文做为消息体");
-            channel.basicPublish("", topic, props, message.getMsg().getBytes());
+            channel.basicPublish("", topic, props, message.getMsg().getBytes()); // 投递消息到默认交换机
         } catch (Throwable e) {
             log.error(e.getMessage(), e);
         }
@@ -39,16 +38,13 @@ public class MessageJob {
 
     @Async
     public int receive(String topic) {
-        log.debug("从消息队列拉取MQ消息,创建消息推送记录");
+        log.debug("拉取MQ消息,创建消息推送记录");
         int count = 0;
         try {
             channel.queueDeclare(topic, true, false, false, null);
             while (true) {
                 GetResponse response = channel.basicGet(topic, false); // 拉取消息
                 if (response != null) {
-                    String message = new String(response.getBody());
-                    log.debug("拉取到的推送消息:{}", message);
-
                     Map<String, Object> headers = response.getProps().getHeaders();
                     MessagePushRecord msgPushRecord = new MessagePushRecord();
                     msgPushRecord.setMessageId(headers.get("msgId").toString());

@@ -43,7 +43,7 @@ spring:
       database: oa
       authentication-database: admin
       username: root
-      password: 12345
+      password: '12345'
     
   mail:
     default-encoding: UTF-8

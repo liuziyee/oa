@@ -1,9 +1,13 @@
 package com.dorohedoro.service.impl;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dorohedoro.domain.User;
 import com.dorohedoro.domain.dto.RegisterDTO;
+import com.dorohedoro.job.MessageJob;
 import com.dorohedoro.mapper.UserMapper;
+import com.dorohedoro.mongo.entity.Message;
 import com.dorohedoro.problem.ServerProblem;
 import com.dorohedoro.service.IUserService;
 import com.dorohedoro.util.RedisUtil;
@@ -23,6 +27,7 @@ public class UserServiceImpl implements IUserService {
     private final UserMapper userMapper;
     private final WeChatUtil weChatUtil;
     private final RedisUtil redisUtil;
+    private final MessageJob messageJob;
     
     @Override
     public Long register(RegisterDTO registerDTO) {
@@ -39,7 +44,6 @@ public class UserServiceImpl implements IUserService {
             }
             log.debug("创建超级管理员账号,绑定openid");
             User root = new User();
-            root.setId(0L);
             root.setOpenId(openId);
             root.setRoles("[0]");
             root.setRoot(true);
@@ -47,9 +51,18 @@ public class UserServiceImpl implements IUserService {
             root.setNickname(nickName);
             root.setAvatarUrl(avatarUrl);
             userMapper.insert(root);
-            return root.getId();
+            Long userId = root.getId();
+
+            Message message = new Message();
+            message.setSenderId(0L);
+            message.setSenderName("系统消息");
+            message.setUuid(IdUtil.simpleUUID());
+            message.setCreateTime(DateUtil.date());
+            message.setMsg("你已注册为超级管理员,请及时更新你的个人信息");
+            messageJob.send(userId.toString(), message);
+            return userId;
         }
-        // TODO 注册员工
+        
         log.debug("注册员工");
         if (redisUtil.hasKey(registerCode)) {
             log.debug("绑定openid到员工账号");
@@ -75,7 +88,6 @@ public class UserServiceImpl implements IUserService {
         log.debug("根据openid查询员工表,有记录,说明微信账号已经和员工(或超级管理员)账号绑定并注册,没有记录,说明微信账号没有注册或已冻结");
         String openId = weChatUtil.getOpenId(code);
         Long userId = userMapper.selectByOpenId(openId).orElseThrow(() -> new ServerProblem("未注册或已冻结"));
-        // TODO 消息队列
         return userId;
     }
 
