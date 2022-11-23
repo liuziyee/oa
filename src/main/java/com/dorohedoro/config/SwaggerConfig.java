@@ -28,7 +28,6 @@ public class SwaggerConfig {
                 .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
                 .paths(PathSelectors.any())
                 .build()
-                // 配置公共参数(访问令牌等)
                 .securitySchemes(List.of(new ApiKey("Authorization", "Authorization", "header"))) // 配置请求头
                 .securityContexts(buildSecurityContexts());
     }

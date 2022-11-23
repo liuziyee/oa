@@ -38,13 +38,6 @@ public class MessageController {
         List<Map> msgPushRecords = messageService.getMsgPushRecords(userId, (page - 1) * size, size);
         return R.ok(msgPushRecords, null);
     }
-    
-    @GetMapping("/getMessage/{id}")
-    @ApiOperation("查询消息")
-    public R getMessage(@NotBlank @PathVariable String id) {
-        Map message = messageService.getMessage(id);
-        return R.ok(message, null);
-    }
 
     @GetMapping("/messageRead/{id}")
     @ApiOperation(("消息置为已读"))
