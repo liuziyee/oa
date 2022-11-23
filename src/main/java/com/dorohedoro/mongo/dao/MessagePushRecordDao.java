@@ -42,7 +42,7 @@ public class MessagePushRecordDao {
                 Aggregation.addFields().addField("msgId").withValue(json).build(),
                 Aggregation.lookup("message", "msgId", "_id", "messages"),
                 Aggregation.match(Criteria.where("receiverId").is(userId)),
-                Aggregation.sort(Sort.by(Sort.Direction.DESC, "createTime")),
+                Aggregation.sort(Sort.by(Sort.Direction.DESC, "messages.createTime")),
                 Aggregation.skip(skip),
                 Aggregation.limit(size)
         );

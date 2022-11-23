@@ -30,7 +30,7 @@ public class MessageController {
     private final JwtUtil jwtUtil;
 
     @PostMapping("/getMsgPushRecords")
-    @ApiOperation("查询用户消息推送记录")
+    @ApiOperation("查询用户的消息推送记录")
     public R getMsgPushRecords(@Valid @RequestBody GetMessagesDTO getMsgDTO, @RequestHeader("Authorization") String accessToken) {
         Long userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
         int page = getMsgDTO.getPage();

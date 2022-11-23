@@ -68,11 +68,19 @@ feign:
 
 logging:
   level:
-    com.dorohedoro.mapper: DEBUG
-    com.dorohedoro.service: DEBUG
-    com.dorohedoro.controller: DEBUG
-    com.dorohedoro.config.shiro: DEBUG
-
+    com:
+      dorohedoro:
+        mapper: DEBUG
+        service: DEBUG
+        controller: DEBUG
+        config:
+          shiro: DEBUG
+    org:
+      springframework:
+        data:
+          mongodb:
+            core: DEBUG
+          
 app:
   jwt:
     expire: 5
