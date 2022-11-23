@@ -50,7 +50,7 @@ public class MessagePushRecordDao {
             log.debug("取出该条消息推送记录关联的消息记录,转为Map,合并两个Map");
             Message message = ((List<Message>) msgPushRecord.get("messages")).get(0);
             log.debug("键_id会重复,这里保留消息推送记录的主键ID");
-            BeanUtil.beanToMap(message).forEach((key, value) -> msgPushRecord.merge(key, value, (one, two) -> one.toString()));
+            BeanUtil.beanToMap(message).forEach((key, value) -> msgPushRecord.merge(key, value, (one, two) -> one));
 
             DateTime createTime = DateUtil.offsetHour((Date) msgPushRecord.get("createTime"), -8);
             msgPushRecord.put("createTime", DateUtil.format(createTime, "yyyy/MM/dd"));
