@@ -3,7 +3,6 @@ package com.dorohedoro.mongo.dao;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
-import com.alibaba.fastjson.JSONObject;
 import com.dorohedoro.mongo.entity.Message;
 import com.dorohedoro.mongo.entity.MessagePushRecord;
 import lombok.RequiredArgsConstructor;
@@ -36,10 +35,9 @@ public class MessagePushRecordDao {
 
     public List<Map> selectPage(Long userId, long skip, int size) {
         log.debug("查询用户的消息推送记录");
-        JSONObject json = new JSONObject();
-        json.put("$toObjectId", "$messageId");
         Aggregation aggregation = Aggregation.newAggregation(
-                Aggregation.addFields().addField("msgId").withValue(json).build(),
+                Aggregation.addFields().addField("msgId").withValue(Map.of("$toObjectId", "$messageId")).build(),
+                Aggregation.addFields().addField("id").withValue(Map.of("$toString", "$_id")).build(),
                 Aggregation.lookup("message", "msgId", "_id", "messages"),
                 Aggregation.match(Criteria.where("receiverId").is(userId)),
                 Aggregation.sort(Sort.by(Sort.Direction.DESC, "messages.createTime")),
@@ -51,10 +49,8 @@ public class MessagePushRecordDao {
         return msgPushRecords.stream().peek(msgPushRecord -> {
             log.debug("取出该条消息推送记录关联的消息记录,转为Map,合并两个Map");
             Message message = ((List<Message>) msgPushRecord.get("messages")).get(0);
-            BeanUtil.beanToMap(message).forEach((key, value) -> {
-                log.debug("键_id会重复,这里保留消息推送记录的主键ID");
-                msgPushRecord.merge(key, value, (one, two) -> one);
-            });
+            log.debug("键_id会重复,这里保留消息推送记录的主键ID");
+            BeanUtil.beanToMap(message).forEach((key, value) -> msgPushRecord.merge(key, value, (one, two) -> one.toString()));
 
             DateTime createTime = DateUtil.offsetHour((Date) msgPushRecord.get("createTime"), -8);
             msgPushRecord.put("createTime", DateUtil.format(createTime, "yyyy/MM/dd"));

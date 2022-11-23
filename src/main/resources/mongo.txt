@@ -21,9 +21,14 @@ db.message_push_record.insert({
 // 查询用户的消息推送记录
 db.message_push_record.aggregate([
     {
-        $set: {
+        $addFields: {
             "msgId": { $toObjectId: "$messageId" } // string转为对象
         }
+    },
+    {
+        $addFields: {
+            "id": { $toString: "$_id" } // 主键ID转为string
+        },
     },
     {
         // 可以理解为message_push_record join message on message_push_record.messageId = message.id
@@ -35,8 +40,8 @@ db.message_push_record.aggregate([
             as: "messages" 
         }
     },
-    { $match: {receiverId: 0} },
-    { $sort: {createTime: -1} },
+    { $match: {receiverId: 1} },
+    { $sort: {"messages.createTime": -1} },
     { $skip: 0 },
     { $limit: 50 }
 ])
