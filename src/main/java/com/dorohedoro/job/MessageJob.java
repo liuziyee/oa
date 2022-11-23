@@ -14,7 +14,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
@@ -26,7 +25,7 @@ public class MessageJob {
 
     @Async
     public void send(String topic, Message message) {
-        log.debug("创建推送消息,投递MQ消息,该MQ消息用于创建消息推送记录");
+        log.info("创建推送消息,投递MQ消息,该MQ消息用于创建消息推送记录");
         try {
             channel.queueDeclare(topic, true, false, false, null); // 声明队列,该队列会绑定到默认交换机
             String msgId = messageService.createMessage(message);
@@ -41,7 +40,7 @@ public class MessageJob {
 
     @Async
     public void receive(String topic) {
-        log.debug("拉取MQ消息,创建消息推送记录");
+        log.info("拉取MQ消息,创建消息推送记录");
         try {
             channel.queueDeclare(topic, true, false, false, null);
             while (true) {
@@ -55,8 +54,8 @@ public class MessageJob {
                     msgPushRecord.setIsRead(false);
                     msgPushRecord.setIsLast(true);
                     messageService.createMsgPushRecord(msgPushRecord);
-                    TimeUnit.SECONDS.sleep(10);
-                    channel.basicAck(response.getEnvelope().getDeliveryTag(), false); // 手动签收
+                    //TimeUnit.SECONDS.sleep(25);
+                    channel.basicAck(response.getEnvelope().getDeliveryTag(), false); // 手动确认
                     continue;
                 }
                 break;
