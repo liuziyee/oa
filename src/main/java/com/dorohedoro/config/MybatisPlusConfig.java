@@ -1,6 +1,6 @@
 package com.dorohedoro.config;
 
-import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
@@ -23,7 +23,7 @@ public class MybatisPlusConfig implements MetaObjectHandler {
 
     @Override
     public void insertFill(MetaObject metaObject) {
-        this.strictInsertFill(metaObject, "createTime", () -> DateTime.now(), Date.class);
+        this.strictInsertFill(metaObject, "createTime", DateUtil::date, Date.class);
     }
 
     @Override

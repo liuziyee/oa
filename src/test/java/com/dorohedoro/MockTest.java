@@ -2,9 +2,12 @@ package com.dorohedoro;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.core.util.IdUtil;
+import com.dorohedoro.domain.Meeting;
 import com.dorohedoro.job.MessageJob;
 import com.dorohedoro.mongo.entity.Message;
 import com.dorohedoro.mongo.entity.MessagePushRecord;
+import com.dorohedoro.service.IMeetingService;
 import com.dorohedoro.service.IMessageService;
 import com.rabbitmq.client.Channel;
 import lombok.SneakyThrows;
@@ -21,23 +24,25 @@ import java.util.stream.IntStream;
 @Slf4j
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
-public class MsgTest {
+public class MockTest {
 
     @Autowired
     private IMessageService messageService;
+    @Autowired
+    private IMeetingService meetingService;
     @Autowired
     private MessageJob messageJob;
     @Autowired
     private Channel channel;
 
     @Test
-    public void createMsgPushRecords() {
-        IntStream.range(0, 100).forEach(no -> {
+    public void mockMsgPushRecords() {
+        IntStream.range(0, 100).forEach(o -> {
             Message message = new Message();
             message.setSenderId(0L);
             message.setSenderName("通知");
             message.setCreateTime(DateUtil.date());
-            message.setMsg("NO " + no);
+            message.setMsg("No" + o);
             String msgId = messageService.createMessage(message);
 
             MessagePushRecord msgPushRecord = new MessagePushRecord();
@@ -46,6 +51,25 @@ public class MsgTest {
             msgPushRecord.setIsRead(false);
             msgPushRecord.setIsLast(true);
             messageService.createMsgPushRecord(msgPushRecord);
+        });
+    }
+    
+    @Test
+    public void mockMeetings() {
+        IntStream.range(0, 100).forEach(o -> {
+            Meeting meeting = new Meeting();
+            meeting.setUuid(IdUtil.simpleUUID());
+            meeting.setTitle("线上研讨会No" + o);
+            meeting.setCreatorId(1L);
+            meeting.setDate(DateUtil.today());
+            meeting.setStart("08:30");
+            meeting.setEnd("10:30");
+            meeting.setType(1);
+            meeting.setMembers("[1]");
+            meeting.setDesc("线上研讨会No" + o);
+            meeting.setInstanceId(IdUtil.simpleUUID());
+            meeting.setStatus(3);
+            meetingService.createMeeting(meeting);
         });
     }
 

@@ -9,8 +9,8 @@
 >> ###### 如果访问令牌过期,缓存令牌也过期了,说明访问令牌过期后的间隔时间超过了5天,要重新登录
 > ##### 关于MySQL和Java日期数据类型的映射
 >> ###### MySQL的datetime映射为Java的Date(下同)
->> ###### date映射为String,不用Java的Date是因为Date同时包含日期和时间,而MySQL的date只包含日期,所以这里用日期字符串来替代Date
->> ###### JDK8+: datetime,timestamp映射为LocalDateTime,date映射为LocalDate
+>> ###### date(time)映射为String,不用Java的Date是因为Date同时包含日期和时间,而MySQL的date(time)只包含日期(时间),所以这里用日期(时间)字符串来替代Date
+>> ###### JDK8+: datetime,timestamp映射为LocalDateTime,date映射为LocalDate,time映射为LocalTime
 > ##### 踩坑
 >> ###### MySQL的时区要设置为Asia/Shanghai
 >> ###### 签到接口会接收签到照片和位置信息(JSON),用@RequestParam接收文件,不要用@RequestBody接收JSON

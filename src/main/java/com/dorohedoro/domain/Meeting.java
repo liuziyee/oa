@@ -1,5 +1,7 @@
 package com.dorohedoro.domain;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -32,11 +34,13 @@ public class Meeting implements Serializable {
     
     private String members;
 
+    @TableField("`desc`")
     private String desc;
 
     private String instanceId;
 
     private Integer status;
 
+    @TableField(fill = FieldFill.INSERT)
     private Date createTime;
 }
