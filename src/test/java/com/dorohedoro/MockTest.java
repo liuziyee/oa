@@ -1,8 +1,11 @@
 package com.dorohedoro;
 
+import cn.hutool.core.date.DateField;
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.dorohedoro.domain.Meeting;
 import com.dorohedoro.job.MessageJob;
 import com.dorohedoro.mongo.entity.Message;
@@ -61,9 +64,10 @@ public class MockTest {
             meeting.setUuid(IdUtil.simpleUUID());
             meeting.setTitle("线上研讨会No" + o);
             meeting.setCreatorId(1L);
-            meeting.setDate(DateUtil.today());
-            meeting.setStart("08:30");
-            meeting.setEnd("10:30");
+            DateTime day = RandomUtil.randomDay(-5, 5);
+            meeting.setDate(day.toDateStr());
+            meeting.setStart(day.toString("HH:mm"));
+            meeting.setEnd(day.offset(DateField.HOUR, RandomUtil.randomInt()).toString("HH:mm"));
             meeting.setType(1);
             meeting.setMembers("[1]");
             meeting.setDesc("线上研讨会No" + o);

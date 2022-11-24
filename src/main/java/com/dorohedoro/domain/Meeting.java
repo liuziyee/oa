@@ -49,4 +49,7 @@ public class Meeting implements Serializable {
     
     @TableField(exist = false)
     private String avatarUrl;
+    
+    @TableField(exist = false)
+    private Integer hour;
 }
