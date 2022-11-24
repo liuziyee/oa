@@ -1,7 +1,7 @@
 package com.dorohedoro.controller;
 
 import cn.hutool.core.convert.Convert;
-import com.dorohedoro.domain.dto.GetMessagesDTO;
+import com.dorohedoro.domain.dto.PageDTO;
 import com.dorohedoro.job.MessageJob;
 import com.dorohedoro.service.IMessageService;
 import com.dorohedoro.util.JwtUtil;
@@ -31,10 +31,10 @@ public class MessageController {
 
     @PostMapping("/getMsgPushRecords")
     @ApiOperation("查询用户的消息推送记录")
-    public R getMsgPushRecords(@Valid @RequestBody GetMessagesDTO getMsgDTO, @RequestHeader("Authorization") String accessToken) {
+    public R getMsgPushRecords(@Valid @RequestBody PageDTO pageDTO, @RequestHeader("Authorization") String accessToken) {
         Long userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
-        int page = getMsgDTO.getPage();
-        int size = getMsgDTO.getSize();
+        int page = pageDTO.getPage();
+        int size = pageDTO.getSize();
         List<Map> msgPushRecords = messageService.getMsgPushRecords(userId, (page - 1) * size, size);
         return R.ok(msgPushRecords, null);
     }

@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @ApiModel
-public class GetMessagesDTO {
+public class PageDTO {
     
     @NotNull
     @Min(1)

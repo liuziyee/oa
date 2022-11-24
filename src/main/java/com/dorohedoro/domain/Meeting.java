@@ -43,4 +43,10 @@ public class Meeting implements Serializable {
 
     @TableField(fill = FieldFill.INSERT)
     private Date createTime;
+    
+    @TableField(exist = false)
+    private String creator;
+    
+    @TableField(exist = false)
+    private String avatarUrl;
 }
