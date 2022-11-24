@@ -66,7 +66,7 @@ public class MockTest {
             meeting.setCreatorId(1L);
             DateTime day = RandomUtil.randomDay(-5, 5);
             meeting.setDate(day.toDateStr());
-            meeting.setStart(day.toTimeStr());
+            meeting.setStart(day.offset(DateField.HOUR, RandomUtil.randomInt()).toTimeStr());
             meeting.setEnd(day.offset(DateField.HOUR, RandomUtil.randomInt()).toTimeStr());
             meeting.setType(1);
             meeting.setMembers("[1]");

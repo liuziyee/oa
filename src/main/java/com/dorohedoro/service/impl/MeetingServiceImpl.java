@@ -27,10 +27,6 @@ public class MeetingServiceImpl implements IMeetingService {
     @Override
     public List<Map> getMeetings(Page<Meeting> page, Long userId) {
         page = meetingMapper.selectPage(page, userId);
-        //Map<String, List<Meeting>> map = page.getRecords().stream().collect(groupingBy(Meeting::getDate));
-        //return map.keySet().stream().map(date -> Map.of("date", date, "meetings", map.get(date)))
-        //        .collect(toList());
-
         JSONArray array = null;
         Map<String, Object> map;
         List<Map> res = new ArrayList<>();
