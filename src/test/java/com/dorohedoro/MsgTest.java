@@ -6,7 +6,9 @@ import com.dorohedoro.job.MessageJob;
 import com.dorohedoro.mongo.entity.Message;
 import com.dorohedoro.mongo.entity.MessagePushRecord;
 import com.dorohedoro.service.IMessageService;
+import com.rabbitmq.client.Channel;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
+@Slf4j
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 public class MsgTest {
@@ -24,6 +27,8 @@ public class MsgTest {
     private IMessageService messageService;
     @Autowired
     private MessageJob messageJob;
+    @Autowired
+    private Channel channel;
 
     @Test
     public void createMsgPushRecords() {
@@ -47,7 +52,7 @@ public class MsgTest {
     @Test
     @SneakyThrows
     public void mockPolling() {
-        // 这里模拟小程序轮询刷新消息推送记录接口,第一次轮询,甲消费者拉取到一条消息,第二次轮询,乙消费者也拉取到了甲还没有确认的同一条消息
+        // 这里模拟小程序轮询刷新消息推送记录接口,第一次轮询,甲拉取到一条消息,第二次轮询,乙也拉取到了甲还没有确认的同一条消息
         Message message = new Message();
         message.setSenderId(0L);
         message.setSenderName("通知");
@@ -57,7 +62,12 @@ public class MsgTest {
         
         ThreadUtil.execAsync(() -> messageJob.receive("1"));
         TimeUnit.SECONDS.sleep(5);
-        ThreadUtil.execAsync(() -> messageJob.receive("1"));
+        ThreadUtil.execAsync(() -> {
+            while (true) {
+                log.info("{}", channel.basicGet("1", false));
+                TimeUnit.SECONDS.sleep(1);
+            }
+        });
         TimeUnit.MINUTES.sleep(5);
     }
 }
