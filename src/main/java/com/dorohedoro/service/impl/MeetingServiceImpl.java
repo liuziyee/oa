@@ -44,5 +44,11 @@ public class MeetingServiceImpl implements IMeetingService {
             array.add(meeting);
         }
         return res;
+
+        //Map<String, List<Meeting>> map = page.getRecords().stream().collect(groupingBy(Meeting::getDate));
+        //return map.keySet().stream().map(date -> {
+        //    map.get(date).sort(comparing(o -> DateUtil.parse(o.getStart())));
+        //    return Map.of("date", date, "meetings", map.get(date));
+        //}).sorted(comparing(o -> DateUtil.parse((String)o.get("date")))).collect(toList());
     }
 }
