@@ -46,7 +46,7 @@ spring:
       password: '12345'
   
   jackson:
-    default-property-inclusion: non_null # 忽略空字段
+    default-property-inclusion: non_null
     
   mail:
     default-encoding: UTF-8
