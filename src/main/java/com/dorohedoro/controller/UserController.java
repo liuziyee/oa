@@ -1,11 +1,15 @@
 package com.dorohedoro.controller;
 
 import cn.hutool.core.convert.Convert;
+import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import com.dorohedoro.domain.Dept;
 import com.dorohedoro.domain.User;
 import com.dorohedoro.domain.dto.GetDeptMembersDTO;
+import com.dorohedoro.domain.dto.GetDetailsDTO;
 import com.dorohedoro.domain.dto.LoginDTO;
 import com.dorohedoro.domain.dto.RegisterDTO;
+import com.dorohedoro.problem.ServerProblem;
 import com.dorohedoro.service.IUserService;
 import com.dorohedoro.util.JwtUtil;
 import com.dorohedoro.util.R;
@@ -62,7 +66,7 @@ public class UserController {
                 .accessToken(accessToken).data(permissions).build();
     }
 
-    @GetMapping("/detail")
+    @GetMapping("/getDetail")
     @ApiOperation("查询用户信息")
     public R getDetail(@RequestHeader("Authorization") String accessToken) {
         Long userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
@@ -71,10 +75,23 @@ public class UserController {
     }
 
     @PostMapping("/getDeptMembers")
-    @ApiOperation("查询部门员工列表")
+    @ApiOperation("查询部门员工")
     @RequiresPermissions(value = {"ROOT", "EMPLOYEE:SELECT"}, logical = Logical.OR)
     public R getDeptMembers(@RequestBody GetDeptMembersDTO getDeptMembersDTO) {
         List<Dept> depts = userService.getDeptMembers(getDeptMembersDTO.getUsername());
         return R.ok(depts, null);
+    }
+    
+    @PostMapping("/getDetails")
+    @ApiOperation("批量查询用户信息")
+    @RequiresPermissions(value = {"ROOT", "MEETING:INSERT", "MEETING:UPDATE"}, logical = Logical.OR)
+    public R getDetails(@Valid @RequestBody GetDetailsDTO getDetailsDTO) {
+        if (!JSONUtil.isJsonArray(getDetailsDTO.getIds())) {
+            throw new ServerProblem("字段[ids]要求为JSON数组");
+        }
+
+        List<Long> userIds = JSON.parseArray(getDetailsDTO.getIds(), Long.class);
+        List<User> users = userService.getDetails(userIds);
+        return R.ok(users, null);
     }
 }

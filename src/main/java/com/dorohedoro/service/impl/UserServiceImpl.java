@@ -101,6 +101,11 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    public List<User> getDetails(List<Long> userIds) {
+        return userMapper.selectBatchIds(userIds);
+    }
+
+    @Override
     public List<Dept> getDeptMembers(String keyword) {
         return deptMapper.selectMembers(keyword).stream().peek(dept -> dept.setTotal(dept.getMembers().size()))
                 .collect(toList());

@@ -18,5 +18,7 @@ public interface IUserService {
 
     Optional<User> getDetail(Long userId);
 
+    List<User> getDetails(List<Long> userIds);
+
     List<Dept> getDeptMembers(String keyword);
 }
