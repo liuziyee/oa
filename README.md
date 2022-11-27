@@ -14,7 +14,7 @@
 > ##### 踩坑
 >> ###### MySQL的时区要设置为Asia/Shanghai
 >> ###### 签到接口会接收签到照片和位置信息(JSON),用@RequestParam接收文件,不要用@RequestBody接收JSON
->> ###### Stream的map,peek等中间操作为惰性操作,Optional的map不是惰性操作
+>> ###### Stream的map,peek等中间操作为惰性操作,要跟上结束操作,Optional的map不是惰性操作
 >> ###### 接口用到了@RequestBody,会执行XssHttpServletRequestWrapper的getInputStream()
 `keytool -genkeypair -alias [keypair] -keyalg RSA -keystore [keypair.keystore] -keypass [dorohedoro] -storepass [dorohedoro]`  
 `docker load < /usr/local/face.tar.gz`  

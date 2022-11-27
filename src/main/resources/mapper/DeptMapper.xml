@@ -2,4 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dorohedoro.mapper.DeptMapper">
 
+    <resultMap id="baseResultMap" type="dept">
+        <result column="id" jdbcType="BIGINT" property="id" />
+        <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
+        <result column="total" jdbcType="INTEGER" property="total" />
+        <collection property="members" ofType="user">
+            <id column="user_id" jdbcType="BIGINT" property="id" />
+            <result column="name" jdbcType="VARCHAR" property="name"/>
+        </collection>
+    </resultMap>
+    
+
+    <select id="selectMembers" resultMap="baseResultMap">
+        select dept.id as id, dept_name, user.id as user_id, name
+        from dept left join user on dept.id = user.dept_id and user.status = 1
+        <if test="username != null and username != ''">
+            where user.name like concat('%', #{username}, '%')
+        </if>
+    </select>
 </mapper>

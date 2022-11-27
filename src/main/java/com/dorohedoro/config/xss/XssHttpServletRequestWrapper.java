@@ -66,7 +66,6 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
                 map.put(key, HtmlUtil.filter(value.toString()));
             }
         }).collect(toSet()));
-        log.debug("Stream的map,peek等中间操作为惰性操作,Optional的map不是惰性操作");
 
         log.debug("将Map转为输入流");
         ByteArrayInputStream inputStream = new ByteArrayInputStream(JSONObject.toJSONString(payload).getBytes());

@@ -1,7 +1,9 @@
 package com.dorohedoro.controller;
 
 import cn.hutool.core.convert.Convert;
+import com.dorohedoro.domain.Dept;
 import com.dorohedoro.domain.User;
+import com.dorohedoro.domain.dto.GetDeptMembersDTO;
 import com.dorohedoro.domain.dto.LoginDTO;
 import com.dorohedoro.domain.dto.RegisterDTO;
 import com.dorohedoro.service.IUserService;
@@ -12,10 +14,13 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Set;
 
 @Slf4j
@@ -63,5 +68,13 @@ public class UserController {
         Long userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
         User user = userService.getDetail(userId).orElse(null);
         return R.ok(user, null);
+    }
+
+    @PostMapping("/getDeptMembers")
+    @ApiOperation("查询部门员工列表")
+    @RequiresPermissions(value = {"ROOT", "EMPLOYEE:SELECT"}, logical = Logical.OR)
+    public R getDeptMembers(@RequestBody GetDeptMembersDTO getDeptMembersDTO) {
+        List<Dept> depts = userService.getDeptMembers(getDeptMembersDTO.getUsername());
+        return R.ok(depts, null);
     }
 }

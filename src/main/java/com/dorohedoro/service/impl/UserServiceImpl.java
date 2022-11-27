@@ -2,9 +2,11 @@ package com.dorohedoro.service.impl;
 
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.dorohedoro.domain.Dept;
 import com.dorohedoro.domain.User;
 import com.dorohedoro.domain.dto.RegisterDTO;
 import com.dorohedoro.job.MessageJob;
+import com.dorohedoro.mapper.DeptMapper;
 import com.dorohedoro.mapper.UserMapper;
 import com.dorohedoro.mongo.entity.Message;
 import com.dorohedoro.problem.ServerProblem;
@@ -15,8 +17,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Service
@@ -24,6 +29,7 @@ import java.util.Set;
 public class UserServiceImpl implements IUserService {
 
     private final UserMapper userMapper;
+    private final DeptMapper deptMapper;
     private final WeChatUtil weChatUtil;
     private final RedisUtil redisUtil;
     private final MessageJob messageJob;
@@ -92,5 +98,11 @@ public class UserServiceImpl implements IUserService {
     @Override
     public Optional<User> getDetail(Long userId) {
         return userMapper.selectById(userId);
+    }
+
+    @Override
+    public List<Dept> getDeptMembers(String keyword) {
+        return deptMapper.selectMembers(keyword).stream().peek(dept -> dept.setTotal(dept.getMembers().size()))
+                .collect(toList());
     }
 }

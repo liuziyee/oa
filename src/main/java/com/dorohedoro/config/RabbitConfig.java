@@ -13,7 +13,7 @@ public class RabbitConfig {
     @SneakyThrows
     public Channel channel() {
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("192.168.1.4");
+        factory.setHost("192.168.1.5");
         factory.setPort(5672);
         return factory.newConnection().createChannel();
     }

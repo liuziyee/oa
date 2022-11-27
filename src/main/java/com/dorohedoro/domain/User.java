@@ -11,6 +11,7 @@ import java.util.Date;
 
 @Data
 @TableName("`user`")
+//@JsonInclude(JsonInclude.Include.NON_NULL)
 public class User implements Serializable {
 
     @TableId
