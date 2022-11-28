@@ -11,4 +11,8 @@ public interface IMeetingService {
     void createMeeting(Meeting meeting);
     
     List<Map> getMeetings(Page<Meeting> page, Long userId);
+
+    boolean isMembersInSameDept(String uuid);
+
+    void setInstanceId(String uuid, String instanceId);
 }

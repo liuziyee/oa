@@ -12,4 +12,9 @@ public class Constants {
     public static String closingEndTime;
     public static String checkDistance;
     public static String checkinDistance;
+
+    public static String GM = "总经理";
+    
+    public static int ONLINE = 1;
+    public static int OFFLINE = 2;
 }

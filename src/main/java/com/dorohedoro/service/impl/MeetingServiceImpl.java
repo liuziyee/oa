@@ -1,6 +1,7 @@
 package com.dorohedoro.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dorohedoro.domain.Meeting;
 import com.dorohedoro.mapper.MeetingMapper;
@@ -23,7 +24,7 @@ public class MeetingServiceImpl implements IMeetingService {
     public void createMeeting(Meeting meeting) {
         meetingMapper.insert(meeting);
     }
-
+    
     @Override
     public List<Map> getMeetings(Page<Meeting> page, Long userId) {
         page = meetingMapper.selectPage(page, userId);
@@ -50,5 +51,17 @@ public class MeetingServiceImpl implements IMeetingService {
         //    map.get(date).sort(comparing(o -> DateUtil.parse(o.getStart())));
         //    return Map.of("date", date, "meetings", map.get(date));
         //}).sorted(comparing(o -> DateUtil.parse((String)o.get("date")))).collect(toList());
+    }
+
+    @Override
+    public boolean isMembersInSameDept(String uuid) {
+        return meetingMapper.isMembersInSameDept(uuid);
+    }
+
+    @Override
+    public void setInstanceId(String uuid, String instanceId) {
+        Meeting meeting = new Meeting();
+        meeting.setInstanceId(instanceId);
+        meetingMapper.update(meeting, Wrappers.<Meeting>lambdaQuery().eq(Meeting::getUuid, uuid));
     }
 }

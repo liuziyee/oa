@@ -1163,7 +1163,7 @@ CREATE TABLE `meeting`  (
   `members` json NOT NULL COMMENT '参与者',
   `desc` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '会议内容',
   `instance_id` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '工作流实例ID',
-  `status` smallint(6) NOT NULL COMMENT '状态(1待审批,2审批不通过,3未开始,4进行中,5已结束)',
+  `status` smallint(6) NOT NULL COMMENT '状态(1待审批,2审批未通过,3未开始,4进行中,5已结束)',
   `create_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_creator_id`(`creator_id`) USING BTREE,

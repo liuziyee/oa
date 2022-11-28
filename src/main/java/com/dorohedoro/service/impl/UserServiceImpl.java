@@ -110,4 +110,14 @@ public class UserServiceImpl implements IUserService {
         return deptMapper.selectMembers(keyword).stream().peek(dept -> dept.setTotal(dept.getMembers().size()))
                 .collect(toList());
     }
+
+    @Override
+    public Long getDMId(Long meetingCreatorId) {
+        return userMapper.selectDMId(meetingCreatorId);
+    }
+
+    @Override
+    public Long getGMId() {
+        return userMapper.selectGMId();
+    }
 }

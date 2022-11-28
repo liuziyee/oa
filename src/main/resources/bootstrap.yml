@@ -44,7 +44,15 @@ spring:
       authentication-database: admin
       username: root
       password: '12345'
+
+  activiti:
+    database-schema-update: true
+    historyLevel: audit
+    db-history-used: true
   
+  quartz:
+    job-store-type: jdbc
+
   jackson:
     default-property-inclusion: non_null
     

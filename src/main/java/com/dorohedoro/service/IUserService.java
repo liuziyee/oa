@@ -21,4 +21,8 @@ public interface IUserService {
     List<User> getDetails(List<Long> userIds);
 
     List<Dept> getDeptMembers(String keyword);
+
+    Long getDMId(Long meetingCreatorId);
+
+    Long getGMId();
 }

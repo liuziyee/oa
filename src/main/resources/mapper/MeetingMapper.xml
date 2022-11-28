@@ -14,4 +14,10 @@
         where u1.id = #{userId} and u1.status = 1 and u2.status = 1 and m.status in (3,4)
         order by m.date, m.start, m.id
     </select>
+    
+    <select id="isMembersInSameDept" resultType="boolean">
+        select if(count(distinct user.dept_id)) = 1, true, false)
+        from meeting join user on json_contains(meeting.members, cast(user.id as char))
+        where meeting.uuid = #{uuid} and user.status = 1
+    </select>
 </mapper>

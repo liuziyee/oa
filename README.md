@@ -24,7 +24,7 @@
 `docker run -d -it -p 9090:9090 -v /usr/local/activiti:/usr/local/activiti --name activiti jdk:latest`  
 `docker exec -it activiti bash`  
 `nohup java -jar /usr/local/activiti/activiti.jar >> out.log 2>&1 &`  
-`用到的mysql函数:if,ifnull,json_contains,date_format,current_date,case when then,cast,concat,timestampdiff`  
+`用到的mysql函数:if,ifnull,json_contains,date_format,current_date,case when then,cast,concat,timestampdiff,group_concat`  
 `A.isBeforeOrEquals(B)等价于A.compareTo(B)<=0`  
 `mongo message:消息集合 message_push_record:消息推送记录集合`  
 `spring.data.mongodb.password要加上单引号`
