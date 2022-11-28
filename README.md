@@ -18,12 +18,12 @@
 >> ###### 接口用到了@RequestBody,会执行XssHttpServletRequestWrapper的getInputStream()
 >> ###### JSON响应忽略空值,可以用@JsonInclude(JsonInclude.Include.NON_NULL)或配置spring.jackson.default-property-inclusion=non_null
 `keytool -genkeypair -alias [keypair] -keyalg RSA -keystore [keypair.keystore] -keypass [dorohedoro] -storepass [dorohedoro]`  
-`docker load < /usr/local/face.tar.gz`  
-`docker run -d -it -p 3000:3000 -v /usr/local/python/demo:/usr/local/demo --name face-recognition face`  
 `docker pull rabbitmq:3.11.3-management`  
 `docker run -d -it -p 15672:15672 -p 5672:5672 --name rabbit rabbitmq:3.11.3-management`  
-`docker exec -it face-recognition bash`  
-`nohup python3 -c "from app import app;" > log.out 2>&1 &`  
+`docker load < /usr/local/jdk.tar.gz`  
+`docker run -d -it -p 9090:9090 -v /usr/local/activiti:/usr/local/activiti --name activiti jdk:latest`  
+`docker exec -it activiti bash`  
+`nohup java -jar /usr/local/activiti/activiti.jar >> out.log 2>&1 &`  
 `用到的mysql函数:if,ifnull,json_contains,date_format,current_date,case when then,cast,concat,timestampdiff`  
 `A.isBeforeOrEquals(B)等价于A.compareTo(B)<=0`  
 `mongo message:消息集合 message_push_record:消息推送记录集合`  
