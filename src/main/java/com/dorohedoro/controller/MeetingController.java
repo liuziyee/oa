@@ -22,6 +22,7 @@ import com.dorohedoro.util.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.BeanUtils;
@@ -33,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Valid
 @Api(tags = "会议模块")
 @RestController
@@ -58,6 +60,8 @@ public class MeetingController {
     @ApiOperation("创建会议")
     @RequiresPermissions(value = {"ROOT", "MEETING:INSERT"}, logical = Logical.OR)
     public R createMeeting(@Valid @RequestBody CreateMeetingDTO createMeetingDTO, @RequestHeader("Authorization") String accessToken) {
+        log.debug("创建会议记录");
+        log.debug("创建工作流实例,绑定实例ID");
         if (createMeetingDTO.getType() == Constants.OFFLINE && StrUtil.isBlank(createMeetingDTO.getPlace())) {
             throw new ServerProblem("线下会议地点不能为空");
         }
@@ -79,21 +83,31 @@ public class MeetingController {
         meeting.setStart(createMeetingDTO.getStart() + ":00");
         meeting.setEnd(createMeetingDTO.getEnd() + ":00");
         meeting.setStatus(1);
-        meetingService.createMeeting(meeting); // 生成会议记录
+        meetingService.createMeeting(meeting);
 
         User user = userService.getDetail(userId).orElseThrow();
         String[] roles = user.getRoles().split(",");
         Map<String, Object> map = new HashMap<>();
-        if (!ArrayUtil.contains(roles, Constants.GM)) {
+        
+        if (ArrayUtil.contains(roles, "总经理")) {
+            map.put("identity", "总经理");
+            map.put("result", "同意");
+        } else {
+            map.put("identity", "员工");
             map.put("managerId", userService.getDMId(userId));
             map.put("gmId", userService.getGMId());
-            map.put("sameDept", meetingService.isMembersInSameDept(uuid));
+            map.put("sameDept", meetingService.isMembersInSameDept(uuid)); 
         }
+        
         map.put("uuid", uuid);
         map.put("openid", user.getOpenId());
         map.put("date", meeting.getDate());
         map.put("start", meeting.getStart());
-        String instanceId = workflowService.createProcessInstance(map); // 创建流程实例
+        map.put("filing", false);
+        map.put("type", "会议申请");
+        map.put("createDate", DateUtil.today());
+        
+        String instanceId = workflowService.createProcessInstance(map);
 
         meetingService.setInstanceId(uuid, instanceId);
         

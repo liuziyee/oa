@@ -30,7 +30,7 @@ public class MeetingServiceImpl implements IMeetingService {
         page = meetingMapper.selectPage(page, userId);
         JSONArray array = null;
         Map<String, Object> map;
-        List<Map> res = new ArrayList<>();
+        List<Map> maps = new ArrayList<>();
         String pre = null;
         for (Meeting meeting : page.getRecords()) {
             String date = meeting.getDate();
@@ -40,11 +40,11 @@ public class MeetingServiceImpl implements IMeetingService {
                 map = new HashMap<>();
                 map.put("date", date);
                 map.put("meetings", array);
-                res.add(map);
+                maps.add(map);
             }
             array.add(meeting);
         }
-        return res;
+        return maps;
 
         //Map<String, List<Meeting>> map = page.getRecords().stream().collect(groupingBy(Meeting::getDate));
         //return map.keySet().stream().map(date -> {
