@@ -15,4 +15,6 @@ public interface IMeetingService {
     boolean isMembersInSameDept(String uuid);
 
     void setInstanceId(String uuid, String instanceId);
+
+    Meeting getMeeting(Long meetingId);
 }

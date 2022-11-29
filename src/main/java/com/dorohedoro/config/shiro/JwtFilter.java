@@ -1,5 +1,6 @@
 package com.dorohedoro.config.shiro;
 
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.dorohedoro.problem.ServerProblem;
@@ -76,7 +77,7 @@ public class JwtFilter extends AuthenticatingFilter {
         } catch (ExpiredJwtException e) {
             if (redisUtil.hasKey(accessToken)) {
                 log.debug("访问令牌过期,缓存令牌未过期 => 生成新的访问令牌并缓存到Redis");
-                Long userId = redisUtil.<Long>get(accessToken);
+                Long userId = Convert.toLong(redisUtil.get(accessToken));
                 redisUtil.delete(accessToken);
                 
                 String refreshToken = jwtUtil.generate(userId);

@@ -64,4 +64,9 @@ public class MeetingServiceImpl implements IMeetingService {
         meeting.setInstanceId(instanceId);
         meetingMapper.update(meeting, Wrappers.<Meeting>lambdaQuery().eq(Meeting::getUuid, uuid));
     }
+
+    @Override
+    public Meeting getMeeting(Long meetingId) {
+        return meetingMapper.selectById(meetingId);
+    }
 }

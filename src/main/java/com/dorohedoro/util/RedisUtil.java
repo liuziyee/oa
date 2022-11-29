@@ -18,8 +18,8 @@ public class RedisUtil {
         return redisTemplate.hasKey(key);
     }
     
-    public <T> T get(String key) {
-        return (T) redisTemplate.opsForValue().get(key);
+    public Object get(String key) {
+        return redisTemplate.opsForValue().get(key);
     }
 
     public void set(String key, Object value) {

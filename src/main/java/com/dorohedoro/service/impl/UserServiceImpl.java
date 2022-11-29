@@ -1,5 +1,6 @@
 package com.dorohedoro.service.impl;
 
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dorohedoro.domain.Dept;
@@ -70,7 +71,7 @@ public class UserServiceImpl implements IUserService {
         log.debug("注册员工");
         if (redisUtil.hasKey(registerCode)) {
             log.debug("绑定openid到员工账号");
-            Long userId = redisUtil.<Long>get(registerCode);
+            Long userId = Convert.toLong(redisUtil.get(registerCode));
             User user = userMapper.selectOne(Wrappers.<User>lambdaQuery().eq(User::getId, userId));
             user.setOpenId(openId);
             user.setNickname(nickName);

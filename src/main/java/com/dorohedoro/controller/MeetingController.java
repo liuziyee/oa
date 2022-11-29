@@ -22,14 +22,18 @@ import com.dorohedoro.util.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Valid
 @Api(tags = "会议模块")
 @RestController
 @RequestMapping("/meeting")
@@ -52,6 +56,7 @@ public class MeetingController {
     
     @PostMapping("/createMeeting")
     @ApiOperation("创建会议")
+    @RequiresPermissions(value = {"ROOT", "MEETING:INSERT"}, logical = Logical.OR)
     public R createMeeting(@Valid @RequestBody CreateMeetingDTO createMeetingDTO, @RequestHeader("Authorization") String accessToken) {
         if (createMeetingDTO.getType() == Constants.OFFLINE && StrUtil.isBlank(createMeetingDTO.getPlace())) {
             throw new ServerProblem("线下会议地点不能为空");
@@ -79,7 +84,7 @@ public class MeetingController {
         User user = userService.getDetail(userId).orElseThrow();
         String[] roles = user.getRoles().split(",");
         Map<String, Object> map = new HashMap<>();
-        if (!ArrayUtil.contains(roles, "总经理")) {
+        if (!ArrayUtil.contains(roles, Constants.GM)) {
             map.put("managerId", userService.getDMId(userId));
             map.put("gmId", userService.getGMId());
             map.put("sameDept", meetingService.isMembersInSameDept(uuid));
@@ -93,5 +98,13 @@ public class MeetingController {
         meetingService.setInstanceId(uuid, instanceId);
         
         return R.ok(null, "会议已创建");
+    }
+
+    @GetMapping("/getMeeting/{id}")
+    @ApiOperation("查询会议信息")
+    @RequiresPermissions(value = {"ROOT", "MEETING:SELECT"}, logical = Logical.OR)
+    public R getMeeting(@NotNull @PathVariable Long id) {
+        Meeting meeting = meetingService.getMeeting(id);
+        return R.ok(meeting, null);
     }
 }

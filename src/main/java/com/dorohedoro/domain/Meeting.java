@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 
 @Data
 @TableName("`meeting`")
@@ -48,8 +49,11 @@ public class Meeting implements Serializable {
     private String creator;
     
     @TableField(exist = false)
-    private String avatarUrl;
+    private String creatorAvatarUrl;
     
     @TableField(exist = false)
     private Integer hour;
+    
+    @TableField(exist = false)
+    private Set<User> joiners;
 }

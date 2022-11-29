@@ -2,8 +2,31 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dorohedoro.mapper.MeetingMapper">
 
-    <select id="selectPage" resultType="meeting">
-        select m.id, m.uuid, m.title, m.place, m.type, m.status, m.desc, u2.name as creator, u2.avatar_url,
+    <resultMap id="baseResultMap" type="meeting">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="uuid" jdbcType="VARCHAR" property="uuid" />
+        <result column="creator_id" jdbcType="BIGINT" property="creatorId" />
+        <result column="title" jdbcType="VARCHAR" property="title" />
+        <result column="place" jdbcType="VARCHAR" property="place" />
+        <result column="date" jdbcType="VARCHAR" property="date" />
+        <result column="type" jdbcType="INTEGER" property="type" />
+        <result column="status" jdbcType="INTEGER" property="status" />
+        <result column="desc" jdbcType="VARCHAR" property="desc" />
+        <result column="start" jdbcType="VARCHAR" property="start" />
+        <result column="end" jdbcType="VARCHAR" property="end" />
+        <result column="instance_id" jdbcType="VARCHAR" property="instanceId" />
+        <result column="creator" jdbcType="VARCHAR" property="creator" />
+        <result column="creator_avatar_url" jdbcType="VARCHAR" property="creatorAvatarUrl" />
+        <result column="hour" jdbcType="INTEGER" property="hour" />
+        <collection property="joiners" ofType="user">
+            <id column="user_id" jdbcType="BIGINT" property="id" />
+            <result column="name" jdbcType="VARCHAR" property="name"/>
+            <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl"/>
+        </collection>
+    </resultMap>
+    
+    <select id="selectPage" resultMap="baseResultMap">
+        select m.id, m.uuid, m.title, m.place, m.type, m.status, m.desc, u2.name as creator, u2.avatar_url as creator_avatar_url,
                date_format(m.date, '%Y年%m月%d日') as date,
                date_format(m.start, '%H:%i') as start,
                date_format(m.end, '%H:%i') as end,
@@ -19,5 +42,14 @@
         select if(count(distinct user.dept_id)) = 1, true, false)
         from meeting join user on json_contains(meeting.members, cast(user.id as char))
         where meeting.uuid = #{uuid} and user.status = 1
+    </select>
+    
+    <select id="selectById" resultMap="baseResultMap">
+        select m.uuid, m.creator_id, m.title, m.place, m.date, m.type, m.status, m.desc, m.instance_id, date_format(start, '%H:%m') as start, date_format(end, '%H:%m') as end,
+			   u1.id as user_id, u1.name, u1.avatar_url, u2.name as creator
+        from meeting m
+        join user u1 on json_contains(m.members, cast(u1.id as char)) and u1.status = 1
+        join user u2 on m.creator_id = u2.id and u2.status = 1
+        where m.id = #{id}
     </select>
 </mapper>

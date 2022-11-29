@@ -12,4 +12,6 @@ public interface MeetingMapper extends BaseMapper<Meeting> {
 
     // 参会者是否在同一部门
     boolean isMembersInSameDept(String uuid);
+
+    Meeting selectById(Long id);
 }

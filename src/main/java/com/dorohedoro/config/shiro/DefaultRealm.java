@@ -4,6 +4,8 @@ import cn.hutool.core.convert.Convert;
 import com.dorohedoro.domain.User;
 import com.dorohedoro.service.IUserService;
 import com.dorohedoro.util.JwtUtil;
+import com.dorohedoro.util.RedisUtil;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.*;
@@ -20,8 +22,9 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class DefaultRealm extends AuthorizingRealm {
 
-    private final JwtUtil jwtUtil;
     private final IUserService userService;
+    private final JwtUtil jwtUtil;
+    private final RedisUtil redisUtil;
 
     @Override
     public boolean supports(AuthenticationToken token) {
@@ -39,9 +42,16 @@ public class DefaultRealm extends AuthorizingRealm {
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-        // 这里的访问令牌是从请求头获取的,有可能过期
+
         String accessToken = (String) token.getCredentials();
-        Long userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
+        Long userId;
+        try {
+            // 这里的访问令牌是从请求头获取的,有可能过期
+            userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
+        } catch (ExpiredJwtException e) {
+            // 访问令牌过期,缓存令牌未过期
+            userId = Convert.toLong(redisUtil.get(accessToken));
+        }
         User user = userService.getDetail(userId).orElseThrow(() -> new LockedAccountException("账号已冻结"));
         SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user, accessToken, getName());
         return info;
