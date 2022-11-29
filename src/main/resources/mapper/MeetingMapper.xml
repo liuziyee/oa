@@ -45,7 +45,7 @@
     </select>
     
     <select id="selectById" resultMap="baseResultMap">
-        select m.uuid, m.creator_id, m.title, m.place, m.date, m.type, m.status, m.desc, m.instance_id, date_format(start, '%H:%m') as start, date_format(end, '%H:%m') as end,
+        select m.id, m.uuid, m.creator_id, m.title, m.place, m.date, m.type, m.status, m.desc, m.instance_id, date_format(start, '%H:%m') as start, date_format(end, '%H:%m') as end,
 			   u1.id as user_id, u1.name, u1.avatar_url, u2.name as creator
         from meeting m
         join user u1 on json_contains(m.members, cast(u1.id as char)) and u1.status = 1
