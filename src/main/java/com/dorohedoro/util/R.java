@@ -15,8 +15,13 @@ public class R<T> {
     private T data;
 
     private String accessToken;
+
+    public static R ok() {
+        return R.builder().code(HttpStatus.HTTP_OK).build();
+    }
     
     public static <T> R<T> ok(T data, String msg) {
         return R.<T>builder().code(HttpStatus.HTTP_OK).msg(msg).data(data).build();
     }
+    
 }

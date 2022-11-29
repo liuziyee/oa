@@ -52,4 +52,17 @@ public class Enums {
             return map.get(desc).getCode();
         }
     }
+
+    @Getter
+    @AllArgsConstructor
+    public enum MeetingStatus {
+        UNAPPROVED(1, "待审批"),
+        FAILED(2, "审批未通过"),
+        UNSTART(3, "未开始"),
+        DOING(4, "进行中"),
+        FINISHED(5, "已结束");
+
+        private int code;
+        private String desc;
+    }
 }

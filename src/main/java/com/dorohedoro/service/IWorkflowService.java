@@ -1,7 +1,8 @@
 package com.dorohedoro.service;
 
-import java.util.Map;
-
 public interface IWorkflowService {
-    String createProcessInstance(Map map);
+    
+    String createMeetingProcess(String uuid, Long creatorId, String date, String start);
+
+    void deleteProcess(String instanceId, String type, String uuid);
 }

@@ -17,4 +17,6 @@ public interface IMeetingService {
     void setInstanceId(String uuid, String instanceId);
 
     Meeting getMeeting(Long meetingId);
+
+    void updateMeeting(Meeting meeting);
 }

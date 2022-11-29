@@ -3,20 +3,19 @@ package com.dorohedoro.controller;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dorohedoro.config.Constants;
 import com.dorohedoro.domain.Meeting;
-import com.dorohedoro.domain.User;
 import com.dorohedoro.domain.dto.CreateMeetingDTO;
 import com.dorohedoro.domain.dto.PageDTO;
+import com.dorohedoro.domain.dto.UpdateMeetingDTO;
 import com.dorohedoro.problem.ServerProblem;
 import com.dorohedoro.service.IMeetingService;
-import com.dorohedoro.service.IUserService;
 import com.dorohedoro.service.IWorkflowService;
+import com.dorohedoro.util.Enums;
 import com.dorohedoro.util.JwtUtil;
 import com.dorohedoro.util.R;
 import io.swagger.annotations.Api;
@@ -30,7 +29,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,75 +41,16 @@ import java.util.Map;
 public class MeetingController {
 
     private final IMeetingService meetingService;
-    private final IUserService userService;
     private final IWorkflowService workflowService;
     private final JwtUtil jwtUtil;
 
     @PostMapping("/getMeetings")
     @ApiOperation("查询用户参加的会议")
     public R getMeetings(@Valid @RequestBody PageDTO pageDTO, @RequestHeader("Authorization") String accessToken) {
-        Long userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
+        Long creatorId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
         Page<Meeting> page = new Page<>(pageDTO.getPage(), pageDTO.getSize());
-        List<Map> meetings = meetingService.getMeetings(page, userId);
+        List<Map> meetings = meetingService.getMeetings(page, creatorId);
         return R.ok(meetings, null);
-    }
-    
-    @PostMapping("/createMeeting")
-    @ApiOperation("创建会议")
-    @RequiresPermissions(value = {"ROOT", "MEETING:INSERT"}, logical = Logical.OR)
-    public R createMeeting(@Valid @RequestBody CreateMeetingDTO createMeetingDTO, @RequestHeader("Authorization") String accessToken) {
-        log.debug("创建会议记录");
-        log.debug("创建工作流实例,绑定实例ID");
-        if (createMeetingDTO.getType() == Constants.OFFLINE && StrUtil.isBlank(createMeetingDTO.getPlace())) {
-            throw new ServerProblem("线下会议地点不能为空");
-        }
-        DateTime startTime = DateUtil.parse(createMeetingDTO.getStart() + ":00");
-        DateTime endTime = DateUtil.parse( createMeetingDTO.getEnd() + ":00");
-        if (endTime.isBeforeOrEquals(startTime)) {
-            throw new ServerProblem("开始时间要求早于结束时间");
-        }
-        if (!JSONUtil.isJsonArray(createMeetingDTO.getMembers())) {
-            throw new ServerProblem("字段[members]要求为JSON数组");
-        }
-
-        Long userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
-        String uuid = IdUtil.simpleUUID();
-        Meeting meeting = new Meeting();
-        BeanUtils.copyProperties(createMeetingDTO, meeting);
-        meeting.setUuid(uuid);
-        meeting.setCreatorId(userId);
-        meeting.setStart(createMeetingDTO.getStart() + ":00");
-        meeting.setEnd(createMeetingDTO.getEnd() + ":00");
-        meeting.setStatus(1);
-        meetingService.createMeeting(meeting);
-
-        User user = userService.getDetail(userId).orElseThrow();
-        String[] roles = user.getRoles().split(",");
-        Map<String, Object> map = new HashMap<>();
-        
-        if (ArrayUtil.contains(roles, "总经理")) {
-            map.put("identity", "总经理");
-            map.put("result", "同意");
-        } else {
-            map.put("identity", "员工");
-            map.put("managerId", userService.getDMId(userId));
-            map.put("gmId", userService.getGMId());
-            map.put("sameDept", meetingService.isMembersInSameDept(uuid)); 
-        }
-        
-        map.put("uuid", uuid);
-        map.put("openid", user.getOpenId());
-        map.put("date", meeting.getDate());
-        map.put("start", meeting.getStart());
-        map.put("filing", false);
-        map.put("type", "会议申请");
-        map.put("createDate", DateUtil.today());
-        
-        String instanceId = workflowService.createProcessInstance(map);
-
-        meetingService.setInstanceId(uuid, instanceId);
-        
-        return R.ok(null, "会议已创建");
     }
 
     @GetMapping("/getMeeting/{id}")
@@ -120,5 +59,65 @@ public class MeetingController {
     public R getMeeting(@NotNull @PathVariable Long id) {
         Meeting meeting = meetingService.getMeeting(id);
         return R.ok(meeting, null);
+    }
+    
+    @PostMapping("/createMeeting")
+    @ApiOperation("创建会议")
+    @RequiresPermissions(value = {"ROOT", "MEETING:INSERT"}, logical = Logical.OR)
+    public R createMeeting(@Valid @RequestBody CreateMeetingDTO dto, @RequestHeader("Authorization") String accessToken) {
+        log.debug("创建会议记录");
+        log.debug("创建流程实例,绑定实例ID");
+        check(dto.getType(), dto.getPlace(), dto.getStart(), dto.getEnd(), dto.getMembers());
+
+        Long creatorId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
+        String uuid = IdUtil.simpleUUID();
+        Meeting meeting = new Meeting();
+        BeanUtils.copyProperties(dto, meeting);
+        meeting.setUuid(uuid);
+        meeting.setCreatorId(creatorId);
+        meeting.setStart(dto.getStart() + ":00");
+        meeting.setEnd(dto.getEnd() + ":00");
+        meeting.setStatus(Enums.MeetingStatus.UNAPPROVED.getCode());
+        
+        meetingService.createMeeting(meeting);
+        String instanceId = workflowService.createMeetingProcess(uuid, creatorId, meeting.getDate(), meeting.getStart());
+        meetingService.setInstanceId(uuid, instanceId);
+        return R.ok();
+    }
+
+    @PostMapping("/updateMeeting")
+    @ApiOperation("更新会议信息")
+    @RequiresPermissions(value = {"ROOT", "MEETING:UPDATE"}, logical = Logical.OR)
+    public R updateMeeting(@Valid @RequestBody UpdateMeetingDTO dto) {
+        log.debug("更新会议记录,状态为待审批");
+        log.debug("删除已有的流程实例,创建新的流程实例,绑定实例ID");
+        check(dto.getType(), dto.getPlace(), dto.getStart(), dto.getEnd(), dto.getMembers());
+
+        Meeting oldOne = meetingService.getMeeting(dto.getId());
+        Meeting newOne = new Meeting();
+        BeanUtils.copyProperties(dto, newOne);
+        newOne.setStart(dto.getStart() + ":00");
+        newOne.setEnd(dto.getEnd() + ":00");
+        newOne.setStatus(Enums.MeetingStatus.UNAPPROVED.getCode());
+
+        meetingService.updateMeeting(newOne);
+        workflowService.deleteProcess(newOne.getInstanceId(), "会议申请", oldOne.getUuid());
+        String instanceId = workflowService.createMeetingProcess(oldOne.getUuid(), oldOne.getCreatorId(), newOne.getDate(), newOne.getStart());
+        meetingService.setInstanceId(oldOne.getUuid(), instanceId);
+        return R.ok();
+    }
+
+    private void check(int type, String place, String start, String end, String members) {
+        if (type == Constants.OFFLINE && StrUtil.isBlank(place)) {
+            throw new ServerProblem("线下会议地点不能为空");
+        }
+        DateTime startTime = DateUtil.parse(start + ":00");
+        DateTime endTime = DateUtil.parse( end + ":00");
+        if (endTime.isBeforeOrEquals(startTime)) {
+            throw new ServerProblem("开始时间要求早于结束时间");
+        }
+        if (!JSONUtil.isJsonArray(members)) {
+            throw new ServerProblem("字段[members]要求为JSON数组");
+        }
     }
 }
