@@ -19,15 +19,13 @@ import javax.annotation.PostConstruct;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import static java.util.stream.Collectors.toSet;
-
 @Slf4j
 @EnableAsync
 @EnableFeignClients
-@SpringBootApplication
 @MapperScan("com.dorohedoro.mapper")
 @ServletComponentScan
 @RequiredArgsConstructor
+@SpringBootApplication
 public class OAWeChatApplication {
 
     private final SysConfigMapper sysConfigMapper;
@@ -41,7 +39,7 @@ public class OAWeChatApplication {
     public void doInit() {
         log.info("读取SYS_CONFIG表");
         List<SysConfig> configs = sysConfigMapper.selectAll();
-        configs.stream().peek(config -> {
+        configs.forEach(config -> {
             String key = StrUtil.toCamelCase(config.getParamKey());
             try {
                 Field field = Constants.class.getDeclaredField(key);
@@ -49,7 +47,7 @@ public class OAWeChatApplication {
             } catch (Throwable e) {
                 log.error(e.getMessage(), e);
             }
-        }).collect(toSet());
+        });
 
         log.info("创建本地文件夹,用于存储签到照片");
         FileUtil.mkdir(properties.getImgDir());

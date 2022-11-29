@@ -5,6 +5,7 @@ import com.dorohedoro.domain.User;
 import com.dorohedoro.service.IUserService;
 import com.dorohedoro.util.JwtUtil;
 import com.dorohedoro.util.RedisUtil;
+import com.dorohedoro.util.ThreadLocalUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,8 +50,7 @@ public class DefaultRealm extends AuthorizingRealm {
             // 这里的访问令牌是从请求头获取的,有可能过期
             userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
         } catch (ExpiredJwtException e) {
-            // 访问令牌过期,缓存令牌未过期
-            userId = Convert.toLong(redisUtil.get(accessToken));
+            userId = Convert.toLong(jwtUtil.get(ThreadLocalUtil.get(), "userid"));
         }
         User user = userService.getDetail(userId).orElseThrow(() -> new LockedAccountException("账号已冻结"));
         SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user, accessToken, getName());

@@ -50,7 +50,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         redisTemplate.setConnectionFactory(redisConnectionFactory);
         return redisTemplate;
     }
-    
+
     @Bean
     public KeyPair keyPair() throws Throwable {
         String alias = "keypair";
@@ -65,7 +65,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         KeyPair keyPair = new KeyPair(publicKey, privateKey);
 
         log.info("读取keystore文件");
-        log.info("公钥: {}, 私钥: {}", Base64.encode(keyPair.getPublic().getEncoded()), 
+        log.info("公钥: {}, 私钥: {}", Base64.encode(keyPair.getPublic().getEncoded()),
                 Base64.encode(keyPair.getPrivate().getEncoded()));
         return keyPair;
     }
