@@ -1,8 +1,8 @@
 :beers:  
-[ubuntu安装mongodb参考文档](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu)  
-[problem-spring-web参考文档](https://github.com/zalando/problem-spring-web/tree/main/problem-spring-web)  
-[swagger访问地址](http://localhost:30000/oa/swagger-ui.html)  
-[knife4j访问地址](http://localhost:30000/oa/doc.html)
+`ubuntu安装mongodb参考文档:https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu)`  
+`problem-spring-web参考文档:https://github.com/zalando/problem-spring-web/tree/main/problem-spring-web)`  
+`swagger访问地址:http://localhost:8080/oa/swagger-ui.html`  
+`knife4j访问地址:http://localhost:8080/oa/doc.html`
 > ##### 关于如何刷新访问令牌
 >> ###### 把生成的访问令牌缓存到Redis(下面叫做缓存令牌),缓存令牌的过期时间设为访问令牌的一倍,下面以访问令牌过期时间5天为例
 >> ###### 如果访问令牌过期,缓存令牌没有过期,说明访问令牌过期后的间隔时间还没有超过5天,要生成新的访问令牌(即续期)并缓存到Redis
@@ -28,4 +28,6 @@
 `timestampdiff,group_concat`  
 `A.isBeforeOrEquals(B)等价于A.compareTo(B)<=0`  
 `mongo message:消息集合 message_push_record:消息推送记录集合`  
-`spring.data.mongodb.password要加上单引号`
+`spring.data.mongodb.password要加上单引号`  
+:whale:
+

@@ -54,7 +54,7 @@ public class CheckinController {
             checkinDTO.setUserId(Convert.toLong(jwtUtil.get(accessToken, "userid")));
             checkinDTO.setImgPath(imgPath);
             checkinService.checkin(checkinDTO);
-            return R.ok(null, "已签到");
+            return R.ok();
         } finally {
             if (imgPath != null) {
                 FileUtil.del(imgPath);
@@ -69,7 +69,7 @@ public class CheckinController {
         try {
             imgPath = copyCheckinImg(file);
             checkinService.createFaceModel(Convert.toLong(jwtUtil.get(accessToken, "userid")), imgPath);
-            return R.ok(null, "已创建人脸模型");
+            return R.ok();
         } finally {
             if (imgPath != null) {
                 FileUtil.del(imgPath);
