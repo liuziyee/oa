@@ -1,6 +1,6 @@
 :beers:  
-`ubuntu安装mongodb参考文档:https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu)`  
-`problem-spring-web参考文档:https://github.com/zalando/problem-spring-web/tree/main/problem-spring-web)`  
+`ubuntu安装mongodb参考文档:https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu`  
+`problem-spring-web参考文档:https://github.com/zalando/problem-spring-web/tree/main/problem-spring-web`  
 `swagger访问地址:http://localhost:8080/oa/swagger-ui.html`  
 `knife4j访问地址:http://localhost:8080/oa/doc.html`
 > ##### 关于如何刷新访问令牌
@@ -29,5 +29,5 @@
 `A.isBeforeOrEquals(B)等价于A.compareTo(B)<=0`  
 `mongo message:消息集合 message_push_record:消息推送记录集合`  
 `spring.data.mongodb.password要加上单引号`  
-:whale:
+:beers:  
 
