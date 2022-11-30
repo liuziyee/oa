@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dorohedoro.domain.Meeting;
 import com.dorohedoro.mapper.MeetingMapper;
 import com.dorohedoro.service.IMeetingService;
+import com.dorohedoro.util.Enums;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -73,5 +74,11 @@ public class MeetingServiceImpl implements IMeetingService {
     @Override
     public void updateMeeting(Meeting meeting) {
         meetingMapper.update(meeting, Wrappers.<Meeting>lambdaQuery().eq(Meeting::getId, meeting.getId()));
+    }
+
+    @Override
+    public void deleteMeeting(Long meetingId) {
+        meetingMapper.delete(Wrappers.<Meeting>lambdaQuery().eq(Meeting::getId, meetingId)
+                .eq(Meeting::getStatus, Enums.MeetingStatus.UNSTART.getCode()));
     }
 }

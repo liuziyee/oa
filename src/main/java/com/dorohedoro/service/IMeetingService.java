@@ -19,4 +19,6 @@ public interface IMeetingService {
     Meeting getMeeting(Long meetingId);
 
     void updateMeeting(Meeting meeting);
+
+    void deleteMeeting(Long meetingId);
 }

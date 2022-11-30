@@ -1,6 +1,7 @@
 package com.dorohedoro.controller;
 
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
@@ -104,6 +105,22 @@ public class MeetingController {
         workflowService.deleteProcess(newOne.getInstanceId(), "会议申请", oldOne.getUuid());
         String instanceId = workflowService.createMeetingProcess(oldOne.getUuid(), oldOne.getCreatorId(), newOne.getDate(), newOne.getStart());
         meetingService.setInstanceId(oldOne.getUuid(), instanceId);
+        return R.ok();
+    }
+
+    @GetMapping("/deleteMeeting/{id}")
+    @ApiOperation("删除会议")
+    @RequiresPermissions(value = {"ROOT", "MEETING:DELETE"}, logical = Logical.OR)
+    public R deleteMeeting(@NotNull @PathVariable Long id) {
+        Meeting meeting = meetingService.getMeeting(id);
+        DateTime start = DateUtil.parse(meeting.getDate() + " " + meeting.getStart());
+        DateTime now = DateUtil.date();
+        if (now.isAfterOrEquals(start.offset(DateField.MINUTE, -20))) {
+            throw new ServerProblem("会议开始前20分钟不允许删除会议");
+        }
+        
+        meetingService.deleteMeeting(id);
+        workflowService.deleteProcess(meeting.getInstanceId(), "会议申请", meeting.getUuid());
         return R.ok();
     }
 
