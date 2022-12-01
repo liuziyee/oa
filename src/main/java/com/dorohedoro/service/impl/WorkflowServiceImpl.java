@@ -20,7 +20,9 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.history.HistoricTaskInstanceQuery;
+import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
+import org.activiti.engine.task.TaskInfo;
 import org.activiti.engine.task.TaskQuery;
 import org.springframework.stereotype.Service;
 
@@ -111,20 +113,39 @@ public class WorkflowServiceImpl implements IWorkflowService {
             }).collect(toList());
         }
         if (status.equals("已审批")) {
-            HistoricTaskInstanceQuery query = historyService.createHistoricTaskInstanceQuery().taskAssignee(userId)
-                    .includeProcessVariables().includeTaskLocalVariables().finished()
-                    .orderByHistoricTaskInstanceStartTime().desc();
+            log.debug("这里要取得指派给该用户的任务和流程最后的任务");
+            HistoricTaskInstanceQuery query = historyService.createHistoricTaskInstanceQuery()
+                    .includeProcessVariables().includeTaskLocalVariables()
+                    .taskAssignee(userId).finished().orderByHistoricTaskInstanceStartTime().desc();
             if (!StrUtil.isBlank(type)) {
                 query.processVariableValueEquals("type", type);
             }
             List<HistoricTaskInstance> tasks = query.listPage(skip, size);
             return tasks.stream().map(task -> {
-                Map map = task.getProcessVariables();
+                Map map = task.getProcessVariables(); // 取得流程变量
+                String instanceId = task.getProcessInstanceId();
+                ProcessInstance instance = runtimeService.createProcessInstanceQuery()
+                        .processInstanceId(instanceId).singleResult();
+                TaskInfo lastTask;
+                if (instance == null) {
+                    log.debug("流程已结束 => 取得最后一个历史任务");
+                    lastTask = historyService.createHistoricTaskInstanceQuery()
+                            .processInstanceId(instanceId)
+                            .includeProcessVariables().includeTaskLocalVariables()
+                            .orderByHistoricTaskInstanceStartTime().desc().list().get(0);
+                } else {
+                    log.debug("流程未结束 => 至少最后一个活动未完成,审批结果为空");
+                    lastTask = taskService.createTaskQuery().processInstanceId(instanceId)
+                            .orderByTaskCreateTime().desc().list().get(0);
+                }
                 map.put("taskId", task.getId());
+                map.put("result_1", task.getTaskLocalVariables().get("result"));
+                map.put("lastUserId", lastTask.getAssignee());
+                map.put("result_2", lastTask.getTaskLocalVariables().get("result"));
+                map.put("processStatus", instance == null ? "已结束" : "未结束");
                 return map;
             }).collect(toList());
         }
-        if (status.equals("已结束")) {}
         return null;
     }
 
