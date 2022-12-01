@@ -1,6 +1,7 @@
 package com.dorohedoro.controller;
 
 import cn.hutool.core.convert.Convert;
+import com.dorohedoro.domain.dto.ApprovalTaskDTO;
 import com.dorohedoro.domain.dto.GetTasksDTO;
 import com.dorohedoro.service.IWorkflowService;
 import com.dorohedoro.util.JwtUtil;
@@ -26,10 +27,17 @@ public class WorkflowController {
     private final JwtUtil jwtUtil;
 
     @PostMapping("/getTasks")
-    @ApiOperation("查询分配给该用户的任务")
+    @ApiOperation("查询指派给该用户的任务")
     public R getTasks(@Valid @RequestBody GetTasksDTO getTasksDTO, @RequestHeader("Authorization") String accessToken) {
         getTasksDTO.setUserId(Convert.toLong(jwtUtil.get(accessToken, "userid")));
         List<Map> tasks = workflowService.getTasks(getTasksDTO);
         return R.ok(tasks, null);
+    }
+
+    @PostMapping("/approvalTask")
+    @ApiOperation("审批")
+    public R approvalTask(@Valid @RequestBody ApprovalTaskDTO approvalTaskDTO) {
+        workflowService.approvalTask(approvalTaskDTO);
+        return R.ok();
     }
 }

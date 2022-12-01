@@ -84,7 +84,7 @@ public class UserController {
     
     @PostMapping("/getDetails")
     @ApiOperation("批量查询用户信息")
-    @RequiresPermissions(value = {"ROOT", "MEETING:INSERT", "MEETING:UPDATE"}, logical = Logical.OR)
+    @RequiresPermissions(value = {"ROOT", "MEETING:INSERT", "MEETING:UPDATE", "WORKFLOW:APPROVAL"}, logical = Logical.OR)
     public R getDetails(@Valid @RequestBody GetDetailsDTO getDetailsDTO) {
         if (!JSONUtil.isJsonArray(getDetailsDTO.getIds())) {
             throw new ServerProblem("字段[ids]要求为JSON数组");

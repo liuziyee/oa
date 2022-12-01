@@ -4,9 +4,11 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.StrUtil;
 import com.dorohedoro.config.Constants;
 import com.dorohedoro.domain.Meeting;
 import com.dorohedoro.domain.User;
+import com.dorohedoro.domain.dto.ApprovalTaskDTO;
 import com.dorohedoro.domain.dto.GetTasksDTO;
 import com.dorohedoro.service.IMeetingService;
 import com.dorohedoro.service.IUserService;
@@ -38,7 +40,7 @@ public class WorkflowServiceImpl implements IWorkflowService {
     private final RuntimeService runtimeService;
     private final HistoryService historyService;
     private final TaskService taskService;
-    
+
     @Override
     public String createMeetingProcess(Long meetingId) {
         // 封装流程变量
@@ -57,6 +59,7 @@ public class WorkflowServiceImpl implements IWorkflowService {
             map.put("gmId", userService.getGMId());
             map.put("sameDept", meetingService.isMembersInSameDept(uuid));
         }
+        map.put("id", meetingId);
         map.put("uuid", uuid);
         map.put("openid", user.getOpenId());
         map.put("date", meeting.getDate());
@@ -96,20 +99,39 @@ public class WorkflowServiceImpl implements IWorkflowService {
         if (status.equals("待审批")) {
             TaskQuery query = taskService.createTaskQuery().taskAssignee(userId)
                     .includeProcessVariables().includeTaskLocalVariables()
-                    .processVariableValueEquals("type", type)
                     .orderByTaskCreateTime().desc();
+            if (!StrUtil.isBlank(type)) {
+                query.processVariableValueEquals("type", type);
+            }
             List<Task> tasks = query.listPage(skip, size);
-            return tasks.stream().map(task -> task.getProcessVariables()).collect(toList());
+            return tasks.stream().map(task -> {
+                Map map = task.getProcessVariables();
+                map.put("taskId", task.getId());
+                return map;
+            }).collect(toList());
         }
         if (status.equals("已审批")) {
             HistoricTaskInstanceQuery query = historyService.createHistoricTaskInstanceQuery().taskAssignee(userId)
-                    .includeProcessVariables().includeTaskLocalVariables()
-                    .processVariableValueEquals("type", type).finished()
+                    .includeProcessVariables().includeTaskLocalVariables().finished()
                     .orderByHistoricTaskInstanceStartTime().desc();
+            if (!StrUtil.isBlank(type)) {
+                query.processVariableValueEquals("type", type);
+            }
             List<HistoricTaskInstance> tasks = query.listPage(skip, size);
-            return tasks.stream().map(task -> task.getProcessVariables()).collect(toList());
+            return tasks.stream().map(task -> {
+                Map map = task.getProcessVariables();
+                map.put("taskId", task.getId());
+                return map;
+            }).collect(toList());
         }
         if (status.equals("已结束")) {}
         return null;
+    }
+
+    @Override
+    public void approvalTask(ApprovalTaskDTO approvalTaskDTO) {
+        String taskId = approvalTaskDTO.getTaskId();
+        taskService.setVariableLocal(taskId, "result", approvalTaskDTO.getResult());
+        taskService.complete(taskId);
     }
 }
