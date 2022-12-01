@@ -22,8 +22,9 @@ public class MeetingServiceImpl implements IMeetingService {
     private final MeetingMapper meetingMapper;
     
     @Override
-    public void createMeeting(Meeting meeting) {
+    public Long createMeeting(Meeting meeting) {
         meetingMapper.insert(meeting);
+        return meeting.getId();
     }
     
     @Override

@@ -14,6 +14,7 @@ public class PageDTO {
     @NotNull
     @Min(1)
     private Integer page;
+    
     @NotNull
     @Range(min = 5, max = 25)
     private Integer size;

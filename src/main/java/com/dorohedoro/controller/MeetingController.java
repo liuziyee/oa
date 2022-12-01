@@ -79,9 +79,9 @@ public class MeetingController {
         meeting.setStart(dto.getStart() + ":00");
         meeting.setEnd(dto.getEnd() + ":00");
         meeting.setStatus(Enums.MeetingStatus.UNAPPROVED.getCode());
-        
-        meetingService.createMeeting(meeting);
-        String instanceId = workflowService.createMeetingProcess(uuid, creatorId, meeting.getDate(), meeting.getStart());
+
+        Long meetingId = meetingService.createMeeting(meeting);
+        String instanceId = workflowService.createMeetingProcess(meetingId);
         meetingService.setInstanceId(uuid, instanceId);
         return R.ok();
     }
@@ -103,7 +103,7 @@ public class MeetingController {
 
         meetingService.updateMeeting(newOne);
         workflowService.deleteProcess(newOne.getInstanceId(), "会议申请", oldOne.getUuid());
-        String instanceId = workflowService.createMeetingProcess(oldOne.getUuid(), oldOne.getCreatorId(), newOne.getDate(), newOne.getStart());
+        String instanceId = workflowService.createMeetingProcess(dto.getId());
         meetingService.setInstanceId(oldOne.getUuid(), instanceId);
         return R.ok();
     }

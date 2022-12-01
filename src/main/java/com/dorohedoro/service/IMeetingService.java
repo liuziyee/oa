@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface IMeetingService {
 
-    void createMeeting(Meeting meeting);
+    Long createMeeting(Meeting meeting);
     
     List<Map> getMeetings(Page<Meeting> page, Long userId);
 
