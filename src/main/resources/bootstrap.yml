@@ -53,6 +53,8 @@ spring:
 
   quartz:
     job-store-type: jdbc
+    jdbc:
+      initialize-schema: always
 
   jackson:
     default-property-inclusion: non_null
