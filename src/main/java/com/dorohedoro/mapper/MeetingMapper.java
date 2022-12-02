@@ -5,13 +5,17 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dorohedoro.domain.Meeting;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 public interface MeetingMapper extends BaseMapper<Meeting> {
 
     // 查询用户参加的会议
-    Page<Meeting> selectPage(@Param("page")Page<Meeting> page, @Param("userId") Long userId);
+    Page<Meeting> selectPage(@Param("page") Page<Meeting> page, @Param("userId") Long userId);
 
     // 参会者是否在同一部门
     boolean isMembersInSameDept(String uuid);
 
     Meeting selectById(Long id);
+
+    List<String> selectByMonth(@Param("userId") Long userId, @Param("month") String month);
 }

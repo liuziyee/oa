@@ -21,4 +21,6 @@ public interface IMeetingService {
     void updateMeeting(Meeting meeting);
 
     void deleteMeeting(Long meetingId);
+    
+    List<String> getMonth(Long userId, String month);
 }

@@ -11,14 +11,18 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dorohedoro.config.Constants;
 import com.dorohedoro.domain.Meeting;
 import com.dorohedoro.domain.dto.CreateMeetingDTO;
+import com.dorohedoro.domain.dto.GetMonthDTO;
 import com.dorohedoro.domain.dto.PageDTO;
 import com.dorohedoro.domain.dto.UpdateMeetingDTO;
+import com.dorohedoro.job.MessageJob;
+import com.dorohedoro.mongo.entity.Message;
 import com.dorohedoro.problem.ServerProblem;
 import com.dorohedoro.service.IMeetingService;
 import com.dorohedoro.service.IWorkflowService;
 import com.dorohedoro.util.Enums;
 import com.dorohedoro.util.JwtUtil;
 import com.dorohedoro.util.R;
+import com.dorohedoro.util.RedisUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +33,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +49,8 @@ public class MeetingController {
     private final IMeetingService meetingService;
     private final IWorkflowService workflowService;
     private final JwtUtil jwtUtil;
+    private final RedisUtil redisUtil;
+    private final MessageJob messageJob;
 
     @PostMapping("/getMeetings")
     @ApiOperation("查询用户参加的会议")
@@ -51,6 +58,15 @@ public class MeetingController {
         Long creatorId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
         Page<Meeting> page = new Page<>(pageDTO.getPage(), pageDTO.getSize());
         List<Map> meetings = meetingService.getMeetings(page, creatorId);
+        return R.ok(meetings, null);
+    }
+    
+    @PostMapping("/getMonth")
+    @ApiOperation("查询某月的会议")
+    public R getMonth(@Valid @RequestBody GetMonthDTO getMonthDTO, @RequestHeader("Authorization") String accessToken) {
+        Long userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
+        String month = getMonthDTO.getYear() + "/" + getMonthDTO.getMonth();
+        List<String> meetings = meetingService.getMonth(userId, month);
         return R.ok(meetings, null);
     }
 
@@ -70,12 +86,12 @@ public class MeetingController {
         log.debug("创建流程实例,绑定实例ID");
         check(dto.getType(), dto.getPlace(), dto.getStart(), dto.getEnd(), dto.getMembers());
 
-        Long creatorId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
+        Long userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
         String uuid = IdUtil.simpleUUID();
         Meeting meeting = new Meeting();
         BeanUtils.copyProperties(dto, meeting);
         meeting.setUuid(uuid);
-        meeting.setCreatorId(creatorId);
+        meeting.setCreatorId(userId);
         meeting.setStart(dto.getStart() + ":00");
         meeting.setEnd(dto.getEnd() + ":00");
         meeting.setStatus(Enums.MeetingStatus.UNAPPROVED.getCode());
@@ -83,6 +99,14 @@ public class MeetingController {
         Long meetingId = meetingService.createMeeting(meeting);
         String instanceId = workflowService.createMeetingProcess(meetingId);
         meetingService.setInstanceId(uuid, instanceId);
+
+        Message message = new Message();
+        message.setSenderId(0L);
+        message.setSenderName("通知");
+        message.setCreateTime(DateUtil.date());
+        message.setMsg(StrUtil.format("已创建待审批会议,标题为{},开始时间为{}", meeting.getTitle(), 
+                meeting.getDate() + " " + meeting.getStart()));
+        messageJob.send(userId.toString(), message);
         return R.ok();
     }
 
@@ -124,6 +148,13 @@ public class MeetingController {
         return R.ok();
     }
 
+    @GetMapping("/getRoomId/{uuid}")
+    @ApiOperation("获取房间ID")
+    public R getRoomId(@NotBlank @PathVariable String uuid) {
+        Long roomId = Convert.toLong(redisUtil.get(uuid));
+        return R.ok(roomId, null);
+    }
+    
     private void check(int type, String place, String start, String end, String members) {
         if (type == Constants.OFFLINE && StrUtil.isBlank(place)) {
             throw new ServerProblem("线下会议地点不能为空");

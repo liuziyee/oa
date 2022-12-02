@@ -82,4 +82,9 @@ public class MeetingServiceImpl implements IMeetingService {
         meetingMapper.delete(Wrappers.<Meeting>lambdaQuery().eq(Meeting::getId, meetingId)
                 .eq(Meeting::getStatus, Enums.MeetingStatus.UNSTART.getCode()));
     }
+
+    @Override
+    public List<String> getMonth(Long userId, String month) {
+        return meetingMapper.selectByMonth(userId, month);
+    }
 }

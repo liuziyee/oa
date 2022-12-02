@@ -52,4 +52,9 @@
         join user u2 on m.creator_id = u2.id and u2.status = 1
         where m.id = #{id}
     </select>
+    <select id="selectByMonth" resultType="string">
+        select distinct date_format(meeting.date, '%Y/%m/%d') as date
+        from meeting join user on json_contains(meeting.members, cast(user.id as char))
+        where user.id = #{userId} and user.status = 1 and meeting.status in (3,4) and date_format(meeting.date, '%Y/%c') = #{month}
+    </select>
 </mapper>
