@@ -87,4 +87,11 @@ public class MeetingServiceImpl implements IMeetingService {
     public List<String> getMonth(Long userId, String month) {
         return meetingMapper.selectByMonth(userId, month);
     }
+
+    @Override
+    public void setStatus(String uuid, int status) {
+        Meeting meeting = new Meeting();
+        meeting.setStatus(status);
+        meetingMapper.update(meeting, Wrappers.<Meeting>lambdaQuery().eq(Meeting::getUuid, uuid));
+    }
 }

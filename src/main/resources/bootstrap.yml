@@ -87,6 +87,8 @@ logging:
         mapper: DEBUG
         service: DEBUG
         controller: DEBUG
+        job: DEBUG
+        util: DEBUG
         config:
           shiro: DEBUG
     org:

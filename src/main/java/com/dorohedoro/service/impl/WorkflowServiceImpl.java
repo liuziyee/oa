@@ -10,9 +10,11 @@ import com.dorohedoro.domain.Meeting;
 import com.dorohedoro.domain.User;
 import com.dorohedoro.domain.dto.ApprovalTaskDTO;
 import com.dorohedoro.domain.dto.GetTasksDTO;
+import com.dorohedoro.job.quartz.CheckMeetingProcessExistJob;
 import com.dorohedoro.service.IMeetingService;
 import com.dorohedoro.service.IUserService;
 import com.dorohedoro.service.IWorkflowService;
+import com.dorohedoro.util.QuartzUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.HistoryService;
@@ -23,6 +25,8 @@ import org.activiti.engine.history.HistoricTaskInstanceQuery;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskQuery;
+import org.quartz.JobBuilder;
+import org.quartz.JobDetail;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -41,10 +45,12 @@ public class WorkflowServiceImpl implements IWorkflowService {
     private final RuntimeService runtimeService;
     private final HistoryService historyService;
     private final TaskService taskService;
+    private final QuartzUtil quartzUtil;
 
     @Override
     public String createMeetingProcess(Long meetingId) {
-        // 封装流程变量
+        log.debug("封装流程变量,创建流程实例");
+        log.debug("创建定时器,在会议的开始时间检查流程实例是否存在");
         Meeting meeting = meetingService.getMeeting(meetingId);
         Long creatorId = meeting.getCreatorId();
         String uuid = meeting.getUuid();
@@ -74,8 +80,15 @@ public class WorkflowServiceImpl implements IWorkflowService {
         DateTime start = DateUtil.parse(meeting.getStart() + ":00");
         DateTime end = DateUtil.parse(meeting.getEnd() + ":00");
         map.put("hour", DateUtil.between(start, end, DateUnit.HOUR));
-
-        return runtimeService.startProcessInstanceByKey("meeting", map).getProcessInstanceId();
+        String instanceId = runtimeService.startProcessInstanceByKey("meeting", map).getProcessInstanceId();
+        
+        JobDetail jobDetail = JobBuilder.newJob(CheckMeetingProcessExistJob.class).build();
+        Map data = jobDetail.getJobDataMap();
+        data.put("uuid", uuid);
+        data.put("instanceId", instanceId);
+        DateTime jobStart = DateUtil.parse(meeting.getDate() + " " + meeting.getStart());
+        quartzUtil.addJob(jobDetail, uuid, "会议工作流任务组", jobStart);
+        return instanceId;
     }
 
     @Override
@@ -86,7 +99,8 @@ public class WorkflowServiceImpl implements IWorkflowService {
         if (historyService.createHistoricProcessInstanceQuery().processInstanceBusinessKey(instanceId).count() > 0L) {
             historyService.deleteHistoricProcessInstance(instanceId);
         }
-        if (type.equals("会议申请")) {}
+        if (type.equals("会议申请")) {
+        }
     }
 
     @Override

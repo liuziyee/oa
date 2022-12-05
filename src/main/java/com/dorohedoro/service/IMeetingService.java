@@ -23,4 +23,6 @@ public interface IMeetingService {
     void deleteMeeting(Long meetingId);
     
     List<String> getMonth(Long userId, String month);
+
+    void setStatus(String uuid, int status);
 }
