@@ -2,6 +2,7 @@ package com.dorohedoro.service.impl;
 
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateUtil;
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dorohedoro.domain.Dept;
 import com.dorohedoro.domain.Role;
@@ -9,6 +10,7 @@ import com.dorohedoro.domain.User;
 import com.dorohedoro.domain.dto.RegisterDTO;
 import com.dorohedoro.job.MessageJob;
 import com.dorohedoro.mapper.DeptMapper;
+import com.dorohedoro.mapper.ModuleMapper;
 import com.dorohedoro.mapper.RoleMapper;
 import com.dorohedoro.mapper.UserMapper;
 import com.dorohedoro.mongo.entity.Message;
@@ -20,9 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
@@ -37,6 +37,7 @@ public class UserServiceImpl implements IUserService {
     private final RedisUtil redisUtil;
     private final MessageJob messageJob;
     private final RoleMapper roleMapper;
+    private final ModuleMapper moduleMapper;
     
     @Override
     public Long register(RegisterDTO registerDTO) {
@@ -133,5 +134,27 @@ public class UserServiceImpl implements IUserService {
     @Override
     public List<Role> getRoles() {
         return roleMapper.selectAll();
+    }
+
+    @Override
+    public List<Map> getModules() {
+        Long pre = null;
+        JSONArray array = null;
+        Map<String, Object> module;
+        List<Map> maps = new ArrayList<>();
+        for (Map map : moduleMapper.selectAll()) {
+            Long moduleId = Convert.toLong(map.get("moduleId"));
+            if (!moduleId.equals(pre)) {
+                pre = moduleId;
+                array = new JSONArray();
+                module = new HashMap();
+                module.put("moduleId", moduleId);
+                module.put("module", map.get("module"));
+                module.put("permissions", array);
+                maps.add(module);
+            }
+            array.add(map);
+        }
+        return maps;
     }
 }

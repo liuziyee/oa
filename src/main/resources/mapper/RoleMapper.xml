@@ -3,7 +3,7 @@
 <mapper namespace="com.dorohedoro.mapper.RoleMapper">
     
     <select id="selectAll" resultType="role">
-        select role.id, role.name, group_concat(permission.id separator ',') as permissions
+        select role.id, role.role_name, group_concat(permission.id separator ',') as permissions
         from role left join permission on json_contains(role.permissions, cast(permission.id as char))
         group by role.id
     </select>

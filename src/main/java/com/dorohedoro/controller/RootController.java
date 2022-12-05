@@ -16,18 +16,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
-@Api(tags = "ROOT模块")
+@Api(tags = "超级管理员模块")
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/root")
 public class RootController {
 
     private final IUserService userService;
@@ -58,5 +57,13 @@ public class RootController {
     public R getRoles() {
         List<Role> roles = userService.getRoles();
         return R.ok(roles, null);
+    }
+
+    @GetMapping("/getModules")
+    @ApiOperation("查询模块列表")
+    @RequiresPermissions(value = {"ROOT"})
+    public R getModules() {
+        List<Map> modules = userService.getModules();
+        return R.ok(modules, null);
     }
 }

@@ -6,6 +6,7 @@ import com.dorohedoro.domain.User;
 import com.dorohedoro.domain.dto.RegisterDTO;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -30,4 +31,6 @@ public interface IUserService {
     Long createUser(User user);
 
     List<Role> getRoles();
+
+    List<Map> getModules();
 }

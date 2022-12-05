@@ -2,4 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dorohedoro.mapper.ModuleMapper">
 
+    <select id="selectAll" resultType="map">
+        select module.id as moduleId, module.module_name as module, permission.id as permissionId, permission.desc
+        from module left join permission on module.id = permission.module_id
+        order by module.id, permission.id
+    </select>
 </mapper>

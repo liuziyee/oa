@@ -480,25 +480,26 @@ CREATE TABLE `permission`  (
   `permission_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '权限',
   `module_id` bigint(20) UNSIGNED NOT NULL COMMENT '模块ID',
   `action_id` bigint(20) UNSIGNED NOT NULL COMMENT '行为ID',
+  `desc` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_permission_name`(`permission_name`) USING BTREE,
   UNIQUE INDEX `uk_module_id_and_action_id`(`module_id`, `action_id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=19 CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='权限表' ROW_FORMAT=DYNAMIC;
 
-INSERT INTO `permission` VALUES (0, 'ROOT', 0, 0);
-INSERT INTO `permission` VALUES (1, 'EMPLOYEE:INSERT', 1, 1);
-INSERT INTO `permission` VALUES (2, 'EMPLOYEE:DELETE', 1, 2);
-INSERT INTO `permission` VALUES (3, 'EMPLOYEE:UPDATE', 1, 3);
-INSERT INTO `permission` VALUES (4, 'EMPLOYEE:SELECT', 1, 4);
-INSERT INTO `permission` VALUES (5, 'DEPT:INSERT', 2, 1);
-INSERT INTO `permission` VALUES (6, 'DEPT:DELETE', 2, 2);
-INSERT INTO `permission` VALUES (7, 'DEPT:UPDATE', 2, 3);
-INSERT INTO `permission` VALUES (8, 'DEPT:SELECT', 2, 4);
-INSERT INTO `permission` VALUES (9, 'MEETING:INSERT', 3, 1);
-INSERT INTO `permission` VALUES (10, 'MEETING:DELETE', 3, 2);
-INSERT INTO `permission` VALUES (11, 'MEETING:UPDATE', 3, 3);
-INSERT INTO `permission` VALUES (12, 'MEETING:SELECT', 3, 4);
-INSERT INTO `permission` VALUES (13, 'WORKFLOW:APPROVAL', 4, 5);
+INSERT INTO `permission` VALUES (0, 'ROOT', 0, 0, '超级管理员');
+INSERT INTO `permission` VALUES (1, 'EMPLOYEE:INSERT', 1, 1, '员工新增');
+INSERT INTO `permission` VALUES (2, 'EMPLOYEE:DELETE', 1, 2, '员工删除');
+INSERT INTO `permission` VALUES (3, 'EMPLOYEE:UPDATE', 1, 3, '员工编辑');
+INSERT INTO `permission` VALUES (4, 'EMPLOYEE:SELECT', 1, 4, '员工查询');
+INSERT INTO `permission` VALUES (5, 'DEPT:INSERT', 2, 1, '部门新增');
+INSERT INTO `permission` VALUES (6, 'DEPT:DELETE', 2, 2, '部门删除');
+INSERT INTO `permission` VALUES (7, 'DEPT:UPDATE', 2, 3, '部门编辑');
+INSERT INTO `permission` VALUES (8, 'DEPT:SELECT', 2, 4, '部门查询');
+INSERT INTO `permission` VALUES (9, 'MEETING:INSERT', 3, 1, '会议新增');
+INSERT INTO `permission` VALUES (10, 'MEETING:DELETE', 3, 2, '会议删除');
+INSERT INTO `permission` VALUES (11, 'MEETING:UPDATE', 3, 3, '会议编辑');
+INSERT INTO `permission` VALUES (12, 'MEETING:SELECT', 3, 4, '会议查询');
+INSERT INTO `permission` VALUES (13, 'WORKFLOW:APPROVAL', 4, 5, '工作流审批');
 
 DROP TABLE IF EXISTS `role`;
 CREATE TABLE `role`  (
