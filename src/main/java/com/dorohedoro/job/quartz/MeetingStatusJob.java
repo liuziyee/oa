@@ -22,5 +22,6 @@ public class MeetingStatusJob extends QuartzJobBean {
         String uuid = map.get("uuid").toString();
         int status = (int) map.get("status");
         meetingService.setStatus(uuid, status);
+        log.debug("会议{}状态置为{}", uuid, status);
     }
 }

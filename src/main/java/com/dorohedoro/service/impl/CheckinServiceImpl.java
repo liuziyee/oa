@@ -1,5 +1,6 @@
 package com.dorohedoro.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateRange;
@@ -26,7 +27,6 @@ import com.dorohedoro.util.Enums;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
@@ -127,8 +127,7 @@ public class CheckinServiceImpl implements ICheckinService {
             }
         }
 
-        Checkin checkin = new Checkin();
-        BeanUtils.copyProperties(checkinDTO, checkin);
+        Checkin checkin = BeanUtil.copyProperties(checkinDTO, Checkin.class);
         checkin.setUserId(userId);
         checkin.setStatus(status);
         checkin.setRisk(risk);

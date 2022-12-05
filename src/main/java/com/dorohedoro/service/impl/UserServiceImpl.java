@@ -4,10 +4,12 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dorohedoro.domain.Dept;
+import com.dorohedoro.domain.Role;
 import com.dorohedoro.domain.User;
 import com.dorohedoro.domain.dto.RegisterDTO;
 import com.dorohedoro.job.MessageJob;
 import com.dorohedoro.mapper.DeptMapper;
+import com.dorohedoro.mapper.RoleMapper;
 import com.dorohedoro.mapper.UserMapper;
 import com.dorohedoro.mongo.entity.Message;
 import com.dorohedoro.problem.ServerProblem;
@@ -34,6 +36,7 @@ public class UserServiceImpl implements IUserService {
     private final WeChatUtil weChatUtil;
     private final RedisUtil redisUtil;
     private final MessageJob messageJob;
+    private final RoleMapper roleMapper;
     
     @Override
     public Long register(RegisterDTO registerDTO) {
@@ -68,7 +71,6 @@ public class UserServiceImpl implements IUserService {
             return userId;
         }
         
-        log.debug("注册员工");
         if (redisUtil.hasKey(registerCode)) {
             log.debug("绑定openid到员工账号");
             Long userId = Convert.toLong(redisUtil.get(registerCode));
@@ -120,5 +122,16 @@ public class UserServiceImpl implements IUserService {
     @Override
     public Long getGMId() {
         return userMapper.selectGMId();
+    }
+
+    @Override
+    public Long createUser(User user) {
+        userMapper.insert(user);
+        return user.getId();
+    }
+
+    @Override
+    public List<Role> getRoles() {
+        return roleMapper.selectAll();
     }
 }

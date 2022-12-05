@@ -469,11 +469,10 @@ CREATE TABLE `module`  (
   UNIQUE INDEX `uk_module_code`(`module_code`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=6 CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='模块表' ROW_FORMAT=DYNAMIC;
 
-INSERT INTO `module` VALUES (1, 'USER', '用户管理');
-INSERT INTO `module` VALUES (2, 'EMPLOYEE', '员工管理');
-INSERT INTO `module` VALUES (3, 'DEPT', '部门管理');
-INSERT INTO `module` VALUES (4, 'MEETING', '会议管理');
-INSERT INTO `module` VALUES (5, 'WORKFLOW', '工作流管理');
+INSERT INTO `module` VALUES (1, 'EMPLOYEE', '员工管理');
+INSERT INTO `module` VALUES (2, 'DEPT', '部门管理');
+INSERT INTO `module` VALUES (3, 'MEETING', '会议管理');
+INSERT INTO `module` VALUES (4, 'WORKFLOW', '工作流管理');
 
 DROP TABLE IF EXISTS `permission`;
 CREATE TABLE `permission`  (
@@ -487,23 +486,19 @@ CREATE TABLE `permission`  (
 ) ENGINE=InnoDB AUTO_INCREMENT=19 CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='权限表' ROW_FORMAT=DYNAMIC;
 
 INSERT INTO `permission` VALUES (0, 'ROOT', 0, 0);
-INSERT INTO `permission` VALUES (1, 'USER:INSERT', 1, 1);
-INSERT INTO `permission` VALUES (2, 'USER:DELETE', 1, 2);
-INSERT INTO `permission` VALUES (3, 'USER:UPDATE', 1, 3);
-INSERT INTO `permission` VALUES (4, 'USER:SELECT', 1, 4);
-INSERT INTO `permission` VALUES (5, 'EMPLOYEE:INSERT', 2, 1);
-INSERT INTO `permission` VALUES (6, 'EMPLOYEE:DELETE', 2, 2);
-INSERT INTO `permission` VALUES (7, 'EMPLOYEE:UPDATE', 2, 3);
-INSERT INTO `permission` VALUES (8, 'EMPLOYEE:SELECT', 2, 4);
-INSERT INTO `permission` VALUES (9, 'DEPT:INSERT', 3, 1);
-INSERT INTO `permission` VALUES (10, 'DEPT:DELETE', 3, 2);
-INSERT INTO `permission` VALUES (11, 'DEPT:UPDATE', 3, 3);
-INSERT INTO `permission` VALUES (12, 'DEPT:SELECT', 3, 4);
-INSERT INTO `permission` VALUES (13, 'MEETING:INSERT', 4, 1);
-INSERT INTO `permission` VALUES (14, 'MEETING:DELETE', 4, 2);
-INSERT INTO `permission` VALUES (15, 'MEETING:UPDATE', 4, 3);
-INSERT INTO `permission` VALUES (16, 'MEETING:SELECT', 4, 4);
-INSERT INTO `permission` VALUES (17, 'WORKFLOW:APPROVAL', 5, 5);
+INSERT INTO `permission` VALUES (1, 'EMPLOYEE:INSERT', 1, 1);
+INSERT INTO `permission` VALUES (2, 'EMPLOYEE:DELETE', 1, 2);
+INSERT INTO `permission` VALUES (3, 'EMPLOYEE:UPDATE', 1, 3);
+INSERT INTO `permission` VALUES (4, 'EMPLOYEE:SELECT', 1, 4);
+INSERT INTO `permission` VALUES (5, 'DEPT:INSERT', 2, 1);
+INSERT INTO `permission` VALUES (6, 'DEPT:DELETE', 2, 2);
+INSERT INTO `permission` VALUES (7, 'DEPT:UPDATE', 2, 3);
+INSERT INTO `permission` VALUES (8, 'DEPT:SELECT', 2, 4);
+INSERT INTO `permission` VALUES (9, 'MEETING:INSERT', 3, 1);
+INSERT INTO `permission` VALUES (10, 'MEETING:DELETE', 3, 2);
+INSERT INTO `permission` VALUES (11, 'MEETING:UPDATE', 3, 3);
+INSERT INTO `permission` VALUES (12, 'MEETING:SELECT', 3, 4);
+INSERT INTO `permission` VALUES (13, 'WORKFLOW:APPROVAL', 4, 5);
 
 DROP TABLE IF EXISTS `role`;
 CREATE TABLE `role`  (
@@ -515,9 +510,9 @@ CREATE TABLE `role`  (
 ) ENGINE=InnoDB AUTO_INCREMENT=5 CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='角色表' ROW_FORMAT=DYNAMIC;
 
 INSERT INTO `role` VALUES (0, '超级管理员', '[0]');
-INSERT INTO `role` VALUES (1, '总经理', '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]');
-INSERT INTO `role` VALUES (2, '部门经理', '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]');
-INSERT INTO `role` VALUES (3, '普通员工', '[1, 2, 3, 4, 5, 6, 7, 8]');
+INSERT INTO `role` VALUES (1, '总经理', '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]');
+INSERT INTO `role` VALUES (2, '部门经理', '[1, 3, 4, 5, 7, 8, 9, 11, 12, 13]');
+INSERT INTO `role` VALUES (3, '普通员工', '[4, 8, 9, 12]');
 
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user`  (

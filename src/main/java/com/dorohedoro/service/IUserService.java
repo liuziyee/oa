@@ -1,6 +1,7 @@
 package com.dorohedoro.service;
 
 import com.dorohedoro.domain.Dept;
+import com.dorohedoro.domain.Role;
 import com.dorohedoro.domain.User;
 import com.dorohedoro.domain.dto.RegisterDTO;
 
@@ -25,4 +26,8 @@ public interface IUserService {
     Long getDMId(Long meetingCreatorId);
 
     Long getGMId();
+
+    Long createUser(User user);
+
+    List<Role> getRoles();
 }

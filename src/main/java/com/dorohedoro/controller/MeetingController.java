@@ -1,5 +1,6 @@
 package com.dorohedoro.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateTime;
@@ -29,7 +30,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -88,8 +88,7 @@ public class MeetingController {
 
         Long userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
         String uuid = IdUtil.simpleUUID();
-        Meeting meeting = new Meeting();
-        BeanUtils.copyProperties(dto, meeting);
+        Meeting meeting = BeanUtil.copyProperties(dto, Meeting.class);
         meeting.setUuid(uuid);
         meeting.setCreatorId(userId);
         meeting.setStart(dto.getStart() + ":00");
@@ -119,8 +118,7 @@ public class MeetingController {
         check(dto.getType(), dto.getPlace(), dto.getStart(), dto.getEnd(), dto.getMembers());
 
         Meeting oldOne = meetingService.getMeeting(dto.getId());
-        Meeting newOne = new Meeting();
-        BeanUtils.copyProperties(dto, newOne);
+        Meeting newOne = BeanUtil.copyProperties(dto, Meeting.class);
         newOne.setStart(dto.getStart() + ":00");
         newOne.setEnd(dto.getEnd() + ":00");
         newOne.setStatus(Enums.MeetingStatus.UNAPPROVED.getCode());
