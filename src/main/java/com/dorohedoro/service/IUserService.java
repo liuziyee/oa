@@ -33,4 +33,6 @@ public interface IUserService {
     List<Role> getRoles();
 
     List<Map> getModules();
+
+    void updateRole(Role role);
 }

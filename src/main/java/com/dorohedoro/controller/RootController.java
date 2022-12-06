@@ -2,11 +2,15 @@ package com.dorohedoro.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.json.JSONUtil;
 import com.dorohedoro.domain.Role;
 import com.dorohedoro.domain.User;
 import com.dorohedoro.domain.dto.RegisterUserDTO;
+import com.dorohedoro.domain.dto.UpdateRoleDTO;
 import com.dorohedoro.job.MailJob;
+import com.dorohedoro.problem.ServerProblem;
 import com.dorohedoro.service.IUserService;
+import com.dorohedoro.util.Enums;
 import com.dorohedoro.util.R;
 import com.dorohedoro.util.RedisUtil;
 import io.swagger.annotations.Api;
@@ -38,6 +42,9 @@ public class RootController {
     @RequiresPermissions(value = {"ROOT", "EMPLOYEE:INSERT"}, logical = Logical.OR)
     public R register(@Valid @RequestBody RegisterUserDTO registerUserDTO) {
         User user = BeanUtil.copyProperties(registerUserDTO, User.class);
+        user.setRoles("[3]");
+        user.setStatus(Enums.Status.AVAILABLE.getCode());
+        user.setRoot(false);
         Long userId = userService.createUser(user);
         String code = RandomUtil.randomNumbers(6);
         log.debug("注册码:{}", code);
@@ -53,7 +60,7 @@ public class RootController {
 
     @GetMapping("/getRoles")
     @ApiOperation("查询角色列表")
-    @RequiresPermissions(value = {"ROOT"})
+    @RequiresPermissions("ROOT")
     public R getRoles() {
         List<Role> roles = userService.getRoles();
         return R.ok(roles, null);
@@ -61,9 +68,22 @@ public class RootController {
 
     @GetMapping("/getModules")
     @ApiOperation("查询模块列表")
-    @RequiresPermissions(value = {"ROOT"})
+    @RequiresPermissions("ROOT")
     public R getModules() {
         List<Map> modules = userService.getModules();
         return R.ok(modules, null);
+    }
+    
+    @PostMapping("/updateRole")
+    @ApiOperation("更新角色包含的权限")
+    @RequiresPermissions("ROOT")
+    public R updateRole(@Valid @RequestBody UpdateRoleDTO updateRoleDTO) {
+        if (!JSONUtil.isJsonArray(updateRoleDTO.getPermissions())) {
+            throw new ServerProblem("字段[permissions]要求为JSON数组");
+        }
+        
+        Role role = BeanUtil.copyProperties(updateRoleDTO, Role.class);
+        userService.updateRole(role);
+        return R.ok();
     }
 }

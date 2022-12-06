@@ -79,7 +79,7 @@ public class UserServiceImpl implements IUserService {
             user.setOpenId(openId);
             user.setNickname(nickName);
             user.setAvatarUrl(avatarUrl);
-            userMapper.insert(user);
+            userMapper.update(user, Wrappers.<User>lambdaQuery().eq(User::getId, user.getId()));
             return userId;
         } else {
             throw new ServerProblem("注册码无效或已过期");
@@ -156,5 +156,10 @@ public class UserServiceImpl implements IUserService {
             array.add(map);
         }
         return maps;
+    }
+
+    @Override
+    public void updateRole(Role role) {
+        roleMapper.update(role, Wrappers.<Role>lambdaQuery().eq(Role::getId, role.getId()));
     }
 }
