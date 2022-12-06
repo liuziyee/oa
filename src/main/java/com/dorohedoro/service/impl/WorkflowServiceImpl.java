@@ -100,6 +100,10 @@ public class WorkflowServiceImpl implements IWorkflowService {
             historyService.deleteHistoricProcessInstance(instanceId);
         }
         if (type.equals("会议申请")) {
+            quartzUtil.deleteJob(uuid, "会议工作流任务组");
+            quartzUtil.deleteJob(uuid, "生成房间ID任务组");
+            quartzUtil.deleteJob(uuid, "会议开始任务组");
+            quartzUtil.deleteJob(uuid, "会议结束任务组");
         }
     }
 

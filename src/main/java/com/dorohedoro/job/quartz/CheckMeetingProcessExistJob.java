@@ -32,7 +32,7 @@ public class CheckMeetingProcessExistJob extends QuartzJobBean {
         if (process != null) {
             log.debug("在会议的开始时间,流程实例存在 => 删掉流程实例,会议状态置为审批未通过");
             map.put("processStatus", "未结束");
-            workflowService.deleteProcess(instanceId, "会议", uuid);
+            workflowService.deleteProcess(instanceId, "会议申请", uuid);
             meetingService.setStatus(uuid, Enums.MeetingStatus.FAILED.getCode());
             log.debug("会议{}已失效", uuid);
         }

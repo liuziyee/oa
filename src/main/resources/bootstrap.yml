@@ -46,7 +46,7 @@ spring:
       password: '12345'
 
   activiti:
-    database-schema-update: true
+    database-schema-update: drop-create
     historyLevel: audit
     db-history-used: true
     check-process-definitions: true

@@ -62,14 +62,14 @@ public class NotifyService implements JavaDelegate {
             map.put("uuid", uuid);
             map.put("status", Enums.MeetingStatus.DOING.getCode());
             DateTime jobStart = DateUtil.parse(date + " " + start);
-            quartzUtil.addJob(jobDetail, uuid, "会议状态任务组1", jobStart);
+            quartzUtil.addJob(jobDetail, uuid, "会议开始任务组", jobStart);
 
             jobDetail = JobBuilder.newJob(MeetingStatusJob.class).build();
             map = jobDetail.getJobDataMap();
             map.put("uuid", uuid);
             map.put("status", Enums.MeetingStatus.FINISHED.getCode());
             jobStart = DateUtil.parse(date + " " + end);
-            quartzUtil.addJob(jobDetail, uuid, "会议状态任务组2", jobStart);
+            quartzUtil.addJob(jobDetail, uuid, "会议结束任务组", jobStart);
         } else {
             meetingService.setStatus(uuid, Enums.MeetingStatus.UNAPPROVED.getCode());
         }
