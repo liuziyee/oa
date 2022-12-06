@@ -31,19 +31,4 @@ systemctl status docker
 docker pull mysql:8.0.23
 docker run -it -d --name mysql --net=host -m 350m -v /usr/local/mysql/data:/var/lib/mysql -v /usr/local/mysql/config:/etc/mysql/conf.d \
 -e MYSQL_ROOT_PASSWORD=12345 -e TZ=Asia/Shanghai mysql:8.0.23
-
-docker pull mongo:6.0
-mkdir -p /usr/local/mongo
-vim /usr/local/mongo/mongod.conf
-net:
-   port: 27017
-   bindIp: "0.0.0.0"
-
-storage:
-   dbPath: "/etc/mongo/data"
-
-security:
-   authorization: enabled
-docker run -it -d --name mongo --net=host -m 350m -v /usr/local/mongo:/etc/mongo -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=12345 \
-mongo:6.0 --config /etc/mongo/mongod.conf
 ```
