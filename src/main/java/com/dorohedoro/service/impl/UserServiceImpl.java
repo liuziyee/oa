@@ -95,8 +95,7 @@ public class UserServiceImpl implements IUserService {
     public Long login(String code) {
         log.debug("根据openid查询员工表,有记录,说明微信账号已经和员工(或超级管理员)账号绑定并注册,没有记录,说明微信账号没有注册或已冻结");
         String openId = weChatUtil.getOpenId(code);
-        Long userId = userMapper.selectByOpenId(openId).orElseThrow(() -> new ServerProblem("未注册或已冻结"));
-        return userId;
+        return userMapper.selectByOpenId(openId).orElseThrow(() -> new ServerProblem("未注册或已冻结"));
     }
 
     @Override
