@@ -21,6 +21,7 @@
 ###### spring.data.mongodb.password要加上单引号
 ```shell
 keytool -genkeypair -alias [keypair] -keyalg RSA -keystore [keypair.keystore] -keypass [dorohedoro] -storepass [dorohedoro]
+
 apt-get update
 apt-get install -y docker.io
 systemctl status docker
@@ -63,7 +64,7 @@ bindIp 0.0.0.0
 
 docker pull openjdk:11.0.11-jdk-oraclelinux7
 docker run -it -d --name oa --net=host -m 1G -v /usr/local/oa:/usr/local/oa -v /etc/localtime:/etc/localtime \
-openjdk:11.0.11-jdk-oraclelinux7
+-e TZ=Asia/Shanghai openjdk:11.0.11-jdk-oraclelinux7
 docker exec -it oa bash
 nohup java -jar /usr/local/oa/oa-1.0-SNAPSHOT.jar >> /dev/null 2>&1 &
 ```
