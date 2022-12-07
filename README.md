@@ -1,4 +1,3 @@
-`ubuntu安装mongodb参考文档:https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu`  
 `problem-spring-web参考文档:https://github.com/zalando/problem-spring-web/tree/main/problem-spring-web`  
 `swagger:http://localhost:8080/oa/swagger-ui.html`  
 `knife4j:http://localhost:8080/oa/doc.html`
@@ -16,19 +15,54 @@
 ###### Stream的map, peek等中间操作为惰性操作, 要跟上结束操作, Optional的map不是惰性操作
 ###### 接口用到了@RequestBody, 会执行XssHttpServletRequestWrapper的getInputStream()
 ###### JSON响应忽略空值, 可以用@JsonInclude(JsonInclude.Include.NON_NULL)或配置spring.jackson.default-property-inclusion=non_null
-###### 用到的mysql函数:if, ifnull, json_contains, date_format, current_date, case when then, cast, concat, timestampdiff, group_concat
+###### 用到的mysql函数: if, ifnull, json_contains, date_format, current_date, case when then, cast, concat, timestampdiff, group_concat
 ###### A.isBeforeOrEquals(B)等价于A.compareTo(B)<=0
-###### mongo message:消息集合 message_push_record:消息推送记录集合
+###### mongo message: 消息集合 message_push_record: 消息推送记录集合
 ###### spring.data.mongodb.password要加上单引号
-`keytool -genkeypair -alias [keypair] -keyalg RSA -keystore [keypair.keystore] -keypass [dorohedoro] -storepass [dorohedoro]`  
-`docker pull rabbitmq:3.11.3-management`  
-`docker run -d -it -p 15672:15672 -p 5672:5672 --name rabbit rabbitmq:3.11.3-management`
 ```shell
-yum install docker -y
+keytool -genkeypair -alias [keypair] -keyalg RSA -keystore [keypair.keystore] -keypass [dorohedoro] -storepass [dorohedoro]
+apt-get update
+apt-get install -y docker.io
 systemctl status docker
-配置docker镜像:https://cloud.tencent.com/document/product/1207/45596
 
 docker pull mysql:8.0.23
-docker run -it -d --name mysql --net=host -m 350m -v /usr/local/mysql/data:/var/lib/mysql -v /usr/local/mysql/config:/etc/mysql/conf.d \
+docker run -it -d --name mysql --net=host -m 500m -v /usr/local/mysql/data:/var/lib/mysql \
+-v /usr/local/mysql/config:/etc/mysql/conf.d \
 -e MYSQL_ROOT_PASSWORD=12345 -e TZ=Asia/Shanghai mysql:8.0.23
+
+docker pull redis:6.0.10
+mkdir -p /usr/local/redis/conf
+vim /usr/local/redis/conf/redis.conf
+bind 0.0.0.0
+protected-mode yes
+port 6379
+tcp-backlog 511
+timeout 0
+tcp-keepalive 0
+loglevel notice
+logfile ""
+databases 4
+save 900 1
+save 300 10
+save 60 10000
+stop-writes-on-bgsave-error yes
+rdbcompression yes
+rdbchecksum yes
+dbfilename dump.rdb
+dir ./
+requirepass 12345
+docker run -it -d --name redis --net=host -m 300m -v /usr/local/redis/conf:/usr/local/etc/redis \
+redis:6.0.10 redis-server /usr/local/etc/redis/redis.conf
+
+docker pull rabbitmq:3.11.3-management
+docker run -it -d --name rabbit --net=host -m 300m rabbitmq:3.11.3-management
+
+ubuntu安装mongodb参考文档:https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu
+vim /etc/mongod.conf
+bindIp 0.0.0.0
+
+docker pull openjdk:11.0.11-jdk-oraclelinux7
+docker run -it -d --name oa --net=host -m 512m -v /usr/local/oa:/usr/local/oa openjdk:11.0.11-jdk-oraclelinux7
+docker exec -it oa bash
+nohup java -jar /usr/local/oa/oa-1.0-SNAPSHOT.jar >> /dev/null 2>&1 &
 ```

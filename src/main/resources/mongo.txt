@@ -1,5 +1,5 @@
 use admin
-db.createUser({user:"root",pwd:"12345",roles:[{role:"root",db:"admin"}],mechanisms:["SCRAM-SHA-1"]})
+db.createUser({user:"root",pwd:"12345",roles:[{role:"root",db:"admin"}]})
 
 db.message.insert({
     _id: ObjectId("600bea9ab5bafb311f147506"),
