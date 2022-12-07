@@ -82,6 +82,6 @@ public class EndEventService implements JavaDelegate {
         message.setSenderName("通知");
         message.setCreateTime(DateUtil.date());
         message.setMsg(StrUtil.format("你发起的{}审批{}", meeting.getTitle(), result.equals("同意") ? "已通过" : "未通过"));
-        rabbitJob.send(map.get("creatorId").toString(), message);
+        rabbitJob.send(meeting.getCreatorId().toString(), message);
     }
 }

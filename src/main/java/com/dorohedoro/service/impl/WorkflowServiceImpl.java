@@ -73,7 +73,6 @@ public class WorkflowServiceImpl implements IWorkflowService {
         map.put("start", meeting.getStart());
         map.put("online", meeting.getType() == Constants.ONLINE);
         map.put("creator", user.getName());
-        map.put("creatorId", creatorId);
         map.put("creatorAvatarUrl", user.getAvatarUrl());
         map.put("filing", false);
         map.put("type", "会议申请");
