@@ -2,7 +2,7 @@ package com.dorohedoro.controller;
 
 import cn.hutool.core.convert.Convert;
 import com.dorohedoro.domain.dto.PageDTO;
-import com.dorohedoro.job.MessageJob;
+import com.dorohedoro.job.RabbitJob;
 import com.dorohedoro.service.IMessageService;
 import com.dorohedoro.util.JwtUtil;
 import com.dorohedoro.util.R;
@@ -26,7 +26,7 @@ import java.util.Map;
 public class MessageController {
 
     private final IMessageService messageService;
-    private final MessageJob messageJob;
+    private final RabbitJob rabbitJob;
     private final JwtUtil jwtUtil;
 
     @PostMapping("/getMsgPushRecords")
@@ -55,7 +55,7 @@ public class MessageController {
     @ApiOperation("刷新消息推送记录")
     public R refreshMsgPushRecords(@RequestHeader("Authorization") String accessToken) {
         Long userId = Convert.toLong(jwtUtil.get(accessToken, "userid"));
-        messageJob.receive(userId.toString()); // 拉取MQ消息,刷新消息推送记录
+        rabbitJob.receive(userId.toString()); // 拉取MQ消息,刷新消息推送记录
         long last = messageService.getLastMsgCount(userId);
         long unread = messageService.getUnreadMsgCount(userId);
         return R.ok(Map.of("last", last, "unread", unread), null);

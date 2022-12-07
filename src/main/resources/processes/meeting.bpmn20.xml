@@ -24,7 +24,7 @@
         <bpmn2:sequenceFlow id="Flow_1xjsdmk" name="不是总经理" sourceRef="Gateway_128ojxd" targetRef="Activity_0oo6m8b">
             <bpmn2:conditionExpression>${identity!='总经理'}</bpmn2:conditionExpression>
         </bpmn2:sequenceFlow>
-        <bpmn2:serviceTask id="Activity_001hzw4" name="发送通知" activiti:delegateExpression="${notifyService}">
+        <bpmn2:serviceTask id="Activity_001hzw4" name="发送通知" activiti:delegateExpression="${endEventService}">
             <bpmn2:incoming>Flow_09860ck</bpmn2:incoming>
             <bpmn2:incoming>Flow_05xpv0l</bpmn2:incoming>
             <bpmn2:incoming>Flow_17ignd3</bpmn2:incoming>

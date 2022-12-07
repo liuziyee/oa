@@ -8,7 +8,7 @@ import com.dorohedoro.domain.Dept;
 import com.dorohedoro.domain.Role;
 import com.dorohedoro.domain.User;
 import com.dorohedoro.domain.dto.RegisterDTO;
-import com.dorohedoro.job.MessageJob;
+import com.dorohedoro.job.RabbitJob;
 import com.dorohedoro.mapper.DeptMapper;
 import com.dorohedoro.mapper.ModuleMapper;
 import com.dorohedoro.mapper.RoleMapper;
@@ -35,7 +35,7 @@ public class UserServiceImpl implements IUserService {
     private final DeptMapper deptMapper;
     private final WeChatUtil weChatUtil;
     private final RedisUtil redisUtil;
-    private final MessageJob messageJob;
+    private final RabbitJob rabbitJob;
     private final RoleMapper roleMapper;
     private final ModuleMapper moduleMapper;
     
@@ -68,7 +68,7 @@ public class UserServiceImpl implements IUserService {
             message.setSenderName("通知");
             message.setCreateTime(DateUtil.date());
             message.setMsg("你已注册为超级管理员,请及时更新你的个人信息");
-            messageJob.send(userId.toString(), message);
+            rabbitJob.send(userId.toString(), message);
             return userId;
         }
         

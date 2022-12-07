@@ -3,9 +3,12 @@ package com.dorohedoro.service.impl;
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
 import com.dorohedoro.domain.Meeting;
+import com.dorohedoro.job.RabbitJob;
 import com.dorohedoro.job.quartz.MeetingRoomJob;
 import com.dorohedoro.job.quartz.MeetingStatusJob;
+import com.dorohedoro.mongo.entity.Message;
 import com.dorohedoro.service.IMeetingService;
 import com.dorohedoro.util.Enums;
 import com.dorohedoro.util.QuartzUtil;
@@ -22,10 +25,11 @@ import java.util.Map;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class NotifyService implements JavaDelegate {
+public class EndEventService implements JavaDelegate {
 
-    private final QuartzUtil quartzUtil;
     private final IMeetingService meetingService;
+    private final QuartzUtil quartzUtil;
+    private final RabbitJob rabbitJob;
     
     @Override
     public void execute(DelegateExecution execution) {
@@ -33,12 +37,10 @@ public class NotifyService implements JavaDelegate {
         Long id = (Long) map.get("id");
         String uuid = map.get("uuid").toString();
         String result = map.get("result").toString();
-
         Meeting meeting = meetingService.getMeeting(id);
         String date = meeting.getDate();
         String start = meeting.getStart();
         String end = meeting.getEnd();
-        log.debug("会议{}审批结果为{}", uuid, result);
         
         if (result.equals("同意")) {
             log.debug("审批结果为同意 => 会议状态置为未开始");
@@ -74,5 +76,12 @@ public class NotifyService implements JavaDelegate {
             meetingService.setStatus(uuid, Enums.MeetingStatus.UNAPPROVED.getCode());
         }
         quartzUtil.deleteJob(uuid, "会议工作流任务组");
+
+        Message message = new Message();
+        message.setSenderId(0L);
+        message.setSenderName("通知");
+        message.setCreateTime(DateUtil.date());
+        message.setMsg(StrUtil.format("你发起的{}审批{}", meeting.getTitle(), result.equals("同意") ? "已通过" : "未通过"));
+        rabbitJob.send(map.get("creatorId").toString(), message);
     }
 }

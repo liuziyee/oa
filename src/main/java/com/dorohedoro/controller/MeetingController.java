@@ -15,7 +15,7 @@ import com.dorohedoro.domain.dto.CreateMeetingDTO;
 import com.dorohedoro.domain.dto.GetMonthDTO;
 import com.dorohedoro.domain.dto.PageDTO;
 import com.dorohedoro.domain.dto.UpdateMeetingDTO;
-import com.dorohedoro.job.MessageJob;
+import com.dorohedoro.job.RabbitJob;
 import com.dorohedoro.mongo.entity.Message;
 import com.dorohedoro.problem.ServerProblem;
 import com.dorohedoro.service.IMeetingService;
@@ -50,7 +50,7 @@ public class MeetingController {
     private final IWorkflowService workflowService;
     private final JwtUtil jwtUtil;
     private final RedisUtil redisUtil;
-    private final MessageJob messageJob;
+    private final RabbitJob rabbitJob;
 
     @PostMapping("/getMeetings")
     @ApiOperation("查询用户参加的会议")
@@ -105,7 +105,7 @@ public class MeetingController {
         message.setCreateTime(DateUtil.date());
         message.setMsg(StrUtil.format("已创建待审批会议,标题为{},开始时间为{}", meeting.getTitle(), 
                 meeting.getDate() + " " + meeting.getStart()));
-        messageJob.send(userId.toString(), message);
+        rabbitJob.send(userId.toString(), message);
         return R.ok();
     }
 

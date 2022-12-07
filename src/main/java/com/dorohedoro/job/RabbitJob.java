@@ -18,7 +18,7 @@ import java.util.Map;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class MessageJob {
+public class RabbitJob {
 
     private final IMessageService messageService;
     private final Channel channel;

@@ -7,7 +7,7 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.dorohedoro.domain.Meeting;
-import com.dorohedoro.job.MessageJob;
+import com.dorohedoro.job.RabbitJob;
 import com.dorohedoro.mongo.entity.Message;
 import com.dorohedoro.mongo.entity.MessagePushRecord;
 import com.dorohedoro.service.IMeetingService;
@@ -34,7 +34,7 @@ public class MockTest {
     @Autowired
     private IMeetingService meetingService;
     @Autowired
-    private MessageJob messageJob;
+    private RabbitJob rabbitJob;
     @Autowired
     private Channel channel;
 
@@ -86,9 +86,9 @@ public class MockTest {
         message.setSenderName("通知");
         message.setCreateTime(DateUtil.date());
         message.setMsg("测试消息");
-        messageJob.send("1", message);
+        rabbitJob.send("1", message);
         
-        ThreadUtil.execAsync(() -> messageJob.receive("1"));
+        ThreadUtil.execAsync(() -> rabbitJob.receive("1"));
         TimeUnit.SECONDS.sleep(5);
         ThreadUtil.execAsync(() -> {
             while (true) {
