@@ -87,7 +87,7 @@ public class CheckinServiceImpl implements ICheckinService {
             return "超出上班考勤结束时间";
         }
 
-        return checkinMapper.selectByCreateTime(userId, attendanceStartTime, attendanceEndTime) == null ? "可以签到" : "已签到";
+        return checkinMapper.selectByCreateTime(userId, attendanceStartTime, attendanceEndTime) == null ? "可签到" : "已签到";
     }
 
     @Override
