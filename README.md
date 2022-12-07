@@ -62,7 +62,8 @@ vim /etc/mongod.conf
 bindIp 0.0.0.0
 
 docker pull openjdk:11.0.11-jdk-oraclelinux7
-docker run -it -d --name oa --net=host -m 512m -v /usr/local/oa:/usr/local/oa openjdk:11.0.11-jdk-oraclelinux7
+docker run -it -d --name oa --net=host -m 1G -v /usr/local/oa:/usr/local/oa -v /etc/localtime:/etc/localtime \
+openjdk:11.0.11-jdk-oraclelinux7
 docker exec -it oa bash
 nohup java -jar /usr/local/oa/oa-1.0-SNAPSHOT.jar >> /dev/null 2>&1 &
 ```
