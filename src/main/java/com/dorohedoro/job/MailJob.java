@@ -14,7 +14,7 @@ public class MailJob {
     private final JavaMailSender mailSender;
     private final Properties properties;
     
-    @Async
+    @Async("pool")
     public void send(SimpleMailMessage msg) {
         String mailBox = properties.getMail().getSystem();
         msg.setFrom(mailBox);

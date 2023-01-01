@@ -23,7 +23,7 @@ public class RabbitJob {
     private final IMessageService messageService;
     private final Channel channel;
 
-    @Async
+    @Async("pool")
     public void send(String topic, Message message) {
         log.debug("创建推送消息,投递MQ消息,该MQ消息用于创建消息推送记录");
         try {
@@ -38,7 +38,7 @@ public class RabbitJob {
         }
     }
 
-    @Async
+    @Async("pool")
     public void receive(String topic) {
         log.debug("拉取MQ消息,创建消息推送记录");
         try {
@@ -65,7 +65,7 @@ public class RabbitJob {
         }
     }
     
-    @Async
+    @Async("pool")
     public void deleteQueue(String topic) {
         try {
             channel.queueDelete(topic);
